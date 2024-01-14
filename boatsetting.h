@@ -11,6 +11,7 @@
 #include "boatmanager.h"
 #include "adddevicedialog.h"
 #include "qhostaddress.h"
+#include "boat.h"
 
 
 namespace Ui {
@@ -37,8 +38,8 @@ public:
     int connectionType();
 
 signals:
-    void changeBoatName(QString boatname, QString newboatname);
-    void AddBoat(QString newname, int ID, QString PIP, QString SIP);
+    void changeBoatName(int boatID, QString newboatname);
+    void AddBoat(Boat* boat);
     void vAddBoat(QString newname);
     void ChangeIP(QString boatname, QString PIP, QString SIP);
     void deleteBoat(QString boatname);
@@ -50,7 +51,7 @@ public slots:
     void onMsg(QByteArray data);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
-    void appendBoat(QString boatname, int ID, QString PIP, QString SIP);
+    Boat* appendBoat(QString boatname, int ID, QString PIP, QString SIP);
     void onBoatNameChange();
     void onAddBoat();
     void onDeleteBoat();

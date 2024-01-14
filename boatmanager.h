@@ -16,6 +16,8 @@ public:
 
     Boat* getBoatbyIndex(int index);
     Boat* getBoatbyID(int ID);
+    int getIDbyInex(int index);
+    int getIndexbyID(int ID);
 
     QString CurrentIP(QString boatname);
     int size();

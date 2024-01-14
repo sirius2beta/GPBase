@@ -449,13 +449,10 @@ void VideoWindow::AddBoat(QString boatname)
     ui->boatcomboBox->addItem(boatname);
 }
 
-void VideoWindow::onBoatNameChange(QString oldname, QString newname)
+void VideoWindow::onBoatNameChange(int boatID, QString newname)
 {
-    for(int i = 0; i < ui->boatcomboBox->count();i++){
-        if(ui->boatcomboBox->itemText(i) == oldname){
-            ui->boatcomboBox->setItemText(i, newname);
-        }
-    }
+
+    ui->boatcomboBox->setItemText(boatList->getIndexbyID(boatID), newname);
 }
 
 void VideoWindow::onDeleteBoat(QString boatname)

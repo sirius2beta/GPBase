@@ -53,6 +53,21 @@ Boat* BoatManager::getBoatbyID(int ID)
     return 0;
 }
 
+int BoatManager::getIDbyInex(int index)
+{
+    return boatList[index]->ID;
+}
+
+int BoatManager::getIndexbyID(int ID)
+{
+    for(int i = 0; i < boatList.size(); i++){
+        if(boatList[i]->ID == ID){
+            return i;
+        }
+    }
+    return -1;
+}
+
 Device& Boat::getDevbyID(int ID)
 {
 

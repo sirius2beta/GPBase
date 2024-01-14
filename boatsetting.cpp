@@ -93,8 +93,9 @@ void BoatSetting::initSettings(BoatManager* _boatList)
             int ID = settings->value("ID").toInt();
             QString boatPIP = settings->value("/PIP").toString();
             QString boatSIP = settings->value("/SIP").toString();
-            appendBoat(boatname, ID, boatPIP, boatSIP);
-            emit AddBoat(boatname, ID, boatPIP, boatSIP);
+            Boat* newboat = appendBoat(boatname, ID, boatPIP, boatSIP);
+            qDebug()<<"boatSetting:: appendboat";
+            emit AddBoat(newboat);
             emit vAddBoat(boatname);
 
             //initialize board
@@ -200,7 +201,7 @@ Boat* BoatSetting::currentBoat(){
      }
  }
 
-void BoatSetting::appendBoat(QString boatname, int ID, QString PIP, QString SIP)
+ Boat* BoatSetting::appendBoat(QString boatname, int ID, QString PIP, QString SIP)
 {
 
     int current = boatItemModel->rowCount();
@@ -229,7 +230,7 @@ void BoatSetting::appendBoat(QString boatname, int ID, QString PIP, QString SIP)
 
     boat->CurrentIP = QString();
 
-
+    return boat;
 
 }
 
@@ -447,14 +448,14 @@ bool BoatSetting::isPrimary(int ID){
 
 void BoatSetting::onBoatNameChange()
 {
+    Boat* _boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    int id = _boat->ID;
     QString oldname = ui->BoatcomboBox->currentText();
     QString newname = ui->BoatlineEdit->text();
-    for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatItemModel->item(i,0)->text() == oldname){
-            boatItemModel->item(i,0)->setText(newname);
-        }
-    }
-    emit changeBoatName(oldname, newname);
+    _boat->boatName = newname;
+
+    boatItemModel->item(ui->BoatcomboBox->currentIndex(),0)->setText(newname);
+    emit changeBoatName(id, newname);
     ui->BoatcomboBox->setItemText(ui->BoatcomboBox->currentIndex(),ui->BoatlineEdit->text());
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
@@ -515,7 +516,7 @@ void BoatSetting::onAddBoat()
     }
     QString newboatname = "unknown";
 
-    appendBoat(newboatname, index,"", "");
+    Boat* newboat = appendBoat(newboatname, index,"", "");
 
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
@@ -531,7 +532,7 @@ void BoatSetting::onAddBoat()
     settings->endGroup();
 
     ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
-    emit AddBoat(newboatname, index, "192.168.0.1", "100.100.100.100");
+    emit AddBoat(newboat);
     emit vAddBoat(newboatname);
 }
 

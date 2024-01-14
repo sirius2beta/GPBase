@@ -42,10 +42,12 @@ MainWindow::MainWindow(QWidget *parent, QString config)
 
     //initialize NetworkSettings
     initNetworkSettings();
-
+    qDebug()<<"MainWindow::initNetworksettings ok";
     initBoatSettings();
+    qDebug()<<"MainWindow::initBoatSettings ok";
     //initialize videowindows
     initVideoWindows();
+    qDebug()<<"MainWindow::initVideoWindows ok";
 
     initSensorWidget();
 
@@ -161,7 +163,6 @@ void MainWindow::addVideoWindow(int index, bool central_widget)
 {
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
 
-
     VideoWindow* vwindow = new VideoWindow(this,_config);
     vwindow->setIndex(index);
     vwindow->setPCPort(settings->value(QString("%1/w%2/in_port").arg(_config,QString::number(index))).toInt());
@@ -170,7 +171,6 @@ void MainWindow::addVideoWindow(int index, bool central_widget)
     vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
     vwindow->setFormat();
     vwindow->setBoatList(boatList);
-
 
     if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(index))) == 1){
         vwindow->setVideoInfo(true);
@@ -207,8 +207,6 @@ void MainWindow::openCreateWindowDialog()
 
 void MainWindow::sendUDPCommand(int ID, QString command, int PCPort)
 {
-    //QHostAddress addr = QHostAddress(boatSetting->getIP(boatname));
-
     Boat* boat = boatList->getBoatbyID(ID);
     if(boat == 0){
         qDebug()<<"MainWindow::sendUDPCommand:no boatname in boatlist";
@@ -219,7 +217,6 @@ void MainWindow::sendUDPCommand(int ID, QString command, int PCPort)
     if(boat)
     if(boatSetting->connectionType() == BoatSetting::Auto){
          addr = QHostAddress(boat->CurrentIP);
-
          if(boatSetting->isPrimary(ID)){
              PC_addr = PCPIP;
          }else{
@@ -228,16 +225,10 @@ void MainWindow::sendUDPCommand(int ID, QString command, int PCPort)
     }else if(boatSetting->connectionType() == BoatSetting::Primary){
             addr = QHostAddress(boat->PIP);
             PC_addr = PCPIP;
-
     }else{
-
             addr = QHostAddress(boat->SIP);
             PC_addr = PCSIP;
-
     }
-
-
-
 
     if(PCPort != 0){
         command = command+" "+PC_addr+" "+QString::number(PCPort);
@@ -250,17 +241,11 @@ void MainWindow::sendUDPCommand(int ID, QString command, int PCPort)
 
 void MainWindow::sendMsg(QHostAddress addr, char topic, QByteArray command)
 {
-
-
-    qDebug()<<"Mainwindow: sendMsg to :"<<addr.toString();
-
     QByteArray cmd;
     cmd.resize(1);
     cmd[0] = topic;
-    //cmd[1] = ' ';
     cmd.append(command);
     serverSocket->writeDatagram(cmd,cmd.size(), addr, 50006);
-
 }
 
 
@@ -384,11 +369,13 @@ void MainWindow::onDisonnected(int ID, bool isprimary)
 
 }
 
-void MainWindow::onNewBoat(QString boatname, int ID, QString PIP, QString SIP)
+void MainWindow::onNewBoat(Boat* newboat)
 {
-    primaryHeartBeat = new HeartBeat(boatname, ID, PCPIP,PIP, 50006,true, this);
+    primaryHeartBeat = new HeartBeat(newboat, PCPIP, 50006, true, this);
+    qDebug()<<"MainWindow::onNewBoat ck1";
     primaryHeartBeat->HeartBeatLoop();
-    secondaryHeartBeat = new HeartBeat(boatname, ID, PCSIP,SIP, 50006,false, this);
+    qDebug()<<"MainWindow::onNewBoat ck2";
+    secondaryHeartBeat = new HeartBeat(newboat, PCSIP, 50006, false, this);
     secondaryHeartBeat->HeartBeatLoop();
     connect(this, &MainWindow::AliveResponse, primaryHeartBeat, &HeartBeat::alive);
     connect(primaryHeartBeat, &HeartBeat::sendMsg, this, &MainWindow::sendMsg);

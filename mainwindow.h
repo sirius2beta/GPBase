@@ -60,7 +60,7 @@ protected slots:
     void onPCSIPChanged(QString PCIP);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
-    void onNewBoat(QString boatname, int ID, QString PIP, QString SIP);
+    void onNewBoat(Boat *newboat);
     void onConnectionTypeChanged();
 
 
