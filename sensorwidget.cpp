@@ -1,14 +1,14 @@
 ﻿#include "sensorwidget.h"
 #include "ui_sensorwidget.h"
 
-sensorWidget::sensorWidget(QWidget *parent) :
+SensorWidget::SensorWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::sensorWidget),
     connection_counter(0),
     costumSensorCount(0)
 {
     ui->setupUi(this);
-    connect(ui->info_Button, &QPushButton::clicked, this, &sensorWidget::info_button_pushed);
+    connect(ui->info_Button, &QPushButton::clicked, this, &SensorWidget::info_button_pushed);
     addWidget("temp", 1, 0);
     addWidget("dist",1 ,1);
     addWidget("dist2",1,2);
@@ -16,18 +16,18 @@ sensorWidget::sensorWidget(QWidget *parent) :
 
 }
 
-sensorWidget::~sensorWidget()
+SensorWidget::~SensorWidget()
 {
     delete ui;
 }
 
-void sensorWidget::setBoatList(BoatManager* boatlist){
+void SensorWidget::setBoatList(BoatManager* boatlist){
     this->boatList = boatlist;
 }
 
 
 
-void sensorWidget::addWidget(QString name, int BoatID, int DeviceID)
+void SensorWidget::addWidget(QString name, int BoatID, int DeviceID)
 {
 
     int H = costumSensorCount/3;
@@ -41,12 +41,12 @@ void sensorWidget::addWidget(QString name, int BoatID, int DeviceID)
     costumSensorCount += 1;
 }
 
-void sensorWidget::info_button_pushed()
+void SensorWidget::info_button_pushed()
 {
     //emit sendMsg(QString("usv1"),QString("qformat"));
 }
 
-void sensorWidget::subscribeSensor(int BoatID, int BoardID, int PinID, char unit)
+void SensorWidget::subscribeSensor(int BoatID, int BoardID, int PinID, char unit)
 {
 
 }

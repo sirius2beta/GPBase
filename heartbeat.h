@@ -12,10 +12,9 @@ class HeartBeat : public QObject
     Q_OBJECT
 public:
     explicit HeartBeat(QObject *parent = nullptr);
-    HeartBeat(Boat* boat, BoatManager* boatList, QString PC_ip, int port, bool isPrimary, QObject *parent = nullptr);
+    HeartBeat(Boat* boat, BoatManager* boatList, int port, bool isPrimary, QObject *parent = nullptr);
     void HeartBeatLoop(); //工作函数
     ~HeartBeat();
-    void setPCIP(QString PC_ip);
 
 signals:
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
@@ -36,7 +35,6 @@ private:
     QTimer *heartBeatTimer;
     QTimer *checkAliveTimer;
     int boatPort;
-    QString PCIP;
     bool isAlive;
     bool isHearBeatLoop;
     bool primary;

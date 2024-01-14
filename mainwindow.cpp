@@ -1,6 +1,5 @@
 ﻿#include "ui_mainwindow.h"
 #include "mainwindow.h"
-#include "videowindow.h"
 #include "createwindowdialog.h"
 #include "configdialog.h"
 #include "QTypes.h"
@@ -11,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     , ui(new Ui::MainWindow)
     , _config(config)
 {
+    gpbcore = new GPBCore(this, config);
+
     ui->setupUi(this);
     this->setCorner(Qt::Corner::BottomLeftCorner, Qt::LeftDockWidgetArea);
     this->setCorner(Qt::Corner::TopLeftCorner, Qt::LeftDockWidgetArea);
@@ -31,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     //connect(configDialog,&ConfigDialog::setconfig,this,&MainWindow::setConfig);
     //configDialog->exec();
 
-    boatList = new BoatManager;
+    boatList = gpbcore->boatList();
     // initialize settings
     settings = new QSettings("Ezosirius", "GPlayer_v1",this);
 
@@ -59,16 +60,7 @@ MainWindow::MainWindow(QWidget *parent, QString config)
 void MainWindow::initBoatSettings()
 {
     QDockWidget* dockwidget = new QDockWidget(QStringLiteral("無人船設定"),this);
-    boatSetting = new BoatSetting(dockwidget);
-    connect(boatSetting, &BoatSetting::AddBoat, this, &MainWindow::onNewBoat);
-    connect(boatSetting, &BoatSetting::sendMsg, networkManager, &NetworkManager::sendMsg);
-    connect(networkManager, &NetworkManager::sensorMsg, boatSetting, &BoatSetting::onMsg);
-    connect(boatSetting, &BoatSetting::connectionTypeChanged, this, &MainWindow::onConnectionTypeChanged);
-
-
-    boatSetting->setconfig(_config);
-    boatSetting->initSettings(boatList);
-
+    BoatSetting* boatSetting = gpbcore->boatSetting();
 
     dockwidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockwidget->setWidget(boatSetting);
@@ -85,7 +77,7 @@ void MainWindow::initVideoWindows()
 {
 
     int window_count = 4;
-    Qt::DockWidgetArea area = Qt::LeftDockWidgetArea;
+    Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
     //settings->endGroup();
     for(int i = 1; i <= window_count; i++){
         //create settings if first time opened
@@ -98,10 +90,18 @@ void MainWindow::initVideoWindows()
             settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(i)), 0);
         }
 
-        if(i == 1){ //set to central widget
-            addVideoWindow( i, true);
-        }else{ // set to dock widget
-            addVideoWindow( i, false);
+
+        VideoWindow* vwindow = addVideoWindow(i);
+
+
+        if(i == 1){
+            setCentralWidget(vwindow);
+        }else{
+            QDockWidget* dockwidget = new QDockWidget(settings->value(QString("%1/w%2/title").arg(_config,QString::number(i))).toString(),this);
+            addDockWidget(area, dockwidget);
+            //dockwidget->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+            dockwidget->setWidget(vwindow);
+            dockwidget->setMinimumHeight(300);
         }
     }
 }
@@ -110,7 +110,7 @@ void MainWindow::initSensorWidget()
 {
     //init sensor panel
     QDockWidget* dockwidget = new QDockWidget("Sensor",this);
-    sensor_widget = new sensorWidget(dockwidget);
+    sensor_widget = new SensorWidget(dockwidget);
     sensor_widget->setBoatList(boatList);
     dockwidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockwidget->setWidget(sensor_widget);
@@ -122,11 +122,11 @@ void MainWindow::initSensorWidget()
     dockwidget->toggleViewAction()->setIcon(QIcon(":/icon/sensor-02.png"));
     ui->toolBar->addAction(dockwidget->toggleViewAction());
 
-    connect(sensor_widget, &sensorWidget::sendMsg, networkManager, &NetworkManager::sendMsg);
+    connect(sensor_widget, &SensorWidget::sendMsg, networkManager, &NetworkManager::sendMsg);
 
 }
 
-void MainWindow::addVideoWindow(int index, bool central_widget)
+VideoWindow* MainWindow::addVideoWindow(int index)
 {
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
 
@@ -146,22 +146,15 @@ void MainWindow::addVideoWindow(int index, bool central_widget)
     }
     vwindow->init();
 
-    if(central_widget){
-        setCentralWidget(vwindow);
-    }else{
-        QDockWidget* dockwidget = new QDockWidget(settings->value(QString("%1/w%2/title").arg(_config,QString::number(index))).toString(),this);
-        addDockWidget(area, dockwidget);
-        //dockwidget->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        dockwidget->setWidget(vwindow);
-        dockwidget->setMinimumHeight(300);
-    }
+
 
     connect(vwindow,&VideoWindow::sendMsg,networkManager,&NetworkManager::sendMsg);
     connect(networkManager, &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);
-    connect(this, &MainWindow::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
-    connect(boatSetting, &BoatSetting::AddBoat, vwindow, &VideoWindow::AddBoat);
-    connect(boatSetting, &BoatSetting::changeBoatName, vwindow, &VideoWindow::onBoatNameChange);
-    connect(boatSetting, &BoatSetting::deleteBoat, vwindow, &VideoWindow::onDeleteBoat);
+    connect(gpbcore, &GPBCore::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
+    connect(gpbcore->boatSetting(), &BoatSetting::AddBoat, vwindow, &VideoWindow::AddBoat);
+    connect(gpbcore->boatSetting(), &BoatSetting::changeBoatName, vwindow, &VideoWindow::onBoatNameChange);
+    connect(gpbcore->boatSetting(), &BoatSetting::deleteBoat, vwindow, &VideoWindow::onDeleteBoat);
+    return vwindow;
 
 }
 
@@ -179,7 +172,7 @@ void MainWindow::openCreateWindowDialog()
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete boatList;
+
 }
 
 
@@ -193,73 +186,10 @@ void MainWindow::setConfig(QString config)
 }
 
 
-void MainWindow::onConnected(int ID, bool isprimary)
-{
-
-    Boat* boat = boatList->getBoatbyID(ID);
-    if(boat != 0){
-        if(isprimary){
-            boat->CurrentIP = boat->PIP;
-            emit connectionChanged();
-        }else{
-            if(boat->CurrentIP != boat->PIP){
-                boat->CurrentIP = boat->SIP;
-                emit connectionChanged();
-            }
-        }
-    }
-
-
-}
-
-void MainWindow::onDisonnected(int ID, bool isprimary)
-{
-
-    Boat* boat = boatList->getBoatbyID(ID);
-    if(boat != 0){
-        if(isprimary){
-            boat->CurrentIP = boat->SIP;
-            emit connectionChanged();
-        }
-
-    }
 
 
 
-}
 
-void MainWindow::onNewBoat(Boat* newboat)
-{
-    primaryHeartBeat = new HeartBeat(newboat, boatList, PCPIP, 50006, true, this);
-    qDebug()<<"MainWindow::onNewBoat ck1";
-    primaryHeartBeat->HeartBeatLoop();
-    qDebug()<<"MainWindow::onNewBoat ck2";
-    secondaryHeartBeat = new HeartBeat(newboat, boatList, PCSIP, 50006, false, this);
-    secondaryHeartBeat->HeartBeatLoop();
-    connect(networkManager, &NetworkManager::AliveResponse, primaryHeartBeat, &HeartBeat::alive);
-    connect(primaryHeartBeat, &HeartBeat::sendMsg, networkManager, &NetworkManager::sendMsg);
-    connect(primaryHeartBeat, &HeartBeat::connected, boatSetting, &BoatSetting::onConnected);
-    connect(primaryHeartBeat, &HeartBeat::disconnected, boatSetting, &BoatSetting::onDisonnected);
-    connect(primaryHeartBeat, &HeartBeat::connected, this, &MainWindow::onConnected);
-    connect(primaryHeartBeat, &HeartBeat::disconnected, this, &MainWindow::onDisonnected);
-    connect(boatSetting, &BoatSetting::changeBoatName, primaryHeartBeat, &HeartBeat::resetBoatName);
-    connect(boatSetting, &BoatSetting::ChangeIP, primaryHeartBeat, &HeartBeat::onChangeIP);
-    connect(boatSetting, &BoatSetting::deleteBoat, primaryHeartBeat, &HeartBeat::onDeleteBoat);
 
-    connect(networkManager, &NetworkManager::AliveResponse, secondaryHeartBeat, &HeartBeat::alive);
-    connect(secondaryHeartBeat, &HeartBeat::sendMsg, networkManager, &NetworkManager::sendMsg);
-    connect(secondaryHeartBeat, &HeartBeat::connected, boatSetting, &BoatSetting::onConnected);
-    connect(secondaryHeartBeat, &HeartBeat::disconnected, boatSetting, &BoatSetting::onDisonnected);
-    connect(secondaryHeartBeat, &HeartBeat::connected, this, &MainWindow::onConnected);
-    connect(secondaryHeartBeat, &HeartBeat::disconnected, this, &MainWindow::onDisonnected);
-    connect(boatSetting, &BoatSetting::changeBoatName, secondaryHeartBeat, &HeartBeat::resetBoatName);
-    connect(boatSetting, &BoatSetting::ChangeIP, secondaryHeartBeat, &HeartBeat::onChangeIP);
-    connect(boatSetting, &BoatSetting::deleteBoat, secondaryHeartBeat, &HeartBeat::onDeleteBoat);
-}
-
-void MainWindow::onConnectionTypeChanged()
-{
-    emit connectionChanged();
-}
 
 

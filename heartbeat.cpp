@@ -10,11 +10,10 @@ HeartBeat::HeartBeat(QObject *parent): QObject(parent)
 
 }
 
-HeartBeat::HeartBeat(Boat* boat, BoatManager* boatList, QString PC_ip, int port, bool isPrimary, QObject *parent): QObject(parent)
+HeartBeat::HeartBeat(Boat* boat, BoatManager* boatList, int port, bool isPrimary, QObject *parent): QObject(parent)
 {
 
     this->boatList = boatList;
-    PCIP = PC_ip;
     boatPort = port;
     isAlive = false;
     isHearBeatLoop = false;
@@ -142,13 +141,3 @@ void HeartBeat::checkAlive()
     isAlive = false;
 }
 
-void HeartBeat::setPCIP(QString PC_ip)
-{
-    PCIP = PC_ip;
-    if(checkAliveTimer->isActive()){
-        checkAliveTimer->stop();
-        isAlive = false;
-        HeartBeatLoop();
-    }
-
-}

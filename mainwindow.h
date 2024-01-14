@@ -18,6 +18,8 @@
 #include "networkmanager.h"
 #include "boatmanager.h"
 #include "heartbeat.h"
+#include "gpbcore.h"
+#include "videowindow.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -45,36 +47,34 @@ signals:
     void changePCPIP(QString ip);
     void changePCSIP(QString ip);
 
-    void connectionChanged();
 
 protected slots:
     void openCreateWindowDialog();
-    void addVideoWindow(int index, bool central_widget);
+    VideoWindow *addVideoWindow(int index);
     void setConfig(QString config);
-    void onConnected(int ID, bool isprimary);
-    void onDisonnected(int ID, bool isprimary);
-    void onNewBoat(Boat *newboat);
-    void onConnectionTypeChanged();
+
+
 
 
 private:
+
+    GPBCore* gpbcore;
     Ui::MainWindow *ui;
     QSettings* settings;
-    BoatSetting* boatSetting;
-    sensorWidget* sensor_widget;
-    /*
-    QUdpSocket *serverSocket;
-    QUdpSocket *clientSocket;
-    */
+
+
     QString _config;
-    HeartBeat* primaryHeartBeat;
-    HeartBeat* secondaryHeartBeat;
     QString PCPIP;
     QString BoatPIP;
     QString PCSIP;
     QString BoatSIP;
+
     BoatManager* boatList;
+
     NetworkManager* networkManager;
+    SensorWidget* sensor_widget;
+    HeartBeat* primaryHeartBeat;
+    HeartBeat* secondaryHeartBeat;
 
 
     char HEARTBEAT = 0x10;
