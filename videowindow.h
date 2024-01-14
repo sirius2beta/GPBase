@@ -17,7 +17,8 @@
 #include <QMetaType>
 #include <QUdpSocket>
 #include <QMap>
-#include "boats.h"
+#include <QHostAddress>
+#include "boatmanager.h"
 //Q_DECLARE_METATYPE(cv::Mat)
 
 namespace Ui {
@@ -73,10 +74,11 @@ public:
     void clearScreen();
     void setVideoNo(int i);
     void setFormatNo(int i);
-    void setBoatList(Boats* boatlist);
+    void setBoatList(BoatManager* boatlist);
 signals:
-    void sendCommand(QString boatname, QString command, int PCPort);
-    void sendMsg(QString ip, char topic, QByteArray command);
+    void sendCommand(int ID, QString command, int PCPort);
+    void sendMsg(QHostAddress addr, char topic, QByteArray command);
+
     void nextframe();
     void order(const QString cmd=QString());
     void stopworker();
@@ -122,7 +124,7 @@ private:
     Worker *worker;
     QUdpSocket *serverSocket;
     QUdpSocket *clientSocket;
-    Boats* boatList;
+    BoatManager* boatList;
 
 
 };

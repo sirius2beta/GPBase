@@ -130,7 +130,8 @@ void VideoWindow::onPlay()
 
 
     ui->playButton->setEnabled(false);
-    emit sendCommand(ui->boatcomboBox->currentText(), ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90", PCPort);
+    int boatID = boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID;
+    emit sendCommand(boatID, ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90", PCPort);
 
 
 
@@ -161,7 +162,8 @@ void VideoWindow::onPlay()
 void VideoWindow::onStop()
 {
     std::string s = QString(ui->videoportComboBox->currentText()).toStdString();
-    emit sendMsg(ui->boatcomboBox->currentText(), char(QUIT), QByteArray(s.c_str()));
+    QHostAddress ip = QHostAddress(boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->CurrentIP);
+    emit sendMsg(ip, char(QUIT), QByteArray(s.c_str()));
 
     if(isPlaying == false){
 
@@ -229,7 +231,7 @@ void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
 
 }
 
-void VideoWindow::setBoatList(Boats* boatlist)
+void VideoWindow::setBoatList(BoatManager* boatlist)
 {
     boatList = boatlist;
     for(int i = 0; i < boatlist->size(); i++){
@@ -495,7 +497,8 @@ void VideoWindow::onSetFormatNo(int i)
 
 void VideoWindow::onSetBoatNo(int i)
 {
-    emit sendMsg(ui->boatcomboBox->itemText(i),char(FORMAT),"qformat");
+    QHostAddress addr(boatList->getBoatbyIndex(i)->CurrentIP);
+    emit sendMsg(addr,char(FORMAT),"qformat");
     ui->videoFormatcomboBox->clear();
     ui->videoportComboBox->clear();
 }

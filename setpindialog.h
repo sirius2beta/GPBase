@@ -6,7 +6,7 @@
 #include <QList>
 
 #include "comboboxdelegate.h"
-#include "boats.h"
+#include "boatmanager.h"
 
 namespace Ui {
 class SetPinDialog;
@@ -19,7 +19,7 @@ class SetPinDialog : public QDialog
 public:
     explicit SetPinDialog(QWidget *parent = nullptr);
     ~SetPinDialog();
-    void setPeripheralModel(QStandardItemModel* pm, _Boat* boat);
+    void setPeripheralModel(QStandardItemModel* pm, Boat* boat);
     QList<Peripheral> getPeripherals();
     const Device& getDevice();
     void setType(int type);
@@ -33,7 +33,7 @@ protected slots:
     void onBoardSelected(const QModelIndex &index);
     void onDeviceItemChanged(QStandardItem *item);
 private:
-    _Boat* thisBoat;
+    Boat* thisBoat;
     Ui::SetPinDialog *ui;
     QStandardItemModel* peripheralItemModel;
     QStandardItemModel* pinItemModel;

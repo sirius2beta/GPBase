@@ -7,7 +7,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
-#include "boats.h"
+#include "boatmanager.h"
 #include "setpindialog.h"
 
 namespace Ui {
@@ -21,7 +21,7 @@ class AddDeviceDialog : public QDialog
 public:
     explicit AddDeviceDialog(QWidget *parent = nullptr);
     ~AddDeviceDialog();
-    void setPeripheralModel(QStandardItemModel* pm, _Boat* boat);
+    void setPeripheralModel(QStandardItemModel* pm, Boat* boat);
     QList<Peripheral> getPeripherals();
     Device getDevice();
     QString getDevName();
@@ -38,7 +38,7 @@ protected slots:
     void onDevNameChanged(const QString& n);
 private:
     Ui::AddDeviceDialog *ui;
-    _Boat* thisBoat;
+    Boat* thisBoat;
     QStandardItemModel* peripheralItemModel;
     QList<Peripheral> PeripheralCache;
     QWidget* backgrounWidget;

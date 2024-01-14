@@ -5,8 +5,9 @@
 #include <QTimer>
 #include <QMap>
 #include <QDebug>
+#include <QHostAddress>
 #include "sensorlabel.h"
-#include "boats.h"
+#include "boatmanager.h"
 
 namespace Ui {
 class sensorWidget;
@@ -19,7 +20,7 @@ class sensorWidget : public QWidget
 public:
     explicit sensorWidget(QWidget *parent = nullptr);
     ~sensorWidget();
-    void setBoatList(Boats* boatlist);
+    void setBoatList(BoatManager* boatlist);
 public slots:
     void addWidget(QString name, int BoatID, int DeviceID);
     void info_button_pushed();
@@ -27,13 +28,13 @@ public slots:
 
 signals:
 
-    void sendMsg(QString boatname, QString msg, int PCPort);
+    void sendMsg(int ID, QString command, int PCPort);
 
 private:
     Ui::sensorWidget *ui;
     int connection_counter;
     int costumSensorCount;
-    Boats *boatList;
+    BoatManager *boatList;
     QMap<int,SensorLabel*> labelMap;
 
 };

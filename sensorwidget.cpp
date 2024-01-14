@@ -21,7 +21,7 @@ sensorWidget::~sensorWidget()
     delete ui;
 }
 
-void sensorWidget::setBoatList(Boats* boatlist){
+void sensorWidget::setBoatList(BoatManager* boatlist){
     this->boatList = boatlist;
 }
 

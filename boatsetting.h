@@ -8,8 +8,9 @@
 #include <QMap>
 #include <QSettings>
 #include <QMessageBox>
-#include "boats.h"
+#include "boatmanager.h"
 #include "adddevicedialog.h"
+#include "qhostaddress.h"
 
 
 namespace Ui {
@@ -23,14 +24,14 @@ class BoatSetting : public QWidget
 public:
     explicit BoatSetting(QWidget *parent = nullptr);
     ~BoatSetting();
-    void initSettings(Boats *_boatList);
+    void initSettings(BoatManager *_boatList);
     QString getIP(QString boatname);
-    bool isPrimary(QString boatname);
+    bool isPrimary(int ID);
     void setconfig(QString conf);
     void addDevice(int ID, QString Devicename, char format, bool IO);
     void deleteDevice(int ID);
     void addBoard(int ID, QString boardName, QString boardType, bool connected);
-    _Boat* currentBoat();
+    Boat* currentBoat();
     void upDateDeviceTableView();
     enum Connection {Auto = 0, Primary = 1, Secondary=2};
     int connectionType();
@@ -41,7 +42,7 @@ signals:
     void vAddBoat(QString newname);
     void ChangeIP(QString boatname, QString PIP, QString SIP);
     void deleteBoat(QString boatname);
-    void sendMsg(QString boatname, char topic, QByteArray command);
+    void sendMsg(QHostAddress addr, char topic, QByteArray command);
     void connectionTypeChanged();
 
 
@@ -65,7 +66,7 @@ private:
     QStandardItemModel* peripheralItemModel;
     QSettings *settings;
     QString config;
-    Boats* boatList;
+    BoatManager* boatList;
     bool initialized;
 
 };

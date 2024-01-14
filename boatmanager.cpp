@@ -1,12 +1,12 @@
-﻿#include "boats.h"
+﻿#include "boatmanager.h"
 
 
-Boats::Boats()
+BoatManager::BoatManager()
 {
 
 }
 
-Boats::~Boats()
+BoatManager::~BoatManager()
 {
     if(!boatList.empty()){
         for(int i = 0; i < boatList.size(); i++){
@@ -16,15 +16,15 @@ Boats::~Boats()
 
 }
 
-_Boat* Boats::addBoat(int ID)
+Boat* BoatManager::addBoat(int ID)
 {
-    _Boat* boat = new _Boat;
+    Boat* boat = new Boat;
     boat->ID = ID;
     boatList.append(boat);
     return boat;
 }
 
-void Boats::deleteBoat(int ID)
+void BoatManager::deleteBoat(int ID)
 {
     for(int i = 0; i<boatList.size(); i++){
         if(boatList[i]->ID == ID){
@@ -32,17 +32,8 @@ void Boats::deleteBoat(int ID)
         }
     }
 }
-_Boat* Boats::getBoatbyName(QString boatname)
-{
-    for(int i = 0; i<boatList.size(); i++){
-        if(boatList[i]->boatName == boatname){
 
-            return boatList[i];
-        }
-    }
-    return 0;
-}
-_Boat* Boats::getBoatbyIndex(int index)
+Boat* BoatManager::getBoatbyIndex(int index)
 {
     if(index > boatList.size()){
         return 0;
@@ -50,7 +41,7 @@ _Boat* Boats::getBoatbyIndex(int index)
     return boatList[index];
 }
 
-_Boat* Boats::getBoatbyID(int ID)
+Boat* BoatManager::getBoatbyID(int ID)
 {
 
     for(int i = 0; i<boatList.size(); i++){
@@ -62,7 +53,7 @@ _Boat* Boats::getBoatbyID(int ID)
     return 0;
 }
 
-Device& _Boat::getDevbyID(int ID)
+Device& Boat::getDevbyID(int ID)
 {
 
     for(int i = 0; i<devices.size(); i++){
@@ -72,7 +63,7 @@ Device& _Boat::getDevbyID(int ID)
     }
 }
 
-QString Boats::CurrentIP(QString boatname)
+QString BoatManager::CurrentIP(QString boatname)
 {
     for(int i = 0; i<boatList.size(); i++){
         if(boatList[i]->boatName == boatname){
@@ -82,12 +73,12 @@ QString Boats::CurrentIP(QString boatname)
     return QString();
 }
 
-int Boats::size()
+int BoatManager::size()
 {
     return boatList.size();
 }
 
-Peripheral _Boat::getPeriperalbyID(int ID)
+Peripheral Boat::getPeriperalbyID(int ID)
 {
 
     for(int i = 0; i<peripherals.size(); i++){

@@ -3,12 +3,8 @@
 #include "videowindow.h"
 #include "createwindowdialog.h"
 #include "configdialog.h"
+#include "QTypes.h"
 
-#define HEARTBEAT 0x10
-#define FORMAT 0x20
-#define COMMAND 0x30
-#define QUIT 0x40
-#define SENSOR 0x50
 
 MainWindow::MainWindow(QWidget *parent, QString config)
     : QMainWindow(parent)
@@ -23,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     this->setDockOptions( QMainWindow::AnimatedDocks);
     this->setWindowTitle(QString("GPlayer"));
 
-    boatList = new Boats;
+    boatList = new BoatManager;
 
     // Setup toolbar icon
     QAction * act;
@@ -209,26 +205,35 @@ void MainWindow::openCreateWindowDialog()
     dialog->exec();
 }
 
-void MainWindow::sendUDPCommand(QString boatname, QString command, int PCPort)
+void MainWindow::sendUDPCommand(int ID, QString command, int PCPort)
 {
     //QHostAddress addr = QHostAddress(boatSetting->getIP(boatname));
 
-    _Boat* boat = boatList->getBoatbyName(boatname);
+    Boat* boat = boatList->getBoatbyID(ID);
+    if(boat == 0){
+        qDebug()<<"MainWindow::sendUDPCommand:no boatname in boatlist";
+        return;
+    }
     QHostAddress addr;
     QString PC_addr;
+    if(boat)
     if(boatSetting->connectionType() == BoatSetting::Auto){
          addr = QHostAddress(boat->CurrentIP);
-         if(boatSetting->isPrimary(boatname)){
+
+         if(boatSetting->isPrimary(ID)){
              PC_addr = PCPIP;
          }else{
              PC_addr = PCSIP;
          }
     }else if(boatSetting->connectionType() == BoatSetting::Primary){
-        addr = QHostAddress(boat->PIP);
-        PC_addr = PCPIP;
+            addr = QHostAddress(boat->PIP);
+            PC_addr = PCPIP;
+
     }else{
-        addr = QHostAddress(boat->SIP);
-        PC_addr = PCSIP;
+
+            addr = QHostAddress(boat->SIP);
+            PC_addr = PCSIP;
+
     }
 
 
@@ -237,27 +242,17 @@ void MainWindow::sendUDPCommand(QString boatname, QString command, int PCPort)
     if(PCPort != 0){
         command = command+" "+PC_addr+" "+QString::number(PCPort);
     }
-    sendMsg(boatname, char(COMMAND), QByteArray::fromStdString(command.toStdString()));
+    sendMsg(addr, char(COMMAND), QByteArray::fromStdString(command.toStdString()));
     qDebug()<<"MainWindow "<<",ip: "<<addr.toString()<<"send command: "<<command;
 
 }
 
 
-void MainWindow::sendMsg(QString IP, char topic, QByteArray command)
+void MainWindow::sendMsg(QHostAddress addr, char topic, QByteArray command)
 {
-    // If IP = boatname, return current IP
-    QString ip = boatSetting->getIP(IP); //return 0.0.0.0 if IP represent boatname
-    QHostAddress addr;
-    if(ip == QString("0.0.0.0")){ //if IP represent ip
-        addr = QHostAddress(IP);
-    }else{ //if IP represent boatname
-        addr = QHostAddress(boatSetting->getIP(IP));
-    }
 
-    if(boatList->getBoatbyName(IP)){
-        qDebug()<<"Mainwindow: currentIP:"<<boatList->getBoatbyName(IP)->CurrentIP;
-    }
 
+    qDebug()<<"Mainwindow: sendMsg to :"<<addr.toString();
 
     QByteArray cmd;
     cmd.resize(1);
@@ -305,7 +300,7 @@ void MainWindow::onUDPMsg()
         }
         if(topic == HEARTBEAT){
             int ID = int(data[0]);
-            _Boat* boat = boatList->getBoatbyID(ID);
+            Boat* boat = boatList->getBoatbyID(ID);
             if( boat != 0){
                 emit AliveResponse(ip);
             }
@@ -357,7 +352,7 @@ void MainWindow::onPCSIPChanged(QString PCIP)
 void MainWindow::onConnected(int ID, bool isprimary)
 {
 
-    _Boat* boat = boatList->getBoatbyID(ID);
+    Boat* boat = boatList->getBoatbyID(ID);
     if(boat != 0){
         if(isprimary){
             boat->CurrentIP = boat->PIP;
@@ -376,7 +371,7 @@ void MainWindow::onConnected(int ID, bool isprimary)
 void MainWindow::onDisonnected(int ID, bool isprimary)
 {
 
-    _Boat* boat = boatList->getBoatbyID(ID);
+    Boat* boat = boatList->getBoatbyID(ID);
     if(boat != 0){
         if(isprimary){
             boat->CurrentIP = boat->SIP;
@@ -423,197 +418,4 @@ void MainWindow::onConnectionTypeChanged()
     emit connectionChanged();
 }
 
-HeartBeat::HeartBeat(QObject *parent): QObject(parent)
-{
 
-}
-
-HeartBeat::HeartBeat(QString boatname, int ID, QString PC_ip, QString Boat_ip, int port, bool isPrimary, QObject *parent): QObject(parent)
-{
-    boatName = boatname;
-    boatIP = Boat_ip;
-    boatID = ID;
-    PCIP = PC_ip;
-    boatPort = port;
-    isAlive = false;
-    isHearBeatLoop = false;
-    primary = isPrimary;
-    heartBeatTimer = new QTimer(this);
-    checkAliveTimer = new QTimer(this);
-    connect(heartBeatTimer, &QTimer::timeout, this, &HeartBeat::beat);
-    connect(checkAliveTimer,&QTimer::timeout, this, &HeartBeat::checkAlive);
-    qDebug()<<"HB init: "<<"ID "<< boatID;
-}
-
-HeartBeat::~HeartBeat()
-{
-    run = false;
-}
-
-void HeartBeat::resetBoatName(QString boatname, QString newname)
-{
-    qDebug()<<"HeartBeat: "<<boatname+" >> "+boatName+" >> "+newname;
-    if(boatname == boatName){
-        boatName = newname;
-        if(!isHearBeatLoop){
-            checkAliveTimer->stop();
-            HeartBeatLoop();
-        }
-    }
-}
-
-void HeartBeat::onChangeIP(QString boatname, QString PIP, QString SIP)
-{
-    if(boatname == boatName){
-        if(primary){
-            boatIP = PIP;
-        }else{
-            boatIP = SIP;
-        }
-        if(!isHearBeatLoop){
-            checkAliveTimer->stop();
-            HeartBeatLoop();
-        }
-    }
-}
-
-void HeartBeat::onPCPIPChanged(QString IP)
-{
-        if(primary){
-            PCIP = IP;
-            if(!isHearBeatLoop){
-                checkAliveTimer->stop();
-                HeartBeatLoop();
-            }
-        }
-
-}
-
-void HeartBeat::onPCSIPChanged(QString IP)
-{
-        if(!primary){
-            PCIP = IP;
-            if(!isHearBeatLoop){
-                checkAliveTimer->stop();
-                HeartBeatLoop();
-            }
-        }
-
-}
-
-void HeartBeat::onDeleteBoat(QString boatname)
-{
-
-    if(boatName == boatname){
-        this->deleteLater();
-    }
-
-}
-
-void HeartBeat::HeartBeatLoop()
-{
-    //qDebug()<<"HeartBeat "<<", boatname:"<<boatName<<", boat ip:"<<boatIP<<", HB loop";
-    /*
-    QString cmd;
-    if(primary){
-        cmd =  PCIP+QString(" ")+boatName+QString(" P");
-    }else{
-        cmd =  PCIP+QString(" ")+boatName+QString(" S");
-    }
-    emit sendMsg(boatIP, char(HEARTBEAT),cmd.toLocal8Bit());
-    */
-    QByteArray cmd_bytes;
-
-    if(primary){
-        //cmd =  PCIP+QString(" ")+boatName+QString(" P");
-        quint32 addr_raw = QHostAddress(PCIP).toIPv4Address();
-        QByteArray addr_bytes = QByteArray::fromRawData(reinterpret_cast<const char *>(&addr_raw), sizeof(addr_raw));
-        cmd_bytes = addr_bytes;
-        cmd_bytes.resize(6);
-        cmd_bytes[4] = boatID;
-        cmd_bytes[5] = 'P';
-    }else{
-        //cmd =  PCIP+QString(" ")+boatName+QString(" S");
-        quint32 addr_raw = QHostAddress(PCIP).toIPv4Address();
-        QByteArray addr_bytes = QByteArray::fromRawData(reinterpret_cast<const char *>(&addr_raw), sizeof(addr_raw));
-        cmd_bytes = addr_bytes;
-        cmd_bytes.resize(6);
-        cmd_bytes[4] = boatID;
-        cmd_bytes[5] = 'S';
-    }
-    emit sendMsg(boatIP, char(HEARTBEAT),cmd_bytes);
-    heartBeatTimer->start(1000);
-    isHearBeatLoop = true;
-    isAlive = false;
-    emit disconnected(boatID,primary);
-}
-
-
-void HeartBeat::alive(QString ip)
-{
-    if(ip == boatIP){
-        if(isHearBeatLoop == false){
-            //qDebug()<<"HeartBeat: alive from "<<ip;
-            isAlive = true;
-        }else{
-            // Enter alive loop
-            qDebug()<<"HeartBeat "<<", boatname:"<<boatName<<", boat ip:"<<ip<<", alive loop";
-            heartBeatTimer->stop();
-            checkAliveTimer->start(1500);
-            isHearBeatLoop = false;
-            qDebug()<<"Start alive loop";
-            emit connected(boatID,primary);
-            emit sendMsg(boatName, char(FORMAT), QString("q").toLocal8Bit());
-            emit sendMsg(boatName, char(SENSOR), QString("d").toLocal8Bit());
-            qDebug()<<"HeartBeat boatname:"<<boatName;
-
-        }
-    }else{
-        //Deposit other boat's message;
-    }
-}
-
-void HeartBeat::beat()
-{
-    //QString cmd;
-    QByteArray cmd_bytes;
-
-    if(primary){
-        //cmd =  PCIP+QString(" ")+boatName+QString(" P");
-        quint32 addr_raw = QHostAddress(PCIP).toIPv4Address();
-        QByteArray addr_bytes = QByteArray::fromRawData(reinterpret_cast<const char *>(&addr_raw), sizeof(addr_raw));
-        cmd_bytes = addr_bytes;
-        cmd_bytes.resize(6);
-        cmd_bytes[4] = boatID;
-        cmd_bytes[5] = 'P';
-    }else{
-        //cmd =  PCIP+QString(" ")+boatName+QString(" S");
-        quint32 addr_raw = QHostAddress(PCIP).toIPv4Address();
-        QByteArray addr_bytes = QByteArray::fromRawData(reinterpret_cast<const char *>(&addr_raw), sizeof(addr_raw));
-        cmd_bytes = addr_bytes;
-        cmd_bytes.resize(6);
-        cmd_bytes[4] = boatID;
-        cmd_bytes[5] = 'S';
-    }
-    emit sendMsg(boatIP, char(HEARTBEAT),cmd_bytes);
-}
-
-void HeartBeat::checkAlive()
-{
-    if(isAlive == false){
-        checkAliveTimer->stop();
-        HeartBeatLoop();
-    }
-    isAlive = false;
-}
-
-void HeartBeat::setPCIP(QString PC_ip)
-{
-    PCIP = PC_ip;
-    if(checkAliveTimer->isActive()){
-        checkAliveTimer->stop();
-        isAlive = false;
-        HeartBeatLoop();
-    }
-
-}

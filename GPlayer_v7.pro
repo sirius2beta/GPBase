@@ -17,12 +17,13 @@ CONFIG += c++11 console
 DEFINES += DEBUG_MODE
 SOURCES += \
     adddevicedialog.cpp \
-    boats.cpp \
+    boatmanager.cpp \
     boatsetting.cpp \
     comboboxdelegate.cpp \
     configdialog.cpp \
     createwindowdialog.cpp \
     device.cpp \
+    heartbeat.cpp \
     main.cpp \
     mainwindow.cpp \
     networksettings.cpp \
@@ -34,13 +35,16 @@ SOURCES += \
     #yolov5.cpp
 
 HEADERS += \
+    QTypes.h \
     adddevicedialog.h \
-    boats.h \
+    boat.h \
+    boatmanager.h \
     boatsetting.h \
     comboboxdelegate.h \
     configdialog.h \
     createwindowdialog.h \
     device.h \
+    heartbeat.h \
     mainwindow.h \
     networksettings.h \
     sensorlabel.h \
@@ -51,17 +55,17 @@ HEADERS += \
     #yolov5.h
 
 FORMS += \
-    adddevicedialog.ui \
-    boatsetting.ui \
-    configdialog.ui \
-    createwindowdialog.ui \
-    mainwindow.ui \
-    networksettings.ui \
-    sensorlabel.ui \
-    sensorwidget.ui \
-    setpindialog.ui \
-    videosettingsdialog.ui \
-    videowindow.ui
+    ui\adddevicedialog.ui \
+    ui\boatsetting.ui \
+    ui\configdialog.ui \
+    ui\createwindowdialog.ui \
+    ui\mainwindow.ui \
+    ui\networksettings.ui \
+    ui\sensorlabel.ui \
+    ui\sensorwidget.ui \
+    ui\setpindialog.ui \
+    ui\videosettingsdialog.ui \
+    ui\videowindow.ui
 
 
 

@@ -38,7 +38,7 @@ SetPinDialog::~SetPinDialog()
     delete ui;
 }
 
-void SetPinDialog::setPeripheralModel(QStandardItemModel* pm, _Boat* boat){
+void SetPinDialog::setPeripheralModel(QStandardItemModel* pm, Boat* boat){
     thisBoat = boat;
     this->peripheralItemModel = pm;
     QStringList label = {"ID", QStringLiteral("裝置名稱"), QStringLiteral("USB裝置"), QStringLiteral("狀態")};

@@ -23,7 +23,7 @@ AddDeviceDialog::~AddDeviceDialog()
     delete ui;
 }
 
-void AddDeviceDialog::setPeripheralModel(QStandardItemModel* pm, _Boat* boat){
+void AddDeviceDialog::setPeripheralModel(QStandardItemModel* pm, Boat* boat){
     thisBoat = boat;
     this->peripheralItemModel = pm;
     newPeripherals = boat->peripherals;

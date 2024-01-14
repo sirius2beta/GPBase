@@ -80,7 +80,7 @@ BoatSetting::BoatSetting(QWidget *parent) :
 
 }
 
-void BoatSetting::initSettings(Boats* _boatList)
+void BoatSetting::initSettings(BoatManager* _boatList)
 {
     boatList = _boatList;
     settings->beginGroup(QString("%1").arg(config));
@@ -173,7 +173,7 @@ int BoatSetting::connectionType()
     return Connection::Secondary;
 }
 
-_Boat* BoatSetting::currentBoat(){
+Boat* BoatSetting::currentBoat(){
     return boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
 }
 
@@ -221,7 +221,7 @@ void BoatSetting::appendBoat(QString boatname, int ID, QString PIP, QString SIP)
     ui->PIPlineEdit->setText(PIP);
     ui->SIPlineEdit->setText(SIP);
 
-    _Boat* boat = boatList->addBoat(ID);
+    Boat* boat = boatList->addBoat(ID);
     boat->boatName = boatname;
     boat->PIP = PIP;
     boat->SIP = SIP;
@@ -333,7 +333,7 @@ void BoatSetting::onMsg(QByteArray data)
 
             if(!cont){
                 Peripheral newperiperal;
-                _Boat* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+                Boat* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
                 newperiperal.ID = devinfo[4].toInt();
 
                 newperiperal.boardName = devinfo[2];
@@ -430,9 +430,9 @@ QString BoatSetting::getIP(QString boatname){
 
 }
 
-bool BoatSetting::isPrimary(QString boatname){
+bool BoatSetting::isPrimary(int ID){
     for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatItemModel->item(i,0)->text() == boatname){
+        if(boatList->getBoatbyIndex(i)->ID == ID){
             if(boatItemModel->item(i,1)->text() == QString("Active")){
                 return true;
             }else{
@@ -441,7 +441,7 @@ bool BoatSetting::isPrimary(QString boatname){
 
         }
     }
-    return "192.168.0.1";
+    return true;
 
 }
 
@@ -478,26 +478,42 @@ void BoatSetting::onBoatNameChange()
 
 void BoatSetting::onAddBoat()
 {
-    int count = 0;
+    //int count = 0;
     QVector<bool> indexfree(256, true);
+    QVector<bool> nameindexfree(256, true);
     int index = 0;
+    int nameindex = 0;
+    /*
     for(int i = 0; i < boatItemModel->rowCount();i++){
         if(boatItemModel->item(i,0)->text().contains("unknown")){
             count++;
             qDebug()<<boatItemModel->item(i,0)->text();
             qDebug()<<boatList->getBoatbyName(boatItemModel->item(i,0)->text())->ID;
-            indexfree[boatList->getBoatbyName(boatItemModel->item(i,0)->text())->ID] = false;
+            nameindexfree[boatList->getBoatbyName(boatItemModel->item(i,0)->text())->ID] = false;
             qDebug()<<"done";
         }
     }
+    */
+
+    for(int i = 0; i<boatList->size(); i++){
+        indexfree[boatList->getBoatbyIndex(i)->ID] = false;
+
+    }
 
     for(int i =0; i<256; i++){
-        if(indexfree[i] == true){
-            index = i;
+        if(nameindexfree[i] == true){
+            nameindex = i;
             break;
         }
     }
-    QString newboatname = "unknown"+QString::number(index);
+    for(int i =0; i<256; i++){
+        if(indexfree[i] == true){
+            index = i;
+            qDebug()<<"add index:"<<i;
+            break;
+        }
+    }
+    QString newboatname = "unknown";
 
     appendBoat(newboatname, index,"", "");
 
@@ -541,7 +557,7 @@ void BoatSetting::onDeleteBoat()
     int size = boatList->size();
 
     for(int i = index; i<size-1; i++){
-        _Boat* boat = boatList->getBoatbyIndex(i+1);
+        Boat* boat = boatList->getBoatbyIndex(i+1);
         lastname = boat->boatName;
         lastPIP = boat->PIP;
         lastSIP = boat->SIP;
@@ -621,7 +637,7 @@ void BoatSetting::onBoatSelected(int index)
         }
 
 
-        emit sendMsg(ui->BoatcomboBox->currentText(), char(SENSOR), QString("d").toLocal8Bit());
+        //emit sendMsg(ui->BoatcomboBox->currentText(), char(SENSOR), QString("d").toLocal8Bit());
         settings->endArray();
         settings->endGroup();
     }
@@ -706,7 +722,7 @@ void BoatSetting::onAddDeviceButtonClicked()
             cmd += "n";
         }
         qDebug()<<cmd;
-        emit sendMsg(currentBoat()->boatName, char(SENSOR), cmd.toLocal8Bit());
+        //emit sendMsg(currentBoat()->boatName, char(SENSOR), cmd.toLocal8Bit());
 
         if(dialog->getDevice().pinUIDList.size() != 0){
             upDateDeviceTableView();

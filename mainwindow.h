@@ -16,51 +16,15 @@
 #include "boatsetting.h"
 #include "sensorwidget.h"
 #include "networksettings.h"
-#include "boats.h"
+#include "boatmanager.h"
+#include "heartbeat.h"
 
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class HeartBeat : public QObject
-{
-    Q_OBJECT
-public:
-    explicit HeartBeat(QObject *parent = nullptr);
-    HeartBeat(QString boatname, int ID, QString PC_ip, QString Boat_ip, int port, bool isPrimary, QObject *parent = nullptr);
-    void HeartBeatLoop(); //工作函数
-    ~HeartBeat();
-    void setPCIP(QString PC_ip);
 
-signals:
-    void sendMsg(QString boatname, char topic, QByteArray command);
-    void connected(int ID, bool isprimary);
-    void disconnected(int ID, bool isprimary);
-
-public slots:
-    void beat();
-    void checkAlive();
-    void alive(QString ip);
-    void resetBoatName(QString boatname, QString newname);
-    void onChangeIP(QString boatname, QString PIP, QString SIP);
-    void onPCPIPChanged(QString IP);
-    void onPCSIPChanged(QString IP);
-    void onDeleteBoat(QString boatname);
-
-private:
-    bool run;
-    QTimer *heartBeatTimer;
-    QTimer *checkAliveTimer;
-    QString boatName;
-    int boatID;
-    QString boatIP;
-    int boatPort;
-    QString PCIP;
-    bool isAlive;
-    bool isHearBeatLoop;
-    bool primary;
-};
 
 class MainWindow : public QMainWindow
 {
@@ -88,8 +52,8 @@ signals:
 protected slots:
     void openCreateWindowDialog();
     void addVideoWindow(int index, bool central_widget);
-    void sendUDPCommand(QString boatname, QString command, int PCPort);
-    void sendMsg(QString IP, char topic, QByteArray command);
+    void sendUDPCommand(int ID, QString command, int PCPort);
+    void sendMsg(QHostAddress addr, char topic, QByteArray command);
     void onUDPMsg();
     void setConfig(QString config);
     void onPCPIPChanged(QString PCIP);
@@ -105,7 +69,6 @@ private:
     QSettings* settings;
     NetworkSettings* networkSettings;
     BoatSetting* boatSetting;
-    struct mosquitto *mosq;
     sensorWidget* sensor_widget;
     QUdpSocket *serverSocket;
     QUdpSocket *clientSocket;
@@ -116,7 +79,7 @@ private:
     QString BoatPIP;
     QString PCSIP;
     QString BoatSIP;
-    Boats* boatList;
+    BoatManager* boatList;
 
 
     char HEARTBEAT = 0x10;
