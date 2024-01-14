@@ -36,10 +36,7 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     settings = new QSettings("Ezosirius", "GPlayer_v1",this);
 
     //initialize UDP socket
-    serverSocket = new QUdpSocket(this);
-    clientSocket = new QUdpSocket(this);
-    clientSocket->bind(50008,QUdpSocket::ShareAddress);
-    connect(clientSocket,&QUdpSocket::readyRead,this, &MainWindow::onUDPMsg);
+    networkManager = new NetworkManager(this, boatList);
 
     initBoatSettings();
     //initialize videowindows
@@ -64,8 +61,8 @@ void MainWindow::initBoatSettings()
     QDockWidget* dockwidget = new QDockWidget(QStringLiteral("無人船設定"),this);
     boatSetting = new BoatSetting(dockwidget);
     connect(boatSetting, &BoatSetting::AddBoat, this, &MainWindow::onNewBoat);
-    connect(boatSetting, &BoatSetting::sendMsg, this, &MainWindow::sendMsg);
-    connect(this, &MainWindow::sensorMsg, boatSetting, &BoatSetting::onMsg);
+    connect(boatSetting, &BoatSetting::sendMsg, networkManager, &NetworkManager::sendMsg);
+    connect(networkManager, &NetworkManager::sensorMsg, boatSetting, &BoatSetting::onMsg);
     connect(boatSetting, &BoatSetting::connectionTypeChanged, this, &MainWindow::onConnectionTypeChanged);
 
 
@@ -125,7 +122,7 @@ void MainWindow::initSensorWidget()
     dockwidget->toggleViewAction()->setIcon(QIcon(":/icon/sensor-02.png"));
     ui->toolBar->addAction(dockwidget->toggleViewAction());
 
-    connect(sensor_widget, &sensorWidget::sendMsg, this, &MainWindow::sendMsg);
+    connect(sensor_widget, &sensorWidget::sendMsg, networkManager, &NetworkManager::sendMsg);
 
 }
 
@@ -159,8 +156,8 @@ void MainWindow::addVideoWindow(int index, bool central_widget)
         dockwidget->setMinimumHeight(300);
     }
 
-    connect(vwindow,&VideoWindow::sendMsg,this,&MainWindow::sendMsg);
-    connect(this, &MainWindow::setFormat, vwindow, &VideoWindow::setVideoFormat);
+    connect(vwindow,&VideoWindow::sendMsg,networkManager,&NetworkManager::sendMsg);
+    connect(networkManager, &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);
     connect(this, &MainWindow::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
     connect(boatSetting, &BoatSetting::AddBoat, vwindow, &VideoWindow::AddBoat);
     connect(boatSetting, &BoatSetting::changeBoatName, vwindow, &VideoWindow::onBoatNameChange);
@@ -175,14 +172,7 @@ void MainWindow::openCreateWindowDialog()
 }
 
 
-void MainWindow::sendMsg(QHostAddress addr, char topic, QByteArray command)
-{
-    QByteArray cmd;
-    cmd.resize(1);
-    cmd[0] = topic;
-    cmd.append(command);
-    serverSocket->writeDatagram(cmd,cmd.size(), addr, 50006);
-}
+
 
 
 
@@ -194,60 +184,7 @@ MainWindow::~MainWindow()
 
 
 
-void MainWindow::onUDPMsg()
-{
-    while(clientSocket->hasPendingDatagrams()){
-        QByteArray data;
-        QHostAddress addr;
-        QString ip;
-        data.resize(clientSocket->pendingDatagramSize());
-        clientSocket->readDatagram(data.data(),data.size(),&addr);
 
-        char topic = data[0];
-        data.remove(0,1);
-
-        ip = QHostAddress(addr.toIPv4Address()).toString();
-        if(ip == BoatPIP){
-            //qDebug()<<QString("recv from primary: %1").arg(ip);
-        }else if(ip == BoatSIP){
-            //qDebug()<<QString("recv from secondary: %1").arg(ip);
-        }
-
-        QStringList dataList = QString(data).split(' ');
-
-        QString message;
-        if(data.split(' ').size() >1){
-            message = data.split(' ')[1];
-        }
-        if(topic == HEARTBEAT){
-            int ID = int(data[0]);
-            Boat* boat = boatList->getBoatbyID(ID);
-            if( boat != 0){
-                emit AliveResponse(ip);
-            }
-
-
-        }else if(topic == FORMAT){
-            int ID = int(data[0]);
-            QString format = data.remove(0,1);
-            qDebug()<<"MainWindow call from FORMAT, boat ID:"<<ID;
-            qDebug()<<format;
-            if(format != ""){
-                emit setFormat(ID, format.split('\n'));
-            }
-
-        }else if(topic == SENSOR){
-            qDebug()<<"sensor";
-            emit sensorMsg(data);
-        }
-        const QString content = QLatin1String(" Received Topic: ")
-                    + topic
-                    + QLatin1String(" Message: ")
-                    + message
-                    + QLatin1Char('\n');
-        //qDebug() << content;
-    }
-}
 
 void MainWindow::setConfig(QString config)
 {
@@ -299,8 +236,8 @@ void MainWindow::onNewBoat(Boat* newboat)
     qDebug()<<"MainWindow::onNewBoat ck2";
     secondaryHeartBeat = new HeartBeat(newboat, boatList, PCSIP, 50006, false, this);
     secondaryHeartBeat->HeartBeatLoop();
-    connect(this, &MainWindow::AliveResponse, primaryHeartBeat, &HeartBeat::alive);
-    connect(primaryHeartBeat, &HeartBeat::sendMsg, this, &MainWindow::sendMsg);
+    connect(networkManager, &NetworkManager::AliveResponse, primaryHeartBeat, &HeartBeat::alive);
+    connect(primaryHeartBeat, &HeartBeat::sendMsg, networkManager, &NetworkManager::sendMsg);
     connect(primaryHeartBeat, &HeartBeat::connected, boatSetting, &BoatSetting::onConnected);
     connect(primaryHeartBeat, &HeartBeat::disconnected, boatSetting, &BoatSetting::onDisonnected);
     connect(primaryHeartBeat, &HeartBeat::connected, this, &MainWindow::onConnected);
@@ -309,8 +246,8 @@ void MainWindow::onNewBoat(Boat* newboat)
     connect(boatSetting, &BoatSetting::ChangeIP, primaryHeartBeat, &HeartBeat::onChangeIP);
     connect(boatSetting, &BoatSetting::deleteBoat, primaryHeartBeat, &HeartBeat::onDeleteBoat);
 
-    connect(this, &MainWindow::AliveResponse, secondaryHeartBeat, &HeartBeat::alive);
-    connect(secondaryHeartBeat, &HeartBeat::sendMsg, this, &MainWindow::sendMsg);
+    connect(networkManager, &NetworkManager::AliveResponse, secondaryHeartBeat, &HeartBeat::alive);
+    connect(secondaryHeartBeat, &HeartBeat::sendMsg, networkManager, &NetworkManager::sendMsg);
     connect(secondaryHeartBeat, &HeartBeat::connected, boatSetting, &BoatSetting::onConnected);
     connect(secondaryHeartBeat, &HeartBeat::disconnected, boatSetting, &BoatSetting::onDisonnected);
     connect(secondaryHeartBeat, &HeartBeat::connected, this, &MainWindow::onConnected);

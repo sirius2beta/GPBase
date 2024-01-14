@@ -23,9 +23,11 @@ SOURCES += \
     configdialog.cpp \
     createwindowdialog.cpp \
     device.cpp \
+    gpbcore.cpp \
     heartbeat.cpp \
     main.cpp \
     mainwindow.cpp \
+    networkmanager.cpp \
     networksettings.cpp \
     sensorlabel.cpp \
     sensorwidget.cpp \
@@ -44,8 +46,10 @@ HEADERS += \
     configdialog.h \
     createwindowdialog.h \
     device.h \
+    gpbcore.h \
     heartbeat.h \
     mainwindow.h \
+    networkmanager.h \
     networksettings.h \
     sensorlabel.h \
     sensorwidget.h \

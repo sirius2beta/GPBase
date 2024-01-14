@@ -15,7 +15,7 @@
 #include <QByteArray>
 #include "boatsetting.h"
 #include "sensorwidget.h"
-#include "networksettings.h"
+#include "networkmanager.h"
 #include "boatmanager.h"
 #include "heartbeat.h"
 
@@ -41,18 +41,15 @@ public:
     QMap<QString,QString> USV2format;
 signals:
     void updateFormat(QMap<QString,QString> format);
-    void AliveResponse(QString ip);
-    void setFormat(int ID, QStringList format);
+
     void changePCPIP(QString ip);
     void changePCSIP(QString ip);
-    void sensorMsg(QByteArray data);
+
     void connectionChanged();
 
 protected slots:
     void openCreateWindowDialog();
     void addVideoWindow(int index, bool central_widget);
-    void sendMsg(QHostAddress addr, char topic, QByteArray command);
-    void onUDPMsg();
     void setConfig(QString config);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
@@ -65,8 +62,10 @@ private:
     QSettings* settings;
     BoatSetting* boatSetting;
     sensorWidget* sensor_widget;
+    /*
     QUdpSocket *serverSocket;
     QUdpSocket *clientSocket;
+    */
     QString _config;
     HeartBeat* primaryHeartBeat;
     HeartBeat* secondaryHeartBeat;
@@ -75,6 +74,7 @@ private:
     QString PCSIP;
     QString BoatSIP;
     BoatManager* boatList;
+    NetworkManager* networkManager;
 
 
     char HEARTBEAT = 0x10;
