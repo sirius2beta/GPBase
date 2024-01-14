@@ -131,9 +131,9 @@ void VideoWindow::onPlay()
 
     ui->playButton->setEnabled(false);
     int boatID = boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID;
-    emit sendCommand(boatID, ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90", PCPort);
-
-
+    QHostAddress ip = QHostAddress(boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->CurrentIP);
+    QString msg = ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90"+" "+QString::number(PCPort);
+    emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
 
     ui->playButton->setEnabled(false);
     QTimer::singleShot(100,[=]{
@@ -443,16 +443,16 @@ void VideoWindow::resetBoatName(QString boatname,QString newboatname)
 
 
 
-void VideoWindow::AddBoat(QString boatname)
+void VideoWindow::AddBoat(Boat* boat)
 {
-    qDebug()<<"Videowindow: add boat: "<<boatname;
-    ui->boatcomboBox->addItem(boatname);
+    qDebug()<<"Videowindow: add boat: "<<boat->boatName;
+    ui->boatcomboBox->addItem(boat->boatName);
 }
 
-void VideoWindow::onBoatNameChange(int boatID, QString newname)
+void VideoWindow::onBoatNameChange(int boatIndex, QString newname)
 {
 
-    ui->boatcomboBox->setItemText(boatList->getIndexbyID(boatID), newname);
+    ui->boatcomboBox->setItemText(boatIndex, newname);
 }
 
 void VideoWindow::onDeleteBoat(QString boatname)

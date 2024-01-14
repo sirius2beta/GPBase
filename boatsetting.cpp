@@ -96,7 +96,6 @@ void BoatSetting::initSettings(BoatManager* _boatList)
             Boat* newboat = appendBoat(boatname, ID, boatPIP, boatSIP);
             qDebug()<<"boatSetting:: appendboat";
             emit AddBoat(newboat);
-            emit vAddBoat(boatname);
 
             //initialize board
             int size = settings->beginReadArray(QString("board"));
@@ -125,8 +124,6 @@ void BoatSetting::initSettings(BoatManager* _boatList)
                 }
             }
 
-            //initialized = true;
-            //emit sendMsg(ui->BoatcomboBox->currentText(), char(SENSOR), QString("d").toLocal8Bit());
             settings->endArray();
         }
     }else{
@@ -455,7 +452,7 @@ void BoatSetting::onBoatNameChange()
     _boat->boatName = newname;
 
     boatItemModel->item(ui->BoatcomboBox->currentIndex(),0)->setText(newname);
-    emit changeBoatName(id, newname);
+    emit changeBoatName(ui->BoatcomboBox->currentIndex(), newname);
     ui->BoatcomboBox->setItemText(ui->BoatcomboBox->currentIndex(),ui->BoatlineEdit->text());
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
@@ -533,7 +530,6 @@ void BoatSetting::onAddBoat()
 
     ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
     emit AddBoat(newboat);
-    emit vAddBoat(newboatname);
 }
 
 void BoatSetting::onDeleteBoat()
@@ -679,7 +675,19 @@ void BoatSetting::onChangeIP()
         msgBox.setText(QStringLiteral("IP與其他船衝突: ")+repeatedBoat);
         msgBox.exec();
     }
-    emit ChangeIP(ui->BoatcomboBox->currentText(), ui->PIPlineEdit->text(), ui->SIPlineEdit->text());
+    bool isPrimary;
+    Boat* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    if(boat->PIP != ui->PIPlineEdit->text()){
+        boat->PIP = ui->PIPlineEdit->text();
+        isPrimary = true;
+    }else{
+        boat->SIP = ui->SIPlineEdit->text();
+        isPrimary = false;
+    }
+
+
+
+    emit ChangeIP(boat, isPrimary);
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
     int index = 0;

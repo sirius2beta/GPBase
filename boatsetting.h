@@ -38,10 +38,9 @@ public:
     int connectionType();
 
 signals:
-    void changeBoatName(int boatID, QString newboatname);
+    void changeBoatName(int boatIndex, QString newboatname);
     void AddBoat(Boat* boat);
-    void vAddBoat(QString newname);
-    void ChangeIP(QString boatname, QString PIP, QString SIP);
+    void ChangeIP(Boat* boat, bool isPrimary);
     void deleteBoat(QString boatname);
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
     void connectionTypeChanged();

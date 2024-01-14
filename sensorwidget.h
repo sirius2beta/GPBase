@@ -28,7 +28,7 @@ public slots:
 
 signals:
 
-    void sendMsg(int ID, QString command, int PCPort);
+    void sendMsg(QHostAddress addr, char topic, QByteArray command);
 
 private:
     Ui::sensorWidget *ui;

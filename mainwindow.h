@@ -36,7 +36,6 @@ public:
 
     void initBoatSettings();
     void initVideoWindows();
-    void initNetworkSettings();
     void initSensorWidget();
     QMap<QString,QString> USV1format;
     QMap<QString,QString> USV2format;
@@ -52,12 +51,9 @@ signals:
 protected slots:
     void openCreateWindowDialog();
     void addVideoWindow(int index, bool central_widget);
-    void sendUDPCommand(int ID, QString command, int PCPort);
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
     void onUDPMsg();
     void setConfig(QString config);
-    void onPCPIPChanged(QString PCIP);
-    void onPCSIPChanged(QString PCIP);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
     void onNewBoat(Boat *newboat);
@@ -67,7 +63,6 @@ protected slots:
 private:
     Ui::MainWindow *ui;
     QSettings* settings;
-    NetworkSettings* networkSettings;
     BoatSetting* boatSetting;
     sensorWidget* sensor_widget;
     QUdpSocket *serverSocket;

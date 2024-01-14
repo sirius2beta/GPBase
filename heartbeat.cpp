@@ -10,9 +10,10 @@ HeartBeat::HeartBeat(QObject *parent): QObject(parent)
 
 }
 
-HeartBeat::HeartBeat(Boat* boat, QString PC_ip, int port, bool isPrimary, QObject *parent): QObject(parent)
+HeartBeat::HeartBeat(Boat* boat, BoatManager* boatList, QString PC_ip, int port, bool isPrimary, QObject *parent): QObject(parent)
 {
 
+    this->boatList = boatList;
     PCIP = PC_ip;
     boatPort = port;
     isAlive = false;
@@ -37,10 +38,10 @@ HeartBeat::~HeartBeat()
     run = false;
 }
 
-void HeartBeat::resetBoatName(int boatID, QString newname)
+void HeartBeat::resetBoatName(int boatIndex, QString newname)
 {
     //qDebug()<<"HeartBeat: "<<boatname+" >> "+boatName+" >> "+newname;
-    if(boatID == boat->ID){
+    if( boatList->getIDbyInex(boatIndex) == boat->ID){
         if(!isHearBeatLoop){
             checkAliveTimer->stop();
             HeartBeatLoop();
@@ -48,50 +49,25 @@ void HeartBeat::resetBoatName(int boatID, QString newname)
     }
 }
 
-void HeartBeat::onChangeIP(QString boatname, QString PIP, QString SIP)
+void HeartBeat::onChangeIP(Boat* boat, bool isPrimary)
 {
 
-    if(boatname == boat->boatName){
-        if(primary){
-            boat->PIP = PIP;
-        }else{
-            boat->SIP = SIP;
-        }
-        if(primary){
-            boatIP = boat->PIP;
-        }else{
-            boatIP = boat->SIP;
-        }
-        if(!isHearBeatLoop){
-            checkAliveTimer->stop();
-            HeartBeatLoop();
+    if(this->boat == boat){
+        if(primary == isPrimary){
+            if(primary){
+                boatIP = boat->PIP;
+            }else{
+                boatIP = boat->SIP;
+            }
+            if(!isHearBeatLoop){
+                checkAliveTimer->stop();
+                HeartBeatLoop();
+            }
         }
     }
-}
-
-void HeartBeat::onPCPIPChanged(QString IP)
-{
-        if(primary){
-            PCIP = IP;
-            if(!isHearBeatLoop){
-                checkAliveTimer->stop();
-                HeartBeatLoop();
-            }
-        }
 
 }
 
-void HeartBeat::onPCSIPChanged(QString IP)
-{
-        if(!primary){
-            PCIP = IP;
-            if(!isHearBeatLoop){
-                checkAliveTimer->stop();
-                HeartBeatLoop();
-            }
-        }
-
-}
 
 void HeartBeat::onDeleteBoat(QString boatname)
 {
