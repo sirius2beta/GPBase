@@ -8,11 +8,12 @@
 
 VideoWindow::VideoWindow(QWidget *parent, QString config) :
     QWidget(parent),
-    _config(config),
+    ui(new Ui::VideoWindow),
     PCPort(0),
+    proxyMode(false),
     title(QString("VideoWindow")),
     isPlaying(false),
-    ui(new Ui::VideoWindow)
+    _config(config)
 {
     ui->setupUi(this);
     ui->playButton->setIcon(QIcon(":/icon/playbutton.png"));
@@ -91,7 +92,13 @@ void VideoWindow::setVideoInfo(bool i)
 void VideoWindow::onSettings()
 {
     VideoSettingsDialog* dialog = new VideoSettingsDialog(this);
-    dialog->setInfo(title, ui->boatcomboBox->currentText(), PCPort, videoNo, formatNo,isVideoInfo);
+    VWSetting vwsetting;
+    vwsetting.title = title;
+    vwsetting.videono =videoNo;
+    vwsetting.formatno =formatNo;
+    vwsetting.video_info = isVideoInfo;
+    vwsetting.proxy = proxyMode;
+    dialog->setInfo(vwsetting);
     dialog->setFormat(ui->videoFormatcomboBox->model(), ui->videoFormatcomboBox->currentIndex());
     dialog->setVideo(ui->videoportComboBox->model(),ui->videoportComboBox->currentIndex());
     connect(dialog, &VideoSettingsDialog::comit, this, &VideoWindow::changeSettings);
@@ -104,6 +111,10 @@ void VideoWindow::onPlay()
 
     QString gstcmd;
     QString encoder = "jpegenc";
+    int port = PCPort;
+    if(proxyMode){
+        port += 100;
+    }
     if(isVideoInfo){
         if(ui->H264checkBox->isChecked()){
             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
@@ -132,7 +143,7 @@ void VideoWindow::onPlay()
     ui->playButton->setEnabled(false);
     int boatID = boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID;
     QHostAddress ip = QHostAddress(boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->CurrentIP);
-    QString msg = ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90"+" "+QString::number(PCPort);
+    QString msg = ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90"+" "+QString::number(port);
     emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
 
     ui->playButton->setEnabled(false);
@@ -240,24 +251,23 @@ void VideoWindow::setBoatList(BoatManager* boatlist)
     }
 }
 
-void VideoWindow::changeSettings(QString _title, QString boatname,int PCPort, int videono, int formatno, bool video_info)
+void VideoWindow::changeSettings(VWSetting settings)
 {
-    setPCPort(PCPort);
-    setTitle(_title);
-    setVideoInfo(video_info);
-    ui->videoportComboBox->setCurrentIndex(videono);
-    ui->videoFormatcomboBox->setCurrentIndex(formatno);
 
-    settings->setValue(QString("%1/w%2/title").arg(_config,QString::number(index)),PCPort);
-    settings->setValue(QString("%1/w%2/boat_name").arg(_config,QString::number(index)),boatname);
-    settings->setValue(QString("%1/w%2/in_port").arg(_config,QString::number(index)),PCPort);
-    settings->setValue(QString("%1/w%2/videono").arg(_config,QString::number(index)), videono);
-    settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(index)), formatno);
-    settings->setValue(QString("%1/w%2/title").arg(_config,QString::number(index)), title);
+    qDebug()<<"change settings";
+    setTitle(settings.title);
+    setVideoInfo(settings.video_info);
+    ui->videoportComboBox->setCurrentIndex(settings.videono);
+    ui->videoFormatcomboBox->setCurrentIndex(settings.formatno);
+    proxyMode = settings.proxy;
+
+    this->settings->setValue(QString("%1/w%2/videono").arg(_config,QString::number(index)), settings.videono);
+    this->settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(index)), settings.formatno);
+    this->settings->setValue(QString("%1/w%2/title").arg(_config,QString::number(index)), title);
     if(isVideoInfo){
-        settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(index)), 1);
+        this->settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(index)), 1);
     }else{
-        settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(index)), 0);
+        this->settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(index)), 0);
     }
     qDebug()<<"start changesettings3";
 
@@ -270,7 +280,7 @@ void VideoWindow::changeSettings(QString _title, QString boatname,int PCPort, in
         gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
      glimagesink name=mySink2").arg(QString::number(PCPort),title,ui->videoportComboBox->currentText());
     }
-    worker->setGstcmd(gstcmd);
+    //worker->setGstcmd(gstcmd);
 
 
     QDockWidget* dockwidget = (QDockWidget*)parent();

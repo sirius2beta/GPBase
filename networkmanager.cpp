@@ -7,6 +7,11 @@ NetworkManager::NetworkManager(QObject *parent, BoatManager* boatList)
     serverSocket = new QUdpSocket(this);
     clientSocket = new QUdpSocket(this);
     clientSocket->bind(50008,QUdpSocket::ShareAddress);
+
+}
+
+void NetworkManager::init()
+{
     connect(clientSocket,&QUdpSocket::readyRead,this, &NetworkManager::onUDPMsg);
 }
 
@@ -44,6 +49,7 @@ void NetworkManager::onUDPMsg()
             int ID = int(data[0]);
             Boat* boat = boatList->getBoatbyID(ID);
             if( boat != 0){
+
                 emit AliveResponse(ip);
             }
 

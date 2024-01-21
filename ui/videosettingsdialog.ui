@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>677</width>
-    <height>301</height>
+    <height>334</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,8 +26,14 @@
       <item>
        <widget class="QWidget" name="widget_8" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <property name="spacing">
+          <number>7</number>
+         </property>
          <property name="topMargin">
           <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
          </property>
          <property name="bottomMargin">
           <number>2</number>
@@ -80,13 +86,13 @@
           <number>0</number>
          </property>
          <property name="topMargin">
-          <number>0</number>
+          <number>2</number>
          </property>
          <property name="rightMargin">
           <number>0</number>
          </property>
          <property name="bottomMargin">
-          <number>0</number>
+          <number>2</number>
          </property>
         </layout>
        </widget>
@@ -126,13 +132,13 @@
           <number>0</number>
          </property>
          <property name="topMargin">
-          <number>0</number>
+          <number>2</number>
          </property>
          <property name="rightMargin">
           <number>0</number>
          </property>
          <property name="bottomMargin">
-          <number>0</number>
+          <number>2</number>
          </property>
          <item>
           <widget class="QLabel" name="label">
@@ -220,6 +226,13 @@
           <widget class="QCheckBox" name="videoinfoCheckBox">
            <property name="text">
             <string>顯示相機資訊於畫面右上方</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="ProxyCheckBox">
+           <property name="text">
+            <string>ProxyDetector</string>
            </property>
           </widget>
          </item>

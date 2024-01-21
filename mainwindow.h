@@ -69,15 +69,11 @@ private:
     QString PCSIP;
     QString BoatSIP;
 
-    BoatManager* boatList;
 
-    NetworkManager* networkManager;
+    //NetworkManager* networkManager;
     SensorWidget* sensor_widget;
     HeartBeat* primaryHeartBeat;
     HeartBeat* secondaryHeartBeat;
-
-
-    char HEARTBEAT = 0x10;
 
 };
 #endif // MAINWINDOW_H

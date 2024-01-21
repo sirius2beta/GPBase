@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 8.0.1, 2024-01-14T20:33:19. -->
+<!-- Written by QtCreator 8.0.1, 2024-01-21T19:54:42. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -178,8 +178,8 @@
     <value type="int" key="SeparateDebugInfo">0</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.2">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">D:\OneDrive\Source\Qt\old\build-GPlayer_v7-Desktop_Qt_5_15_2_MSVC2019_64bit-ff</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">D:/OneDrive/Source/Qt/old/build-GPlayer_v7-Desktop_Qt_5_15_2_MSVC2019_64bit-ff</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">D:\OneDrive\Source\Qt\GPBaseff</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">D:/OneDrive/Source/Qt/GPBaseff</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -246,7 +246,7 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/OneDrive/Source/Qt/old/build-GPlayer_v7-Desktop_Qt_5_15_2_MSVC2019_64bit-ff</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/OneDrive/Source/Qt/GPBaseff</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

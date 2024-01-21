@@ -28,22 +28,13 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     act->setIcon(QIcon(":/icon/GP_logo-04.png"));
     ui->toolBar->addAction(act);
 
-    //ConfigDialog* configDialog = new ConfigDialog(this);
-    //connect(configDialog,&ConfigDialog::setconfig,this,&MainWindow::setConfig);
-    //configDialog->exec();
 
-    boatList = gpbcore->boatList();
     // initialize settings
     settings = new QSettings("Ezosirius", "GPlayer_v1",this);
 
-    //initialize UDP socket
-    networkManager = new NetworkManager(this, boatList);
-
     initBoatSettings();
-    //initialize videowindows
     initVideoWindows();
-
-    initSensorWidget();
+    //initSensorWidget();
 
     act = new QAction(tr("view"), this);
     act->setIcon(QIcon(":/icon/view-07.png"));
@@ -53,8 +44,6 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     act->setIcon(QIcon(":/icon/control-03.png"));
     ui->toolBar->setIconSize(QSize(40, 40));
     ui->toolBar->addAction(act);
-
-    //connect(ui->addWindowButton, &QPushButton::clicked, this, &MainWindow::openCreateWindowDialog);
 }
 
 void MainWindow::initBoatSettings()
@@ -66,7 +55,6 @@ void MainWindow::initBoatSettings()
     dockwidget->setWidget(boatSetting);
     dockwidget->setMinimumWidth(300);
     addDockWidget(Qt::LeftDockWidgetArea, dockwidget);
-    //dockwidget->hide();
 
     dockwidget->toggleViewAction()->setIcon(QIcon(":/icon/boat-06.png"));
     ui->toolBar->addAction(dockwidget->toggleViewAction());
@@ -110,8 +98,8 @@ void MainWindow::initSensorWidget()
 {
     //init sensor panel
     QDockWidget* dockwidget = new QDockWidget("Sensor",this);
-    sensor_widget = new SensorWidget(dockwidget);
-    sensor_widget->setBoatList(boatList);
+    sensor_widget = gpbcore->sensorWidget();
+
     dockwidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockwidget->setWidget(sensor_widget);
     dockwidget->setMinimumWidth(400);
@@ -122,7 +110,7 @@ void MainWindow::initSensorWidget()
     dockwidget->toggleViewAction()->setIcon(QIcon(":/icon/sensor-02.png"));
     ui->toolBar->addAction(dockwidget->toggleViewAction());
 
-    connect(sensor_widget, &SensorWidget::sendMsg, networkManager, &NetworkManager::sendMsg);
+
 
 }
 
@@ -137,7 +125,7 @@ VideoWindow* MainWindow::addVideoWindow(int index)
     vwindow->setVideoNo(settings->value(QString("%1/w%2/videono").arg(_config,QString::number(index))).toInt());
     vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
     vwindow->setFormat();
-    vwindow->setBoatList(boatList);
+    vwindow->setBoatList(gpbcore->boatList());
 
     if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(index))) == 1){
         vwindow->setVideoInfo(true);
@@ -148,12 +136,13 @@ VideoWindow* MainWindow::addVideoWindow(int index)
 
 
 
-    connect(vwindow,&VideoWindow::sendMsg,networkManager,&NetworkManager::sendMsg);
-    connect(networkManager, &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);
+    connect(vwindow,&VideoWindow::sendMsg,gpbcore->networkManager(),&NetworkManager::sendMsg);
+    connect(gpbcore->networkManager(), &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);
     connect(gpbcore, &GPBCore::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
     connect(gpbcore->boatSetting(), &BoatSetting::AddBoat, vwindow, &VideoWindow::AddBoat);
     connect(gpbcore->boatSetting(), &BoatSetting::changeBoatName, vwindow, &VideoWindow::onBoatNameChange);
     connect(gpbcore->boatSetting(), &BoatSetting::deleteBoat, vwindow, &VideoWindow::onDeleteBoat);
+
     return vwindow;
 
 }

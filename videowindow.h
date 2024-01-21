@@ -19,6 +19,8 @@
 #include <QMap>
 #include <QHostAddress>
 #include "boatmanager.h"
+#include "QTypes.h"
+
 //Q_DECLARE_METATYPE(cv::Mat)
 
 namespace Ui {
@@ -94,7 +96,7 @@ public slots:
 
 protected slots:
     void onSettings();
-    void changeSettings(QString _title, QString boatIP, int boatPort, int videono, int formatno, bool video_info);
+    void changeSettings(VWSetting settings);
     void onPlay();
     void onStop();
     void onUDPMsg();
@@ -105,11 +107,11 @@ protected slots:
 private:
     Ui::VideoWindow *ui;
     int PCPort;
+    bool proxyMode;
 
     int index;
     int index2;
     QString title;
-    //QString boatName;
     QSettings* settings;
     int formatNo;
     int videoNo;

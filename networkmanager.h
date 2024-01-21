@@ -10,6 +10,7 @@ class NetworkManager : public QObject
     Q_OBJECT
 public:
     explicit NetworkManager(QObject *parent = nullptr, BoatManager* boatList = 0);
+    void init();
 
 signals:
     void AliveResponse(QString ip);

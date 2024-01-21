@@ -8,6 +8,7 @@
 #include "sensorwidget.h"
 #include "heartbeat.h"
 #include "videowindow.h"
+#include "sensorwidget.h"
 
 class GPBCore : public QObject
 {
@@ -39,6 +40,7 @@ private:
     SensorWidget* _sensorwidget;
     HeartBeat* _primaryHeartBeat;
     HeartBeat* _secondaryHeartBeat;
+    SensorWidget* _sensorWidget;
 
 };
 

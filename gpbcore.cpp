@@ -5,31 +5,44 @@ GPBCore::GPBCore(QObject *parent, QString config)
       _config(config)
 {
     settings = new QSettings("Ezosirius", "GPlayer_v1",this);
-
     _boatList = new BoatManager;
+    _networkManager = new NetworkManager(this, _boatList);
+
     _boatSetting = new BoatSetting();
+    qDebug()<<"ck01";
     connect(_boatSetting, &BoatSetting::AddBoat, this, &GPBCore::onNewBoat);
+    qDebug()<<"ck02";
+
     connect(_boatSetting, &BoatSetting::sendMsg, _networkManager, &NetworkManager::sendMsg);
     connect(_networkManager, &NetworkManager::sensorMsg, _boatSetting, &BoatSetting::onMsg);
     connect(_boatSetting, &BoatSetting::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
     _boatSetting->setconfig(_config);
     _boatSetting->initSettings(_boatList);
+    qDebug()<<"ck03";
+    _sensorWidget = new SensorWidget();
+    _sensorWidget->setBoatList(_boatList);
+    connect(_sensorWidget, &SensorWidget::sendMsg, _networkManager, &NetworkManager::sendMsg);
+    qDebug()<<"ck04";
+    _networkManager->init();
 }
 
 GPBCore::~GPBCore(){
     delete _boatSetting;
     delete _boatList;
+    delete _sensorWidget;
 }
 
 void GPBCore::onNewBoat(Boat* newboat)
 {
+    qDebug()<<"ck1-1";
+
     _primaryHeartBeat = new HeartBeat(newboat, _boatList, 50006, true, this);
-    qDebug()<<"MainWindow::onNewBoat ck1";
     _primaryHeartBeat->HeartBeatLoop();
-    qDebug()<<"MainWindow::onNewBoat ck2";
     _secondaryHeartBeat = new HeartBeat(newboat, _boatList, 50006, false, this);
     _secondaryHeartBeat->HeartBeatLoop();
+
     connect(_networkManager, &NetworkManager::AliveResponse, _primaryHeartBeat, &HeartBeat::alive);
+
     connect(_primaryHeartBeat, &HeartBeat::sendMsg, _networkManager, &NetworkManager::sendMsg);
     connect(_primaryHeartBeat, &HeartBeat::connected, _boatSetting, &BoatSetting::onConnected);
     connect(_primaryHeartBeat, &HeartBeat::disconnected, _boatSetting, &BoatSetting::onDisonnected);
@@ -48,6 +61,7 @@ void GPBCore::onNewBoat(Boat* newboat)
     connect(_boatSetting, &BoatSetting::changeBoatName, _secondaryHeartBeat, &HeartBeat::resetBoatName);
     connect(_boatSetting, &BoatSetting::ChangeIP, _secondaryHeartBeat, &HeartBeat::onChangeIP);
     connect(_boatSetting, &BoatSetting::deleteBoat, _secondaryHeartBeat, &HeartBeat::onDeleteBoat);
+
 }
 
 
