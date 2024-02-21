@@ -62,7 +62,7 @@ private:
     QStandardItemModel* peripheralItemModel;
     QSettings *settings;
     QString config;
-    BoatManager* boatList;
+    BoatManager* boatManager;
     bool initialized;
 
 };

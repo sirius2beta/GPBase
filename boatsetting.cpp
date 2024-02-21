@@ -82,7 +82,7 @@ BoatSetting::BoatSetting(QWidget *parent) :
 
 void BoatSetting::initSettings(BoatManager* _boatList)
 {
-    boatList = _boatList;
+    boatManager = _boatList;
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
 
@@ -172,7 +172,7 @@ int BoatSetting::connectionType()
 }
 
 BoatItem* BoatSetting::currentBoat(){
-    return boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    return boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
 }
 
  void BoatSetting::upDateDeviceTableView()
@@ -219,11 +219,11 @@ BoatItem* BoatSetting::currentBoat(){
     ui->PIPlineEdit->setText(PIP);
     ui->SIPlineEdit->setText(SIP);
 
-    BoatItem* boat = boatList->addBoat(ID);
+    BoatItem* boat = boatManager->addBoat(ID);
     boat->setName(boatname);
     boat->setPIP(PIP);
     boat->setSIP(SIP);
-    //boat->ID = ID;
+
 
     boat->setCurrentIP(QString());
 
@@ -265,8 +265,8 @@ void BoatSetting::deleteDevice(int ID)
 void BoatSetting::onConnected(int ID, bool isprimary)
 {
     for(int i = 0; i < boatItemModel->rowCount();i++){
-        qDebug()<<"boatItem: "<<boatItemModel->item(i,0)->text()<<"boatName: "<<boatList->getBoatbyID(ID)->name();
-        if(boatItemModel->item(i,0)->text() == boatList->getBoatbyID(ID)->name()){
+        qDebug()<<"boatItem: "<<boatItemModel->item(i,0)->text()<<"boatName: "<<boatManager->getBoatbyID(ID)->name();
+        if(boatItemModel->item(i,0)->text() == boatManager->getBoatbyID(ID)->name()){
 
             if(isprimary){
                 boatItemModel->item(i,1)->setText("Active");
@@ -283,7 +283,7 @@ void BoatSetting::onConnected(int ID, bool isprimary)
 void BoatSetting::onDisonnected(int ID, bool isprimary)
 {
     for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatItemModel->item(i,0)->text() == boatList->getBoatbyID(ID)->name()){
+        if(boatItemModel->item(i,0)->text() == boatManager->getBoatbyID(ID)->name()){
             if(isprimary){
                 boatItemModel->item(i,1)->setText("SB");
                 boatItemModel->item(i,1)->setBackground(QBrush(QColor(120,0,0)));
@@ -303,7 +303,7 @@ void BoatSetting::onMsg(QByteArray data)
     QStringList devlistline = QString(data).split('\n');
 
     if(mode == 'r'){
-        if(ID != boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex())->ID()){
+        if(ID != boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex())->ID()){
             return;
         }
         if(!initialized){
@@ -331,7 +331,7 @@ void BoatSetting::onMsg(QByteArray data)
 
             if(!cont){
                 Peripheral newperiperal;
-                BoatItem* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+                BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
                 newperiperal.ID = devinfo[4].toInt();
 
                 newperiperal.boardName = devinfo[2];
@@ -400,7 +400,7 @@ void BoatSetting::onMsg(QByteArray data)
 
 void BoatSetting::onBoatNameChange()
 {
-    BoatItem* _boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    BoatItem* _boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     int id = _boat->ID();
     QString oldname = ui->BoatcomboBox->currentText();
     QString newname = ui->BoatlineEdit->text();
@@ -419,7 +419,7 @@ void BoatSetting::onBoatNameChange()
         if(settings->value("boatname").toString() == oldname){
             settings->setValue("boatname",newname);
             index = i;
-            boatList->getBoatbyIndex(i)->name() = newname;
+            boatManager->getBoatbyIndex(i)->name() = newname;
             break;
         }
     }
@@ -448,8 +448,8 @@ void BoatSetting::onAddBoat()
     }
     */
 
-    for(int i = 0; i<boatList->size(); i++){
-        indexfree[boatList->getBoatbyIndex(i)->ID()] = false;
+    for(int i = 0; i<boatManager->size(); i++){
+        indexfree[boatManager->getBoatbyIndex(i)->ID()] = false;
 
     }
 
@@ -490,7 +490,7 @@ void BoatSetting::onAddBoat()
 void BoatSetting::onDeleteBoat()
 {
     int index = ui->BoatcomboBox->currentIndex();
-    int deletedID = boatList->getBoatbyIndex(index)->ID();
+    int deletedID = boatManager->getBoatbyIndex(index)->ID();
     qDebug()<<"BoatSetting delete: " <<index;
     QMessageBox msgBox;
     msgBox.setText(QString("Are you sure you want to delete ")+ui->BoatcomboBox->currentText());
@@ -506,10 +506,10 @@ void BoatSetting::onDeleteBoat()
     QString lastPIP;
     QString lastSIP;
     int lastID;
-    int size = boatList->size();
+    int size = boatManager->size();
 
     for(int i = index; i<size-1; i++){
-        BoatItem* boat = boatList->getBoatbyIndex(i+1);
+        BoatItem* boat = boatManager->getBoatbyIndex(i+1);
         lastname = boat->name();
         lastPIP = boat->PIP();
         lastSIP = boat->SIP();
@@ -537,7 +537,7 @@ void BoatSetting::onDeleteBoat()
     settings->setValue("boat/size", size-1);
     settings->remove(QString("boat/%1").arg(size));
     settings->endGroup();
-    boatList->deleteBoat(deletedID);
+    boatManager->deleteBoat(deletedID);
     emit deleteBoat(ui->BoatcomboBox->currentText());
     ui->BoatcomboBox->removeItem(index);
     boatItemModel->removeRows(index,1);
@@ -630,7 +630,7 @@ void BoatSetting::onChangeIP()
         msgBox.exec();
     }
 
-    BoatItem* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     if(boat->PIP() != ui->PIPlineEdit->text()){
         boat->setPIP(ui->PIPlineEdit->text());
     }else{
@@ -656,7 +656,7 @@ void BoatSetting::onChangeIP()
 void BoatSetting::onAddDeviceButtonClicked()
 {
     AddDeviceDialog* dialog = new AddDeviceDialog(this);
-    dialog->setPeripheralModel(peripheralItemModel, boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex()));
+    dialog->setPeripheralModel(peripheralItemModel, boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex()));
     int ret = dialog->exec();
     if(ret==QDialog::Accepted){
         Device newdev = dialog->getDevice();
