@@ -629,19 +629,14 @@ void BoatSetting::onChangeIP()
         msgBox.setText(QStringLiteral("IP與其他船衝突: ")+repeatedBoat);
         msgBox.exec();
     }
-    bool isPrimary;
+
     BoatItem* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     if(boat->PIP() != ui->PIPlineEdit->text()){
-        boat->PIP() = ui->PIPlineEdit->text();
-        isPrimary = true;
+        boat->setPIP(ui->PIPlineEdit->text());
     }else{
-        boat->SIP() = ui->SIPlineEdit->text();
-        isPrimary = false;
+        boat->setSIP(ui->SIPlineEdit->text());
     }
 
-
-
-    emit ChangeIP(boat, isPrimary);
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
     int index = 0;

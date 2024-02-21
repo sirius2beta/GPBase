@@ -42,21 +42,17 @@ void GPBCore::onNewBoat(BoatItem* newboat)
     _secondaryHeartBeat = new HeartBeat(newboat, 50006, false, newboat);
     _secondaryHeartBeat->HeartBeatLoop();
 
-    connect(_networkManager, &NetworkManager::AliveResponse, _primaryHeartBeat, &HeartBeat::alive);
+    connect(newboat, &BoatItem::connected, _boatSetting, &BoatSetting::onConnected);
+    connect(newboat, &BoatItem::disconnected, _boatSetting, &BoatSetting::onDisonnected);
+    connect(newboat, &BoatItem::connected, this, &GPBCore::onConnected);
+    connect(newboat, &BoatItem::disconnected,this, &GPBCore::onDisonnected);
 
+    connect(_networkManager, &NetworkManager::AliveResponse, _primaryHeartBeat, &HeartBeat::alive);
     connect(_primaryHeartBeat, &HeartBeat::sendMsg, _networkManager, &NetworkManager::sendMsg);
-    connect(_primaryHeartBeat, &HeartBeat::connected, _boatSetting, &BoatSetting::onConnected);
-    connect(_primaryHeartBeat, &HeartBeat::disconnected, _boatSetting, &BoatSetting::onDisonnected);
-    connect(_primaryHeartBeat, &HeartBeat::connected, this, &GPBCore::onConnected);
-    connect(_primaryHeartBeat, &HeartBeat::disconnected, this, &GPBCore::onDisonnected);
     connect(newboat, &BoatItem::IPChanged, _primaryHeartBeat, &HeartBeat::onChangeIP);
 
     connect(_networkManager, &NetworkManager::AliveResponse, _secondaryHeartBeat, &HeartBeat::alive);
     connect(_secondaryHeartBeat, &HeartBeat::sendMsg, _networkManager, &NetworkManager::sendMsg);
-    connect(_secondaryHeartBeat, &HeartBeat::connected, _boatSetting, &BoatSetting::onConnected);
-    connect(_secondaryHeartBeat, &HeartBeat::disconnected, _boatSetting, &BoatSetting::onDisonnected);
-    connect(_secondaryHeartBeat, &HeartBeat::connected, this, &GPBCore::onConnected);
-    connect(_secondaryHeartBeat, &HeartBeat::disconnected, this, &GPBCore::onDisonnected);
     connect(newboat, &BoatItem::IPChanged, _secondaryHeartBeat, &HeartBeat::onChangeIP);
 
 }

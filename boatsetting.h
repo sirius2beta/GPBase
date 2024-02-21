@@ -38,7 +38,6 @@ public:
 signals:
     void changeBoatName(int boatIndex, QString newboatname);
     void AddBoat(BoatItem* boat);
-    void ChangeIP(BoatItem* boat, bool isPrimary);
     void deleteBoat(QString boatname);
     void connectionTypeChanged();
 

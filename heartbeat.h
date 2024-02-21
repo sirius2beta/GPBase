@@ -18,14 +18,12 @@ public:
 
 signals:
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
-    void connected(int ID, bool isprimary);
-    void disconnected(int ID, bool isprimary);
 
 public slots:
     void beat();
     void checkAlive();
     void alive(QString ip);
-    void onChangeIP(BoatItem* boat, bool isPrimary);
+    void onChangeIP(bool isPrimary);
     void onDeleteBoat(QString boatname);
 
 private:

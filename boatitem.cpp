@@ -20,13 +20,13 @@ void BoatItem::setID(int ID)
 void BoatItem::setPIP(QString PIP)
 {
     _PIP = PIP;
-    emit IPChanged(this, true);
+    emit IPChanged(true);
 }
 
 void BoatItem::setSIP(QString SIP)
 {
     _SIP = SIP;
-    emit IPChanged(this, false);
+    emit IPChanged(false);
 }
 
 void BoatItem::setCurrentIP(QString currentIP)
@@ -50,6 +50,24 @@ Peripheral BoatItem::getPeriperalbyID(int ID)
     }
 
     return Peripheral();
+}
+
+void BoatItem::connect(bool isPrimary)
+{
+    if(isPrimary){
+        _currentIP = _PIP;
+    }
+    emit connected(_ID, isPrimary);
+}
+
+void BoatItem::disconnect(bool isPrimary)
+{
+    if(isPrimary){
+        _currentIP = _SIP;
+    }else{
+        _currentIP = _PIP;
+    }
+    emit disconnected(_ID, isPrimary);
 }
 
 Device& BoatItem::getDevbyID(int ID)

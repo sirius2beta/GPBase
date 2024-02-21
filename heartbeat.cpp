@@ -38,22 +38,23 @@ HeartBeat::~HeartBeat()
 
 
 
-void HeartBeat::onChangeIP(BoatItem* boat, bool isPrimary)
+void HeartBeat::onChangeIP(bool isPrimary)
 {
+    qDebug()<<"HB::onchangeIP, boatID:"<<boat->ID();
 
-    if(this->boat == boat){
-        if(primary == isPrimary){
-            if(primary){
-                boatIP = boat->PIP();
-            }else{
-                boatIP = boat->SIP();
-            }
-            if(!isHearBeatLoop){
-                checkAliveTimer->stop();
-                HeartBeatLoop();
-            }
+
+    if(primary == isPrimary){
+        if(primary){
+            boatIP = boat->PIP();
+        }else{
+            boatIP = boat->SIP();
+        }
+        if(!isHearBeatLoop){
+            checkAliveTimer->stop();
+            HeartBeatLoop();
         }
     }
+
 
 }
 
@@ -75,7 +76,7 @@ void HeartBeat::HeartBeatLoop()
     heartBeatTimer->start(1000);
     isHearBeatLoop = true;
     isAlive = false;
-    emit disconnected(boat->ID(),primary);
+    boat->disconnect(primary);
 
 }
 
@@ -93,7 +94,7 @@ void HeartBeat::alive(QString ip)
             checkAliveTimer->start(1500);
             isHearBeatLoop = false;
             qDebug()<<"Start alive loop";
-            emit connected(boat->ID(),primary);
+            boat->connect(primary);
             emit sendMsg(QHostAddress(ip), char(FORMAT), QString("q").toLocal8Bit());
             emit sendMsg(QHostAddress(boat->name()), char(SENSOR), QString("d").toLocal8Bit());
             qDebug()<<"HeartBeat boatname:"<<boat->name();

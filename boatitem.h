@@ -27,14 +27,18 @@ public:
     void setOS(int OS);
     Device& getDevbyID(int ID);
     Peripheral getPeriperalbyID(int ID);
+    void connect(bool isPrimary);
+    void disconnect(bool isPrimary);
 
     QList<Peripheral> peripherals;
     QList<Device> devices;
 signals:
     void nameChanged(QString name);
     void IDChanged(int ID);
-    void IPChanged(BoatItem* boat, bool isPrimary);
+    void IPChanged(bool isPrimary);
     void CurrentIPChanged(QString curretIP);
+    void connected(int ID, bool isPrimary);
+    void disconnected(int ID, bool isPrimary);
 private:
     QString _name;
     int _ID;
