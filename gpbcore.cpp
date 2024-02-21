@@ -19,7 +19,7 @@ void GPBCore::init(){
     _networkManager = new NetworkManager(this, this);
 
     _boatSetting = new BoatSetting();
-    connect(_boatSetting, &BoatSetting::AddBoat, this, &GPBCore::onNewBoat);
+    connect(_boatManager, &BoatManager::boatAdded, this, &GPBCore::onNewBoat);
 
     connect(_networkManager, &NetworkManager::sensorMsg, _boatSetting, &BoatSetting::onMsg);
     connect(_boatSetting, &BoatSetting::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);

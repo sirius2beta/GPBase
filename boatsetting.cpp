@@ -95,7 +95,6 @@ void BoatSetting::initSettings(BoatManager* _boatList)
             QString boatSIP = settings->value("/SIP").toString();
             BoatItem* newboat = appendBoat(boatname, ID, boatPIP, boatSIP);
             qDebug()<<"boatSetting:: appendboat";
-            emit AddBoat(newboat);
 
             //initialize board
             int size = settings->beginReadArray(QString("board"));
@@ -219,13 +218,7 @@ BoatItem* BoatSetting::currentBoat(){
     ui->PIPlineEdit->setText(PIP);
     ui->SIPlineEdit->setText(SIP);
 
-    BoatItem* boat = boatManager->addBoat(ID);
-    boat->setName(boatname);
-    boat->setPIP(PIP);
-    boat->setSIP(SIP);
-
-
-    boat->setCurrentIP(QString());
+    BoatItem* boat = boatManager->addBoat(ID, boatname, PIP, SIP);
 
     return boat;
 
@@ -468,7 +461,7 @@ void BoatSetting::onAddBoat()
     }
     QString newboatname = "unknown";
 
-    BoatItem* newboat = appendBoat(newboatname, index,"", "");
+    appendBoat(newboatname, index,"", "");
 
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
@@ -478,13 +471,13 @@ void BoatSetting::onAddBoat()
     settings->setArrayIndex(size);
     settings->setValue(QString("boatname"), newboatname);
     settings->setValue(QString("ID"), index);
-    settings->setValue(QString("PIP"), "192.168.0.1");
-    settings->setValue(QString("SIP"), "100.100.100.100");
+    settings->setValue(QString("PIP"), "");
+    settings->setValue(QString("SIP"), "");
     settings->endArray();
     settings->endGroup();
 
     ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
-    emit AddBoat(newboat);
+
 }
 
 void BoatSetting::onDeleteBoat()

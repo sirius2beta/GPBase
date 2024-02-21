@@ -14,7 +14,7 @@ class BoatManager: public QObject
 public:
     BoatManager(QObject* parent = nullptr, GPBCore* core = nullptr);
     ~BoatManager();
-    BoatItem* addBoat(int ID);
+    BoatItem* addBoat(int ID, QString boatname, QString PIP, QString SIP);
     void deleteBoat(int ID);
 
     BoatItem* getBoatbyIndex(int index);
@@ -25,7 +25,7 @@ public:
     QString CurrentIP(QString boatname);
     int size();
 signals:
-
+    void boatAdded(BoatItem* newboat);
 
 private:
     QVector<BoatItem*> boatList;

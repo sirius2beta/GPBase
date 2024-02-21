@@ -504,6 +504,7 @@ void VideoWindow::onSetFormatNo(int i)
 
 void VideoWindow::onSetBoatNo(int i)
 {
+    qDebug()<<"vw:"<<boatList->getBoatbyIndex(i)->currentIP();
     QHostAddress addr(boatList->getBoatbyIndex(i)->currentIP());
     emit sendMsg(addr,char(FORMAT),"qformat");
     ui->videoFormatcomboBox->clear();

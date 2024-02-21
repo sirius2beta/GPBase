@@ -13,11 +13,15 @@ BoatManager::~BoatManager()
 
 }
 
-BoatItem* BoatManager::addBoat(int ID)
+BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SIP)
 {
     BoatItem* boat = new BoatItem(this);
     boat->setID(ID);
+    boat->setName(boatname);
+    boat->setPIP(PIP);
+    boat->setSIP(SIP);
     boatList.append(boat);
+    emit boatAdded(boat);
     return boat;
 }
 

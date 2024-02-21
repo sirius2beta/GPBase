@@ -15,7 +15,13 @@ public:
     int ID(void) {    return _ID; };
     QString PIP(void) {    return _PIP;    };
     QString SIP(void) {    return _SIP;    };
-    QString currentIP(void) {    return _currentIP;    };
+    QString currentIP(void) {
+        if(!primaryConnected){
+            return _SIP;
+        }else{
+            return _PIP;
+        }
+    };
     int OS(void) {    return _OS;   };
 
 
@@ -46,6 +52,7 @@ private:
     QString _SIP;
     QString _currentIP;
     int _OS;
+    bool primaryConnected;
 
     HeartBeat* _primaryHeartBeat;
     HeartBeat* _secondaryHeartBeat;

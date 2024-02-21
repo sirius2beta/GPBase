@@ -140,7 +140,7 @@ VideoWindow* MainWindow::addVideoWindow(int index)
     connect(vwindow,&VideoWindow::sendMsg,gpbcore->networkManager(),&NetworkManager::sendMsg);
     connect(gpbcore->networkManager(), &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);
     connect(gpbcore, &GPBCore::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
-    connect(gpbcore->boatSetting(), &BoatSetting::AddBoat, vwindow, &VideoWindow::AddBoat);
+    connect(gpbcore->boatManager(), &BoatManager::boatAdded, vwindow, &VideoWindow::AddBoat);
     connect(gpbcore->boatSetting(), &BoatSetting::changeBoatName, vwindow, &VideoWindow::onBoatNameChange);
     connect(gpbcore->boatSetting(), &BoatSetting::deleteBoat, vwindow, &VideoWindow::onDeleteBoat);
 

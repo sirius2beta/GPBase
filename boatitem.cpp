@@ -1,7 +1,8 @@
 ﻿#include "boatitem.h"
 
 BoatItem::BoatItem(QObject *parent)
-    : QObject{parent}
+    : QObject{parent},
+      primaryConnected(false)
 {
 }
 
@@ -56,6 +57,7 @@ void BoatItem::connect(bool isPrimary)
 {
     if(isPrimary){
         _currentIP = _PIP;
+        primaryConnected = true;
     }
     emit connected(_ID, isPrimary);
 }
@@ -63,9 +65,8 @@ void BoatItem::connect(bool isPrimary)
 void BoatItem::disconnect(bool isPrimary)
 {
     if(isPrimary){
-        _currentIP = _SIP;
+        primaryConnected = false;
     }else{
-        _currentIP = _PIP;
     }
     emit disconnected(_ID, isPrimary);
 }

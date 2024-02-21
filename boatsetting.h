@@ -37,7 +37,6 @@ public:
 
 signals:
     void changeBoatName(int boatIndex, QString newboatname);
-    void AddBoat(BoatItem* boat);
     void deleteBoat(QString boatname);
     void connectionTypeChanged();
 
