@@ -5,40 +5,41 @@ GPBCore::GPBCore(QObject *parent, QString config)
       _config(config)
 {
     settings = new QSettings("Ezosirius", "GPlayer_v1",this);
-    _boatList = new BoatManager;
-    _networkManager = new NetworkManager(this, _boatList);
+
+}
+
+GPBCore::~GPBCore(){
+    delete _boatSetting;
+    delete _boatManager;
+    delete _sensorWidget;
+}
+
+void GPBCore::init(){
+    _boatManager = new BoatManager(this, this);
+    _networkManager = new NetworkManager(this, this);
 
     _boatSetting = new BoatSetting();
-    qDebug()<<"ck01";
     connect(_boatSetting, &BoatSetting::AddBoat, this, &GPBCore::onNewBoat);
-    qDebug()<<"ck02";
 
-    connect(_boatSetting, &BoatSetting::sendMsg, _networkManager, &NetworkManager::sendMsg);
     connect(_networkManager, &NetworkManager::sensorMsg, _boatSetting, &BoatSetting::onMsg);
     connect(_boatSetting, &BoatSetting::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
     _boatSetting->setconfig(_config);
-    _boatSetting->initSettings(_boatList);
+    _boatSetting->initSettings(_boatManager);
     qDebug()<<"ck03";
     _sensorWidget = new SensorWidget();
-    _sensorWidget->setBoatList(_boatList);
+    _sensorWidget->setBoatList(_boatManager);
     connect(_sensorWidget, &SensorWidget::sendMsg, _networkManager, &NetworkManager::sendMsg);
     qDebug()<<"ck04";
     _networkManager->init();
 }
 
-GPBCore::~GPBCore(){
-    delete _boatSetting;
-    delete _boatList;
-    delete _sensorWidget;
-}
-
-void GPBCore::onNewBoat(Boat* newboat)
+void GPBCore::onNewBoat(BoatItem* newboat)
 {
     qDebug()<<"ck1-1";
 
-    _primaryHeartBeat = new HeartBeat(newboat, _boatList, 50006, true, this);
+    _primaryHeartBeat = new HeartBeat(newboat, 50006, true, newboat);
     _primaryHeartBeat->HeartBeatLoop();
-    _secondaryHeartBeat = new HeartBeat(newboat, _boatList, 50006, false, this);
+    _secondaryHeartBeat = new HeartBeat(newboat, 50006, false, newboat);
     _secondaryHeartBeat->HeartBeatLoop();
 
     connect(_networkManager, &NetworkManager::AliveResponse, _primaryHeartBeat, &HeartBeat::alive);
@@ -48,9 +49,7 @@ void GPBCore::onNewBoat(Boat* newboat)
     connect(_primaryHeartBeat, &HeartBeat::disconnected, _boatSetting, &BoatSetting::onDisonnected);
     connect(_primaryHeartBeat, &HeartBeat::connected, this, &GPBCore::onConnected);
     connect(_primaryHeartBeat, &HeartBeat::disconnected, this, &GPBCore::onDisonnected);
-    connect(_boatSetting, &BoatSetting::changeBoatName, _primaryHeartBeat, &HeartBeat::resetBoatName);
-    connect(_boatSetting, &BoatSetting::ChangeIP, _primaryHeartBeat, &HeartBeat::onChangeIP);
-    connect(_boatSetting, &BoatSetting::deleteBoat, _primaryHeartBeat, &HeartBeat::onDeleteBoat);
+    connect(newboat, &BoatItem::IPChanged, _primaryHeartBeat, &HeartBeat::onChangeIP);
 
     connect(_networkManager, &NetworkManager::AliveResponse, _secondaryHeartBeat, &HeartBeat::alive);
     connect(_secondaryHeartBeat, &HeartBeat::sendMsg, _networkManager, &NetworkManager::sendMsg);
@@ -58,9 +57,7 @@ void GPBCore::onNewBoat(Boat* newboat)
     connect(_secondaryHeartBeat, &HeartBeat::disconnected, _boatSetting, &BoatSetting::onDisonnected);
     connect(_secondaryHeartBeat, &HeartBeat::connected, this, &GPBCore::onConnected);
     connect(_secondaryHeartBeat, &HeartBeat::disconnected, this, &GPBCore::onDisonnected);
-    connect(_boatSetting, &BoatSetting::changeBoatName, _secondaryHeartBeat, &HeartBeat::resetBoatName);
-    connect(_boatSetting, &BoatSetting::ChangeIP, _secondaryHeartBeat, &HeartBeat::onChangeIP);
-    connect(_boatSetting, &BoatSetting::deleteBoat, _secondaryHeartBeat, &HeartBeat::onDeleteBoat);
+    connect(newboat, &BoatItem::IPChanged, _secondaryHeartBeat, &HeartBeat::onChangeIP);
 
 }
 
@@ -74,14 +71,14 @@ void GPBCore::onConnectionTypeChanged()
 void GPBCore::onConnected(int ID, bool isprimary)
 {
 
-    Boat* boat = _boatList->getBoatbyID(ID);
+    BoatItem* boat = _boatManager->getBoatbyID(ID);
     if(boat != 0){
         if(isprimary){
-            boat->CurrentIP = boat->PIP;
+            boat->setCurrentIP(boat->PIP());
             emit connectionChanged();
         }else{
-            if(boat->CurrentIP != boat->PIP){
-                boat->CurrentIP = boat->SIP;
+            if(boat->currentIP() != boat->PIP()){
+                boat->setCurrentIP(boat->SIP());
                 emit connectionChanged();
             }
         }
@@ -93,10 +90,10 @@ void GPBCore::onConnected(int ID, bool isprimary)
 void GPBCore::onDisonnected(int ID, bool isprimary)
 {
 
-    Boat* boat = _boatList->getBoatbyID(ID);
+    BoatItem* boat = _boatManager->getBoatbyID(ID);
     if(boat != 0){
         if(isprimary){
-            boat->CurrentIP = boat->SIP;
+            boat->setCurrentIP(boat->SIP());
             emit connectionChanged();
         }
 

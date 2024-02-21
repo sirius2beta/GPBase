@@ -1,0 +1,51 @@
+﻿#ifndef BOATITEM_H
+#define BOATITEM_H
+
+#include <QObject>
+#include "device.h"
+
+class HeartBeat;
+
+class BoatItem : public QObject
+{
+    Q_OBJECT
+public:
+    explicit BoatItem(QObject *parent = nullptr);
+    QString name(void) {    return _name;   };
+    int ID(void) {    return _ID; };
+    QString PIP(void) {    return _PIP;    };
+    QString SIP(void) {    return _SIP;    };
+    QString currentIP(void) {    return _currentIP;    };
+    int OS(void) {    return _OS;   };
+
+
+    void setName(QString name);
+    void setID(int ID);
+    void setPIP(QString PIP);
+    void setSIP(QString SIP);
+    void setCurrentIP(QString currentIP);
+    void setOS(int OS);
+    Device& getDevbyID(int ID);
+    Peripheral getPeriperalbyID(int ID);
+
+    QList<Peripheral> peripherals;
+    QList<Device> devices;
+signals:
+    void nameChanged(QString name);
+    void IDChanged(int ID);
+    void IPChanged(BoatItem* boat, bool isPrimary);
+    void CurrentIPChanged(QString curretIP);
+private:
+    QString _name;
+    int _ID;
+    QString _PIP;
+    QString _SIP;
+    QString _currentIP;
+    int _OS;
+
+    HeartBeat* _primaryHeartBeat;
+    HeartBeat* _secondaryHeartBeat;
+
+};
+
+#endif // BOATITEM_H

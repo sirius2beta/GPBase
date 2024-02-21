@@ -17,6 +17,7 @@ CONFIG += c++11 console
 DEFINES += DEBUG_MODE
 SOURCES += \
     adddevicedialog.cpp \
+    boatitem.cpp \
     boatmanager.cpp \
     boatsetting.cpp \
     comboboxdelegate.cpp \
@@ -28,7 +29,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     networkmanager.cpp \
-    networksettings.cpp \
     sensorlabel.cpp \
     sensorwidget.cpp \
     setpindialog.cpp \
@@ -39,7 +39,7 @@ SOURCES += \
 HEADERS += \
     QTypes.h \
     adddevicedialog.h \
-    boat.h \
+    boatitem.h \
     boatmanager.h \
     boatsetting.h \
     comboboxdelegate.h \
@@ -50,7 +50,6 @@ HEADERS += \
     heartbeat.h \
     mainwindow.h \
     networkmanager.h \
-    networksettings.h \
     sensorlabel.h \
     sensorwidget.h \
     setpindialog.h \
@@ -64,7 +63,7 @@ FORMS += \
     ui\configdialog.ui \
     ui\createwindowdialog.ui \
     ui\mainwindow.ui \
-    ui\networksettings.ui \
+    ui\networksettingscontrol.ui \
     ui\sensorlabel.ui \
     ui\sensorwidget.ui \
     ui\setpindialog.ui \

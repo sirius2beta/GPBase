@@ -5,11 +5,13 @@
 #include <QUdpSocket>
 #include "boatmanager.h"
 
+class GPBCore;
+
 class NetworkManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit NetworkManager(QObject *parent = nullptr, BoatManager* boatList = 0);
+    explicit NetworkManager(QObject *parent = nullptr, GPBCore* core = nullptr);
     void init();
 
 signals:
@@ -24,8 +26,7 @@ protected slots:
 private:
     QUdpSocket *serverSocket;
     QUdpSocket *clientSocket;
-    BoatManager* boatList;
-
+    GPBCore* _core;
 };
 
 #endif // NETWORKMANAGER_H

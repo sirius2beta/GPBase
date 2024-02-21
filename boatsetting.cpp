@@ -93,7 +93,7 @@ void BoatSetting::initSettings(BoatManager* _boatList)
             int ID = settings->value("ID").toInt();
             QString boatPIP = settings->value("/PIP").toString();
             QString boatSIP = settings->value("/SIP").toString();
-            Boat* newboat = appendBoat(boatname, ID, boatPIP, boatSIP);
+            BoatItem* newboat = appendBoat(boatname, ID, boatPIP, boatSIP);
             qDebug()<<"boatSetting:: appendboat";
             emit AddBoat(newboat);
 
@@ -171,7 +171,7 @@ int BoatSetting::connectionType()
     return Connection::Secondary;
 }
 
-Boat* BoatSetting::currentBoat(){
+BoatItem* BoatSetting::currentBoat(){
     return boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
 }
 
@@ -198,7 +198,7 @@ Boat* BoatSetting::currentBoat(){
      }
  }
 
- Boat* BoatSetting::appendBoat(QString boatname, int ID, QString PIP, QString SIP)
+ BoatItem* BoatSetting::appendBoat(QString boatname, int ID, QString PIP, QString SIP)
 {
 
     int current = boatItemModel->rowCount();
@@ -219,13 +219,13 @@ Boat* BoatSetting::currentBoat(){
     ui->PIPlineEdit->setText(PIP);
     ui->SIPlineEdit->setText(SIP);
 
-    Boat* boat = boatList->addBoat(ID);
-    boat->boatName = boatname;
-    boat->PIP = PIP;
-    boat->SIP = SIP;
+    BoatItem* boat = boatList->addBoat(ID);
+    boat->setName(boatname);
+    boat->setPIP(PIP);
+    boat->setSIP(SIP);
     //boat->ID = ID;
 
-    boat->CurrentIP = QString();
+    boat->setCurrentIP(QString());
 
     return boat;
 
@@ -265,8 +265,8 @@ void BoatSetting::deleteDevice(int ID)
 void BoatSetting::onConnected(int ID, bool isprimary)
 {
     for(int i = 0; i < boatItemModel->rowCount();i++){
-        qDebug()<<"boatItem: "<<boatItemModel->item(i,0)->text()<<"boatName: "<<boatList->getBoatbyID(ID)->boatName;
-        if(boatItemModel->item(i,0)->text() == boatList->getBoatbyID(ID)->boatName){
+        qDebug()<<"boatItem: "<<boatItemModel->item(i,0)->text()<<"boatName: "<<boatList->getBoatbyID(ID)->name();
+        if(boatItemModel->item(i,0)->text() == boatList->getBoatbyID(ID)->name()){
 
             if(isprimary){
                 boatItemModel->item(i,1)->setText("Active");
@@ -283,7 +283,7 @@ void BoatSetting::onConnected(int ID, bool isprimary)
 void BoatSetting::onDisonnected(int ID, bool isprimary)
 {
     for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatItemModel->item(i,0)->text() == boatList->getBoatbyID(ID)->boatName){
+        if(boatItemModel->item(i,0)->text() == boatList->getBoatbyID(ID)->name()){
             if(isprimary){
                 boatItemModel->item(i,1)->setText("SB");
                 boatItemModel->item(i,1)->setBackground(QBrush(QColor(120,0,0)));
@@ -303,7 +303,7 @@ void BoatSetting::onMsg(QByteArray data)
     QStringList devlistline = QString(data).split('\n');
 
     if(mode == 'r'){
-        if(ID != boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex())->ID){
+        if(ID != boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex())->ID()){
             return;
         }
         if(!initialized){
@@ -331,7 +331,7 @@ void BoatSetting::onMsg(QByteArray data)
 
             if(!cont){
                 Peripheral newperiperal;
-                Boat* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+                BoatItem* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
                 newperiperal.ID = devinfo[4].toInt();
 
                 newperiperal.boardName = devinfo[2];
@@ -345,7 +345,7 @@ void BoatSetting::onMsg(QByteArray data)
                 }
                 boat->peripherals.append(newperiperal);
                 qDebug()<<"--------Add periperal-----------";
-                qDebug()<<"boat:"<<boat->boatName;
+                qDebug()<<"boat:"<<boat->name();
                 qDebug()<<"DevID"<<newperiperal.ID;
                 qDebug()<<"DevName"<<newperiperal.boardName;
                 qDebug()<<"DevType"<<newperiperal.boardType;
@@ -396,60 +396,15 @@ void BoatSetting::onMsg(QByteArray data)
 
 }
 
-QString BoatSetting::getIP(QString boatname){
-    if(ui->autoButton->isChecked()){
-        for(int i = 0; i < boatItemModel->rowCount();i++){
-            if(boatItemModel->item(i,0)->text() == boatname){
-                if(boatItemModel->item(i,1)->text() == QString("Active")){
-                    return boatItemModel->item(i,1)->data().toString();
-                    qDebug()<<"Using Primary IP";
-                }else{
-                    return boatItemModel->item(i,2)->data().toString();
-                    qDebug()<<"Using Secondary IP";
-                }
 
-            }
-        }
-    }else{
-        for(int i = 0; i < boatItemModel->rowCount();i++){
-            if(boatItemModel->item(i,0)->text() == boatname){
-                if(ui->primaryButton->isChecked()){
-                    return boatItemModel->item(i,1)->data().toString();
-                    qDebug()<<"Using Primary IP";
-                }else{
-                    return boatItemModel->item(i,2)->data().toString();
-                    qDebug()<<"Using Secondary IP";
-                }
-
-            }
-        }
-    }
-    return "0.0.0.0";
-
-}
-
-bool BoatSetting::isPrimary(int ID){
-    for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatList->getBoatbyIndex(i)->ID == ID){
-            if(boatItemModel->item(i,1)->text() == QString("Active")){
-                return true;
-            }else{
-                return false;
-            }
-
-        }
-    }
-    return true;
-
-}
 
 void BoatSetting::onBoatNameChange()
 {
-    Boat* _boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
-    int id = _boat->ID;
+    BoatItem* _boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    int id = _boat->ID();
     QString oldname = ui->BoatcomboBox->currentText();
     QString newname = ui->BoatlineEdit->text();
-    _boat->boatName = newname;
+    _boat->setName(newname);
 
     boatItemModel->item(ui->BoatcomboBox->currentIndex(),0)->setText(newname);
     emit changeBoatName(ui->BoatcomboBox->currentIndex(), newname);
@@ -464,7 +419,7 @@ void BoatSetting::onBoatNameChange()
         if(settings->value("boatname").toString() == oldname){
             settings->setValue("boatname",newname);
             index = i;
-            boatList->getBoatbyIndex(i)->boatName = newname;
+            boatList->getBoatbyIndex(i)->name() = newname;
             break;
         }
     }
@@ -494,7 +449,7 @@ void BoatSetting::onAddBoat()
     */
 
     for(int i = 0; i<boatList->size(); i++){
-        indexfree[boatList->getBoatbyIndex(i)->ID] = false;
+        indexfree[boatList->getBoatbyIndex(i)->ID()] = false;
 
     }
 
@@ -513,7 +468,7 @@ void BoatSetting::onAddBoat()
     }
     QString newboatname = "unknown";
 
-    Boat* newboat = appendBoat(newboatname, index,"", "");
+    BoatItem* newboat = appendBoat(newboatname, index,"", "");
 
     settings->beginGroup(QString("%1").arg(config));
     int size = settings->beginReadArray("boat");
@@ -535,7 +490,7 @@ void BoatSetting::onAddBoat()
 void BoatSetting::onDeleteBoat()
 {
     int index = ui->BoatcomboBox->currentIndex();
-    int deletedID = boatList->getBoatbyIndex(index)->ID;
+    int deletedID = boatList->getBoatbyIndex(index)->ID();
     qDebug()<<"BoatSetting delete: " <<index;
     QMessageBox msgBox;
     msgBox.setText(QString("Are you sure you want to delete ")+ui->BoatcomboBox->currentText());
@@ -554,11 +509,11 @@ void BoatSetting::onDeleteBoat()
     int size = boatList->size();
 
     for(int i = index; i<size-1; i++){
-        Boat* boat = boatList->getBoatbyIndex(i+1);
-        lastname = boat->boatName;
-        lastPIP = boat->PIP;
-        lastSIP = boat->SIP;
-        lastID = boat->ID;
+        BoatItem* boat = boatList->getBoatbyIndex(i+1);
+        lastname = boat->name();
+        lastPIP = boat->PIP();
+        lastSIP = boat->SIP();
+        lastID = boat->ID();
 
 
 
@@ -634,7 +589,6 @@ void BoatSetting::onBoatSelected(int index)
         }
 
 
-        //emit sendMsg(ui->BoatcomboBox->currentText(), char(SENSOR), QString("d").toLocal8Bit());
         settings->endArray();
         settings->endGroup();
     }
@@ -676,12 +630,12 @@ void BoatSetting::onChangeIP()
         msgBox.exec();
     }
     bool isPrimary;
-    Boat* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
-    if(boat->PIP != ui->PIPlineEdit->text()){
-        boat->PIP = ui->PIPlineEdit->text();
+    BoatItem* boat = boatList->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    if(boat->PIP() != ui->PIPlineEdit->text()){
+        boat->PIP() = ui->PIPlineEdit->text();
         isPrimary = true;
     }else{
-        boat->SIP = ui->SIPlineEdit->text();
+        boat->SIP() = ui->SIPlineEdit->text();
         isPrimary = false;
     }
 
@@ -731,7 +685,6 @@ void BoatSetting::onAddDeviceButtonClicked()
             cmd += "n";
         }
         qDebug()<<cmd;
-        //emit sendMsg(currentBoat()->boatName, char(SENSOR), cmd.toLocal8Bit());
 
         if(dialog->getDevice().pinUIDList.size() != 0){
             upDateDeviceTableView();

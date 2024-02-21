@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     , _config(config)
 {
     gpbcore = new GPBCore(this, config);
+    gpbcore->init();
 
     ui->setupUi(this);
     this->setCorner(Qt::Corner::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -125,7 +126,7 @@ VideoWindow* MainWindow::addVideoWindow(int index)
     vwindow->setVideoNo(settings->value(QString("%1/w%2/videono").arg(_config,QString::number(index))).toInt());
     vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
     vwindow->setFormat();
-    vwindow->setBoatList(gpbcore->boatList());
+    vwindow->setBoatList(gpbcore->boatManager());
 
     if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(index))) == 1){
         vwindow->setVideoInfo(true);

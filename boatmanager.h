@@ -1,21 +1,24 @@
 ﻿#ifndef BOATMANAGER_H
 #define BOATMANAGER_H
 
-#include <QWidget>
+#include <QObject>
 #include <QDebug>
-#include "boat.h"
+#include "boatitem.h"
+
+class GPBCore;
 
 
-class BoatManager
+class BoatManager: public QObject
 {
+    Q_OBJECT
 public:
-    BoatManager();
+    BoatManager(QObject* parent = nullptr, GPBCore* core = nullptr);
     ~BoatManager();
-    Boat* addBoat(int ID);
+    BoatItem* addBoat(int ID);
     void deleteBoat(int ID);
 
-    Boat* getBoatbyIndex(int index);
-    Boat* getBoatbyID(int ID);
+    BoatItem* getBoatbyIndex(int index);
+    BoatItem* getBoatbyID(int ID);
     int getIDbyInex(int index);
     int getIndexbyID(int ID);
 
@@ -25,7 +28,8 @@ signals:
 
 
 private:
-    QVector<Boat*> boatList;
+    QVector<BoatItem*> boatList;
+    GPBCore* _core;
 };
 
 #endif // BOATMANAGER_H

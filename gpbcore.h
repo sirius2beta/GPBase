@@ -7,7 +7,6 @@
 #include "networkmanager.h"
 #include "sensorwidget.h"
 #include "heartbeat.h"
-#include "videowindow.h"
 #include "sensorwidget.h"
 
 class GPBCore : public QObject
@@ -16,7 +15,10 @@ class GPBCore : public QObject
 public:
     explicit GPBCore(QObject *parent = nullptr, QString config = 0);
     ~GPBCore();
-    BoatManager* boatList() { return _boatList; }
+
+    void init();
+
+    BoatManager* boatManager() { return _boatManager; }
     BoatSetting* boatSetting() { return _boatSetting; }
     NetworkManager* networkManager() { return _networkManager; }
     SensorWidget* sensorWidget() { return _sensorwidget; }
@@ -24,7 +26,7 @@ public:
 signals:
     void connectionChanged();
 protected slots:
-    void onNewBoat(Boat *newboat);
+    void onNewBoat(BoatItem* newboat);
     void onConnectionTypeChanged();
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
@@ -34,7 +36,7 @@ private:
 
     QString _config;
 
-    BoatManager* _boatList;
+    BoatManager* _boatManager;
     BoatSetting* _boatSetting;
     NetworkManager* _networkManager;
     SensorWidget* _sensorwidget;

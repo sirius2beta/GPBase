@@ -19,7 +19,7 @@ class SetPinDialog : public QDialog
 public:
     explicit SetPinDialog(QWidget *parent = nullptr);
     ~SetPinDialog();
-    void setPeripheralModel(QStandardItemModel* pm, Boat* boat);
+    void setPeripheralModel(QStandardItemModel* pm, BoatItem* boat);
     QList<Peripheral> getPeripherals();
     const Device& getDevice();
     void setType(int type);
@@ -33,7 +33,7 @@ protected slots:
     void onBoardSelected(const QModelIndex &index);
     void onDeviceItemChanged(QStandardItem *item);
 private:
-    Boat* thisBoat;
+    BoatItem* thisBoat;
     Ui::SetPinDialog *ui;
     QStandardItemModel* peripheralItemModel;
     QStandardItemModel* pinItemModel;

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QHostAddress>
 
-#include "boat.h"
+#include "boatitem.h"
 #include "boatmanager.h"
 
 class HeartBeat : public QObject
@@ -12,7 +12,7 @@ class HeartBeat : public QObject
     Q_OBJECT
 public:
     explicit HeartBeat(QObject *parent = nullptr);
-    HeartBeat(Boat* boat, BoatManager* boatList, int port, bool isPrimary, QObject *parent = nullptr);
+    HeartBeat(BoatItem* boat, int port, bool isPrimary, QObject *parent = nullptr);
     void HeartBeatLoop(); //工作函数
     ~HeartBeat();
 
@@ -25,8 +25,7 @@ public slots:
     void beat();
     void checkAlive();
     void alive(QString ip);
-    void resetBoatName(int boatIndex, QString newname);
-    void onChangeIP(Boat *boat, bool isPrimary);
+    void onChangeIP(BoatItem* boat, bool isPrimary);
     void onDeleteBoat(QString boatname);
 
 private:
@@ -38,7 +37,7 @@ private:
     bool isAlive;
     bool isHearBeatLoop;
     bool primary;
-    Boat* boat;
+    BoatItem* boat;
     BoatManager* boatList;
 };
 

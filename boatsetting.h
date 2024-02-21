@@ -11,7 +11,7 @@
 #include "boatmanager.h"
 #include "adddevicedialog.h"
 #include "qhostaddress.h"
-#include "boat.h"
+#include "boatitem.h"
 
 
 namespace Ui {
@@ -26,23 +26,20 @@ public:
     explicit BoatSetting(QWidget *parent = nullptr);
     ~BoatSetting();
     void initSettings(BoatManager *_boatList);
-    QString getIP(QString boatname);
-    bool isPrimary(int ID);
     void setconfig(QString conf);
     void addDevice(int ID, QString Devicename, char format, bool IO);
     void deleteDevice(int ID);
     void addBoard(int ID, QString boardName, QString boardType, bool connected);
-    Boat* currentBoat();
+    BoatItem* currentBoat();
     void upDateDeviceTableView();
     enum Connection {Auto = 0, Primary = 1, Secondary=2};
     int connectionType();
 
 signals:
     void changeBoatName(int boatIndex, QString newboatname);
-    void AddBoat(Boat* boat);
-    void ChangeIP(Boat* boat, bool isPrimary);
+    void AddBoat(BoatItem* boat);
+    void ChangeIP(BoatItem* boat, bool isPrimary);
     void deleteBoat(QString boatname);
-    void sendMsg(QHostAddress addr, char topic, QByteArray command);
     void connectionTypeChanged();
 
 
@@ -50,7 +47,7 @@ public slots:
     void onMsg(QByteArray data);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
-    Boat* appendBoat(QString boatname, int ID, QString PIP, QString SIP);
+    BoatItem* appendBoat(QString boatname, int ID, QString PIP, QString SIP);
     void onBoatNameChange();
     void onAddBoat();
     void onDeleteBoat();

@@ -89,7 +89,7 @@ public slots:
     void handleResult(const QPixmap& result);
     void setVideoFormat(int ID, QStringList videoformat);
     void resetBoatName(QString boatname,QString newboatname);
-    void AddBoat(Boat *boat);
+    void AddBoat(BoatItem *boat);
     void onBoatNameChange(int boatIndex, QString newname);
     void onDeleteBoat(QString boatname);
     void onConnectionChanged();

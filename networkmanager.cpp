@@ -1,9 +1,11 @@
 ﻿#include "networkmanager.h"
 #include "QTypes.h"
-NetworkManager::NetworkManager(QObject *parent, BoatManager* boatList)
+#include "gpbcore.h"
+
+NetworkManager::NetworkManager(QObject *parent, GPBCore *core)
     : QObject{parent}
 {
-    this->boatList = boatList;
+    _core = core;
     serverSocket = new QUdpSocket(this);
     clientSocket = new QUdpSocket(this);
     clientSocket->bind(50008,QUdpSocket::ShareAddress);
@@ -47,7 +49,7 @@ void NetworkManager::onUDPMsg()
         }
         if(topic == HEARTBEAT){
             int ID = int(data[0]);
-            Boat* boat = boatList->getBoatbyID(ID);
+            BoatItem* boat = _core->boatManager()->getBoatbyID(ID);
             if( boat != 0){
 
                 emit AliveResponse(ip);
