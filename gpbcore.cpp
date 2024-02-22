@@ -15,8 +15,9 @@ GPBCore::~GPBCore(){
 }
 
 void GPBCore::init(){
-    _boatManager = new BoatManager(this, this);
     _networkManager = new NetworkManager(this, this);
+    _boatManager = new BoatManager(this, this);
+
 
     _boatSetting = new BoatSetting();
     connect(_boatManager, &BoatManager::boatAdded, this, &GPBCore::onNewBoat);
@@ -37,23 +38,8 @@ void GPBCore::onNewBoat(BoatItem* newboat)
 {
     qDebug()<<"ck1-1";
 
-    _primaryHeartBeat = new HeartBeat(newboat, 50006, true, newboat);
-    _primaryHeartBeat->HeartBeatLoop();
-    _secondaryHeartBeat = new HeartBeat(newboat, 50006, false, newboat);
-    _secondaryHeartBeat->HeartBeatLoop();
 
-    connect(newboat, &BoatItem::connected, _boatSetting, &BoatSetting::onConnected);
-    connect(newboat, &BoatItem::disconnected, _boatSetting, &BoatSetting::onDisonnected);
-    connect(newboat, &BoatItem::connected, this, &GPBCore::onConnected);
-    connect(newboat, &BoatItem::disconnected,this, &GPBCore::onDisonnected);
 
-    connect(_networkManager, &NetworkManager::AliveResponse, _primaryHeartBeat, &HeartBeat::alive);
-    connect(_primaryHeartBeat, &HeartBeat::sendMsg, _networkManager, &NetworkManager::sendMsg);
-    connect(newboat, &BoatItem::IPChanged, _primaryHeartBeat, &HeartBeat::onChangeIP);
-
-    connect(_networkManager, &NetworkManager::AliveResponse, _secondaryHeartBeat, &HeartBeat::alive);
-    connect(_secondaryHeartBeat, &HeartBeat::sendMsg, _networkManager, &NetworkManager::sendMsg);
-    connect(newboat, &BoatItem::IPChanged, _secondaryHeartBeat, &HeartBeat::onChangeIP);
 
 }
 

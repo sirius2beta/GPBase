@@ -20,16 +20,13 @@ BoatSetting::BoatSetting(QWidget *parent) :
     connect(ui->PIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
     connect(ui->SIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
 
-    settings = new QSettings("Ezosirius", "GPlayer_v1", this);
+
 
     ui->BoatTableView->verticalHeader()->setDefaultSectionSize(10);
     ui->DeviceTableView->verticalHeader()->setDefaultSectionSize(10);
     //setup boat tableview
-    boatItemModel = new QStandardItemModel();
-    QStringList label = {"name", "Primary", "Secondary"};
-    boatItemModel->setHorizontalHeaderLabels(label);
-    ui->BoatTableView->setModel(boatItemModel);
-    //ui->BoatTableView->setColumnWidth(0,100);
+
+
     ui->BoatTableView->setColumnWidth(1,100);
     ui->BoatTableView->setColumnWidth(2,100);
     ui->BoatTableView->verticalHeader()->setVisible(false);
@@ -47,18 +44,6 @@ BoatSetting::BoatSetting(QWidget *parent) :
 
 
     peripheralItemModel = new QStandardItemModel();
-    /*
-    QStringList label3 = {"ID", QStringLiteral("USB裝置"), QStringLiteral("腳位"),QStringLiteral("類別"),QStringLiteral("狀態")};
-    peripheralItemModel->setHorizontalHeaderLabels(label3);
-    ui->PeriTableView->setModel(peripheralItemModel);
-    ui->PeriTableView->setColumnWidth(0,50);
-    ui->PeriTableView->setColumnWidth(1,100);
-    ui->PeriTableView->setColumnWidth(2,100);
-    ui->PeriTableView->setColumnWidth(3,50);
-    ui->PeriTableView->setStyleSheet("QTableView::indicator:checked { background-color: #55ee55;} QTableView::indicator:unchecked { background-color: #ee5555;}");
-    ui->PeriTableView->verticalHeader()->setVisible(false);
-    */
-
     QStringList label3 = {"ID", QStringLiteral("USB裝置"), QStringLiteral("類別"),QStringLiteral("狀態")};
     peripheralItemModel->setHorizontalHeaderLabels(label3);
     ui->PeriTableView->setModel(peripheralItemModel);
@@ -83,53 +68,23 @@ BoatSetting::BoatSetting(QWidget *parent) :
 void BoatSetting::initSettings(BoatManager* _boatList)
 {
     boatManager = _boatList;
-    settings->beginGroup(QString("%1").arg(config));
-    int size = settings->beginReadArray("boat");
+    connect(boatManager, &BoatManager::boatAdded, this, &BoatSetting::onBoatAdded);
+    ui->BoatTableView->setModel(boatManager->model());
+    int size = boatManager->size();
 
-    if(size!=0){
-        for(int i = 0; i < size; i++){            
-            settings->setArrayIndex(i);
-            QString boatname = settings->value("boatname").toString();
-            int ID = settings->value("ID").toInt();
-            QString boatPIP = settings->value("/PIP").toString();
-            QString boatSIP = settings->value("/SIP").toString();
-            BoatItem* newboat = appendBoat(boatname, ID, boatPIP, boatSIP);
-            qDebug()<<"boatSetting:: appendboat";
-
-            //initialize board
-            int size = settings->beginReadArray(QString("board"));
-            qDebug()<<"Boatsetting: init boat: "<<boatname<<"board num: "<<size;
-
-            if(size!=0){
-                for(int i = 0; i < size; i++){
-
-                    settings->setArrayIndex(i);
-
-                    int ID = settings->value("ID").toInt();
-                    QString boardName = settings->value("boardName").toString();
-                    QString boardType = settings->value("boardType").toString();
-                    if(boardType == QString("FTDI")){
-                        boardType = QString("RS485_hub");
-                    }else if(boardType == QString("Silicon")){
-                        boardType = QString("Gyro");
-                    }
-                    addBoard(ID, boardName, boardType, false);
-                    Peripheral p;
-                    p.ID = ID;
-                    p.boardName = boardName;
-                    p.boardType = boardType;
-                    currentBoat()->peripherals.append(p);
-                    qDebug()<<"----------------- "<<i<<","<<ID<<","<<boardName;
-                }
-            }
-
-            settings->endArray();
-        }
-    }else{
+    if(size==0){
         ui->infoBox->setVisible(false);
+    }else{
+        for(int i = 0; i<size; i++){
+            BoatItem* boat = boatManager->getBoatbyIndex(i);
+            ui->BoatTableView->setRowHeight(boatManager->size(),30);
+            ui->BoatcomboBox->addItem(boat->name(),boat->name());
+            ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
+            ui->BoatlineEdit->setText(boat->name());
+            ui->PIPlineEdit->setText(boat->PIP());
+            ui->SIPlineEdit->setText(boat->SIP());
+        }
     }
-    settings->endArray();
-    settings->endGroup();
     initialized = true;
 }
 
@@ -197,30 +152,16 @@ BoatItem* BoatSetting::currentBoat(){
      }
  }
 
- BoatItem* BoatSetting::appendBoat(QString boatname, int ID, QString PIP, QString SIP)
+void BoatSetting::onBoatAdded(BoatItem* newboat)
 {
 
-    int current = boatItemModel->rowCount();
-    QStandardItem* item1 = new QStandardItem(boatname);
-    QStandardItem* item2 = new QStandardItem(QString("SB"));
-    item2->setData(PIP);
-    item2->setBackground(QBrush(QColor(120,0,0)));
-    QStandardItem* item3 = new QStandardItem(QString("SB"));
-    item3->setData(SIP);
-    item3->setBackground(QBrush(QColor(120,0,0)));
-    boatItemModel->setItem(current,0,item1);
-    boatItemModel->setItem(current,1,item2);
-    boatItemModel->setItem(current,2,item3);
-    ui->BoatTableView->setRowHeight(current,30);
-    ui->BoatcomboBox->addItem(boatname,boatname);
+
+    ui->BoatTableView->setRowHeight(boatManager->size(),30);
+    ui->BoatcomboBox->addItem(newboat->name(),newboat->name());
     ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
-    ui->BoatlineEdit->setText(boatname);
-    ui->PIPlineEdit->setText(PIP);
-    ui->SIPlineEdit->setText(SIP);
-
-    BoatItem* boat = boatManager->addBoat(ID, boatname, PIP, SIP);
-
-    return boat;
+    ui->BoatlineEdit->setText(newboat->name());
+    ui->PIPlineEdit->setText(newboat->PIP());
+    ui->SIPlineEdit->setText(newboat->SIP());
 
 }
 
@@ -245,9 +186,11 @@ void BoatSetting::addDevice(int ID, QString Devicename, char format, bool IO)
     }else{
          item3 = new QStandardItem(QString("O"));
     }
+    /*
     boatItemModel->setItem(current,0,item1);
     boatItemModel->setItem(current,1,item2);
     boatItemModel->setItem(current,2,item3);
+    */
 }
 
 void BoatSetting::deleteDevice(int ID)
@@ -255,38 +198,9 @@ void BoatSetting::deleteDevice(int ID)
 
 }
 
-void BoatSetting::onConnected(int ID, bool isprimary)
-{
-    for(int i = 0; i < boatItemModel->rowCount();i++){
-        qDebug()<<"boatItem: "<<boatItemModel->item(i,0)->text()<<"boatName: "<<boatManager->getBoatbyID(ID)->name();
-        if(boatItemModel->item(i,0)->text() == boatManager->getBoatbyID(ID)->name()){
 
-            if(isprimary){
-                boatItemModel->item(i,1)->setText("Active");
-                boatItemModel->item(i,1)->setBackground(QBrush(QColor(0,120,0)));
-            }else{
-                boatItemModel->item(i,2)->setText("Active");
-                boatItemModel->item(i,2)->setBackground(QBrush(QColor(0,120,0)));
-            }
-        }
-    }
 
-}
 
-void BoatSetting::onDisonnected(int ID, bool isprimary)
-{
-    for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatItemModel->item(i,0)->text() == boatManager->getBoatbyID(ID)->name()){
-            if(isprimary){
-                boatItemModel->item(i,1)->setText("SB");
-                boatItemModel->item(i,1)->setBackground(QBrush(QColor(120,0,0)));
-            }else{
-                boatItemModel->item(i,2)->setText("SB");
-                boatItemModel->item(i,2)->setBackground(QBrush(QColor(120,0,0)));
-            }
-        }
-    }
-}
 
 void BoatSetting::onMsg(QByteArray data)
 {
@@ -346,7 +260,7 @@ void BoatSetting::onMsg(QByteArray data)
 
                 addBoard(newperiperal.ID, newperiperal.boardName, dev_type, true);
                 currentBoat()->peripherals.append(newperiperal);
-
+                /*
                 settings->beginGroup(QString("%1").arg(config));
                 int size = settings->beginReadArray(QString("boat/%1/board").arg(ui->BoatcomboBox->currentIndex()+1));
 
@@ -358,6 +272,7 @@ void BoatSetting::onMsg(QByteArray data)
                 settings->setValue(QString("boardType"), dev_type);
                 settings->endArray();
                 settings->endGroup();
+                */
             }
 
 
@@ -393,6 +308,7 @@ void BoatSetting::onMsg(QByteArray data)
 
 void BoatSetting::onBoatNameChange()
 {
+    /*
     BoatItem* _boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     int id = _boat->ID();
     QString oldname = ui->BoatcomboBox->currentText();
@@ -419,62 +335,13 @@ void BoatSetting::onBoatNameChange()
 
     settings->endArray();
     settings->endGroup();
+    */
 
 }
 
 void BoatSetting::onAddBoat()
 {
-    //int count = 0;
-    QVector<bool> indexfree(256, true);
-    QVector<bool> nameindexfree(256, true);
-    int index = 0;
-    int nameindex = 0;
-    /*
-    for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatItemModel->item(i,0)->text().contains("unknown")){
-            count++;
-            qDebug()<<boatItemModel->item(i,0)->text();
-            qDebug()<<boatList->getBoatbyName(boatItemModel->item(i,0)->text())->ID;
-            nameindexfree[boatList->getBoatbyName(boatItemModel->item(i,0)->text())->ID] = false;
-            qDebug()<<"done";
-        }
-    }
-    */
 
-    for(int i = 0; i<boatManager->size(); i++){
-        indexfree[boatManager->getBoatbyIndex(i)->ID()] = false;
-
-    }
-
-    for(int i =0; i<256; i++){
-        if(nameindexfree[i] == true){
-            nameindex = i;
-            break;
-        }
-    }
-    for(int i =0; i<256; i++){
-        if(indexfree[i] == true){
-            index = i;
-            qDebug()<<"add index:"<<i;
-            break;
-        }
-    }
-    QString newboatname = "unknown";
-
-    appendBoat(newboatname, index,"", "");
-
-    settings->beginGroup(QString("%1").arg(config));
-    int size = settings->beginReadArray("boat");
-
-    settings->endArray();
-    settings->beginWriteArray("boat");
-    settings->setArrayIndex(size);
-    settings->setValue(QString("boatname"), newboatname);
-    settings->setValue(QString("ID"), index);
-    settings->setValue(QString("PIP"), "");
-    settings->setValue(QString("SIP"), "");
-    settings->endArray();
-    settings->endGroup();
 
     ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
 
@@ -493,6 +360,7 @@ void BoatSetting::onDeleteBoat()
     if(ret != QMessageBox::Ok){
         return;
     }
+    /*
     settings->beginGroup(QString("%1").arg(config));
     settings->beginWriteArray("boat");
     QString lastname;
@@ -537,14 +405,15 @@ void BoatSetting::onDeleteBoat()
     if(ui->BoatcomboBox->count() == 0){
         ui->infoBox->setVisible(false);
     }
+    */
 }
 
 void BoatSetting::onBoatSelected(int index)
 {
     if(index>-1){
         ui->BoatlineEdit->setText(ui->BoatcomboBox->currentText());
-        ui->PIPlineEdit->setText(boatItemModel->item(index,1)->data().toString());
-        ui->SIPlineEdit->setText(boatItemModel->item(index,2)->data().toString());
+        ui->PIPlineEdit->setText(boatManager->getBoatbyIndex(index)->PIP());
+        ui->SIPlineEdit->setText(boatManager->getBoatbyIndex(index)->SIP());
     }
     ui->infoBox->setVisible(true);
     peripheralItemModel->clear();
@@ -558,7 +427,7 @@ void BoatSetting::onBoatSelected(int index)
     ui->PeriTableView->setStyleSheet("QTableView::indicator:checked { background-color: #55ee55;} QTableView::indicator:unchecked { background-color: #ee5555;}");
     ui->PeriTableView->verticalHeader()->setVisible(false);
 
-
+/*
 
     if(initialized){
         settings->beginGroup(QString("%1").arg(config));
@@ -586,19 +455,20 @@ void BoatSetting::onBoatSelected(int index)
         settings->endGroup();
     }
 
-
+*/
 }
 
 void BoatSetting::onBoatDoubleClicked(QModelIndex index)
 {
-    ui->BoatlineEdit->setText(boatItemModel->item(index.row(),0)->text());
-    ui->PIPlineEdit->setText(boatItemModel->item(index.row(),1)->data().toString());
-    ui->SIPlineEdit->setText(boatItemModel->item(index.row(),2)->data().toString());
+    ui->BoatlineEdit->setText(boatManager->getBoatbyIndex(index.row())->name());
+    ui->PIPlineEdit->setText(boatManager->getBoatbyIndex(index.row())->PIP());
+    ui->SIPlineEdit->setText(boatManager->getBoatbyIndex(index.row())->SIP());
     ui->BoatcomboBox->setCurrentIndex(index.row());
 }
 
 void BoatSetting::onChangeIP()
 {
+    /*
     bool breakout = false;
     QString repeatedBoat;
 
@@ -644,6 +514,7 @@ void BoatSetting::onChangeIP()
     boatItemModel->item(ui->BoatcomboBox->currentIndex(),2)->setData(ui->SIPlineEdit->text());
     settings->endArray();
     settings->endGroup();
+    */
 }
 
 void BoatSetting::onAddDeviceButtonClicked()

@@ -4,14 +4,18 @@
 #include "heartbeat.h"
 
 #include "QTypes.h"
+#include "networkmanager.h"
+#include "gpbcore.h"
 
-HeartBeat::HeartBeat(QObject *parent): QObject(parent)
+HeartBeat::HeartBeat(QObject *parent, GPBCore *core): QObject(parent)
 {
-
+    _core = core;
 }
 
-HeartBeat::HeartBeat(BoatItem* boat, int port, bool isPrimary, QObject *parent): QObject(parent)
+HeartBeat::HeartBeat(BoatItem* boat, int port, bool isPrimary, QObject *parent, GPBCore *core): QObject(parent)
 {
+
+    _core = core;
 
     boatPort = port;
     isAlive = false;
@@ -27,6 +31,11 @@ HeartBeat::HeartBeat(BoatItem* boat, int port, bool isPrimary, QObject *parent):
     checkAliveTimer = new QTimer(this);
     connect(heartBeatTimer, &QTimer::timeout, this, &HeartBeat::beat);
     connect(checkAliveTimer,&QTimer::timeout, this, &HeartBeat::checkAlive);
+    connect(_core->networkManager(), &NetworkManager::AliveResponse, this, &HeartBeat::alive);
+    connect(this, &HeartBeat::sendMsg, _core->networkManager(), &NetworkManager::sendMsg);
+
+
+
     qDebug()<<"HB init: "<<"ID "<< boat->ID();
 
 }
@@ -73,10 +82,13 @@ void HeartBeat::HeartBeatLoop()
     qDebug()<<"HeartBeat "<<", boatname:"<<boat->name()<<", boat ip:"<<boatIP<<", HB loop";
 
     beat();
+
     heartBeatTimer->start(1000);
     isHearBeatLoop = true;
     isAlive = false;
+
     boat->disconnect(primary);
+
 
 }
 

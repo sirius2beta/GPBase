@@ -43,9 +43,8 @@ signals:
 
 public slots:
     void onMsg(QByteArray data);
-    void onConnected(int ID, bool isprimary);
-    void onDisonnected(int ID, bool isprimary);
-    BoatItem* appendBoat(QString boatname, int ID, QString PIP, QString SIP);
+
+    void onBoatAdded(BoatItem* newboat);
     void onBoatNameChange();
     void onAddBoat();
     void onDeleteBoat();
@@ -56,10 +55,11 @@ public slots:
 
 private:
     Ui::BoatSetting *ui;
-    QStandardItemModel* boatItemModel;
+
     QStandardItemModel* deviceItemModel;
     QStandardItemModel* peripheralItemModel;
-    QSettings *settings;
+
+
     QString config;
     BoatManager* boatManager;
     bool initialized;

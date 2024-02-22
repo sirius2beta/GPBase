@@ -22,10 +22,11 @@ public:
     BoatSetting* boatSetting() { return _boatSetting; }
     NetworkManager* networkManager() { return _networkManager; }
     SensorWidget* sensorWidget() { return _sensorwidget; }
+    QString config() {return _config;}
 
 signals:
     void connectionChanged();
-protected slots:
+public slots:
     void onNewBoat(BoatItem* newboat);
     void onConnectionTypeChanged();
     void onConnected(int ID, bool isprimary);
@@ -40,8 +41,7 @@ private:
     BoatSetting* _boatSetting;
     NetworkManager* _networkManager;
     SensorWidget* _sensorwidget;
-    HeartBeat* _primaryHeartBeat;
-    HeartBeat* _secondaryHeartBeat;
+
     SensorWidget* _sensorWidget;
 
 };
