@@ -456,11 +456,6 @@ void VideoWindow::AddBoat(BoatItem* boat)
     qDebug()<<"Videowindow: add boat: "<<boat->name();
 }
 
-void VideoWindow::onBoatNameChange(int boatIndex, QString newname)
-{
-
-    ui->boatcomboBox->setItemText(boatIndex, newname);
-}
 
 void VideoWindow::onDeleteBoat(int index)
 {

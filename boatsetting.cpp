@@ -16,7 +16,7 @@ BoatSetting::BoatSetting(QWidget *parent) :
     ui->BoatTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->BoatTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(ui->BoatlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onBoatNameChange);
-    connect(ui->BoatTableView, &QTableView::doubleClicked, this, &BoatSetting::onBoatDoubleClicked);
+    connect(ui->BoatTableView, &QTableView::clicked, this, &BoatSetting::onBoatDoubleClicked);
     connect(ui->PIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
     connect(ui->SIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
 
@@ -25,8 +25,6 @@ BoatSetting::BoatSetting(QWidget *parent) :
     ui->BoatTableView->verticalHeader()->setDefaultSectionSize(30);
     ui->DeviceTableView->verticalHeader()->setDefaultSectionSize(10);
     //setup boat tableview
-
-
     ui->BoatTableView->setColumnWidth(1,100);
     ui->BoatTableView->setColumnWidth(2,100);
     ui->BoatTableView->verticalHeader()->setVisible(false);
@@ -295,34 +293,11 @@ void BoatSetting::onMsg(QByteArray data)
 
 void BoatSetting::onBoatNameChange()
 {
-    /*
+
     BoatItem* _boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
-    int id = _boat->ID();
-    QString oldname = ui->BoatcomboBox->currentText();
     QString newname = ui->BoatlineEdit->text();
     _boat->setName(newname);
-
-    boatItemModel->item(ui->BoatcomboBox->currentIndex(),0)->setText(newname);
-    emit changeBoatName(ui->BoatcomboBox->currentIndex(), newname);
     ui->BoatcomboBox->setItemText(ui->BoatcomboBox->currentIndex(),ui->BoatlineEdit->text());
-    settings->beginGroup(QString("%1").arg(config));
-    int size = settings->beginReadArray("boat");
-    int index = 0;
-    for(int i = 0; i<size; i++){
-
-        settings->setArrayIndex(i);
-        ;
-        if(settings->value("boatname").toString() == oldname){
-            settings->setValue("boatname",newname);
-            index = i;
-            boatManager->getBoatbyIndex(i)->name() = newname;
-            break;
-        }
-    }
-
-    settings->endArray();
-    settings->endGroup();
-    */
 
 }
 

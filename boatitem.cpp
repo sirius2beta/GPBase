@@ -14,7 +14,7 @@ BoatItem::~BoatItem()
 void BoatItem::setName(QString name)
 {
     _name = name;
-    emit nameChanged(name);
+    emit nameChanged(_ID, name);
 }
 
 void BoatItem::setID(int ID)

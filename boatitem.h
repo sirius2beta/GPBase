@@ -40,7 +40,7 @@ public:
     QList<Peripheral> peripherals;
     QList<Device> devices;
 signals:
-    void nameChanged(QString name);
+    void nameChanged(int ID, QString name);
     void IDChanged(int ID);
     void IPChanged(bool isPrimary);
     void CurrentIPChanged(QString curretIP);

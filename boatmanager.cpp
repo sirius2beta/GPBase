@@ -49,6 +49,7 @@ void BoatManager::init()
         boatItemModel->setItem(current,1,item2);
         boatItemModel->setItem(current,2,item3);
 
+        connect(boat, &BoatItem::nameChanged, this, &BoatManager::onBoatNameChange);
         connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
         connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
 
@@ -82,6 +83,7 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     boat->setPIP(PIP);
     boat->setSIP(SIP);
     boatList.append(boat);
+    connect(boat, &BoatItem::nameChanged, this, &BoatManager::onBoatNameChange);
     connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
     connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
 
@@ -202,6 +204,20 @@ QString BoatManager::CurrentIP(QString boatname)
 int BoatManager::size()
 {
     return boatList.size();
+}
+
+void BoatManager::onBoatNameChange(int ID, QString newname)
+{
+    int index = getIndexbyID(ID);
+    boatItemModel->item(index, 0)->setText(newname);
+    settings->beginGroup(QString("%1").arg(_core->config()));
+    int size = settings->beginReadArray("boat");
+    settings->setArrayIndex(ID);
+    settings->setValue("boatname",newname);
+
+    settings->endArray();
+    settings->endGroup();
+    qDebug()<<"changename";
 }
 
 void BoatManager::onConnected(int ID, bool isprimary)

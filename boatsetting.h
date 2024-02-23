@@ -36,8 +36,6 @@ public:
     int connectionType();
 
 signals:
-    void changeBoatName(int boatIndex, QString newboatname);
-
     void connectionTypeChanged();
 
 

@@ -90,7 +90,6 @@ public slots:
     void setVideoFormat(int ID, QStringList videoformat);
     void resetBoatName(QString boatname,QString newboatname);
     void AddBoat(BoatItem *boat);
-    void onBoatNameChange(int boatIndex, QString newname);
     void onDeleteBoat(int index);
     void onConnectionChanged();
 
