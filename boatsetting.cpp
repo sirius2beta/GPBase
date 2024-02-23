@@ -22,7 +22,7 @@ BoatSetting::BoatSetting(QWidget *parent) :
 
 
 
-    ui->BoatTableView->verticalHeader()->setDefaultSectionSize(10);
+    ui->BoatTableView->verticalHeader()->setDefaultSectionSize(30);
     ui->DeviceTableView->verticalHeader()->setDefaultSectionSize(10);
     //setup boat tableview
 
@@ -30,6 +30,7 @@ BoatSetting::BoatSetting(QWidget *parent) :
     ui->BoatTableView->setColumnWidth(1,100);
     ui->BoatTableView->setColumnWidth(2,100);
     ui->BoatTableView->verticalHeader()->setVisible(false);
+
 
 
     deviceItemModel = new QStandardItemModel();
@@ -68,7 +69,6 @@ BoatSetting::BoatSetting(QWidget *parent) :
 void BoatSetting::initSettings(BoatManager* _boatList)
 {
     boatManager = _boatList;
-    connect(boatManager, &BoatManager::boatAdded, this, &BoatSetting::onBoatAdded);
     ui->BoatTableView->setModel(boatManager->model());
     int size = boatManager->size();
 
@@ -151,19 +151,6 @@ BoatItem* BoatSetting::currentBoat(){
          deviceItemModel->setItem(i,3, item4);
      }
  }
-
-void BoatSetting::onBoatAdded(BoatItem* newboat)
-{
-
-
-    ui->BoatTableView->setRowHeight(boatManager->size(),30);
-    ui->BoatcomboBox->addItem(newboat->name(),newboat->name());
-    ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
-    ui->BoatlineEdit->setText(newboat->name());
-    ui->PIPlineEdit->setText(newboat->PIP());
-    ui->SIPlineEdit->setText(newboat->SIP());
-
-}
 
 void BoatSetting::setconfig(QString conf)
 {
@@ -341,17 +328,35 @@ void BoatSetting::onBoatNameChange()
 
 void BoatSetting::onAddBoat()
 {
+    // select free index
+    QVector<bool> indexfree(256, true);
+    int index = 0;
+    for(int i = 0; i< boatManager->size(); i++){
+        indexfree[boatManager->getBoatbyIndex(i)->ID()] = false;
 
+    }
+    for(int i =0; i<256; i++){
+        if(indexfree[i] == true){
+            index = i;
 
+            break;
+        }
+    }
+    QString newboatname = "unknown";
+    boatManager->addBoat(index, newboatname, "", "");
+
+    ui->BoatcomboBox->addItem(newboatname,newboatname);
     ui->BoatcomboBox->setCurrentIndex(ui->BoatcomboBox->count()-1);
+    ui->BoatlineEdit->setText(newboatname);
+    ui->PIPlineEdit->setText("");
+    ui->SIPlineEdit->setText("");
 
 }
 
 void BoatSetting::onDeleteBoat()
 {
     int index = ui->BoatcomboBox->currentIndex();
-    int deletedID = boatManager->getBoatbyIndex(index)->ID();
-    qDebug()<<"BoatSetting delete: " <<index;
+    qDebug()<<"BoatSetting::delete: " <<index;
     QMessageBox msgBox;
     msgBox.setText(QString("Are you sure you want to delete ")+ui->BoatcomboBox->currentText());
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -360,52 +365,14 @@ void BoatSetting::onDeleteBoat()
     if(ret != QMessageBox::Ok){
         return;
     }
-    /*
-    settings->beginGroup(QString("%1").arg(config));
-    settings->beginWriteArray("boat");
-    QString lastname;
-    QString lastPIP;
-    QString lastSIP;
-    int lastID;
-    int size = boatManager->size();
 
-    for(int i = index; i<size-1; i++){
-        BoatItem* boat = boatManager->getBoatbyIndex(i+1);
-        lastname = boat->name();
-        lastPIP = boat->PIP();
-        lastSIP = boat->SIP();
-        lastID = boat->ID();
+    boatManager->deleteBoat(index);
 
-
-
-        settings->setArrayIndex(i);
-        settings->setValue("boatname",lastname);
-        settings->setValue("PIP", lastPIP);
-        settings->setValue("SIP", lastSIP);
-        settings->setValue("ID", lastID);
-        settings->remove(QString("boat/%1/board").arg(size));
-        settings->beginWriteArray("board");
-        for(int j = 0; j<boat->peripherals.size(); j++){
-            settings->setArrayIndex(j);
-            settings->setValue("boardName", boat->peripherals[j].boardName);
-            settings->setValue("boardType", boat->peripherals[j].boardType);
-            settings->setValue("ID", boat->peripherals[j].ID);
-        }
-        settings->endArray();
-
-    }
-    settings->endArray();
-    settings->setValue("boat/size", size-1);
-    settings->remove(QString("boat/%1").arg(size));
-    settings->endGroup();
-    boatManager->deleteBoat(deletedID);
-    emit deleteBoat(ui->BoatcomboBox->currentText());
     ui->BoatcomboBox->removeItem(index);
-    boatItemModel->removeRows(index,1);
     if(ui->BoatcomboBox->count() == 0){
         ui->infoBox->setVisible(false);
     }
-    */
+
 }
 
 void BoatSetting::onBoatSelected(int index)

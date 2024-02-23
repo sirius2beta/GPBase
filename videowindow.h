@@ -65,7 +65,7 @@ class VideoWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit VideoWindow(QWidget *parent = nullptr, QString config=QString());
+    explicit VideoWindow(QWidget *parent = nullptr, QString config=QString(), GPBCore *core = nullptr);
     ~VideoWindow();
     void init();
     void setFormat();
@@ -76,7 +76,7 @@ public:
     void clearScreen();
     void setVideoNo(int i);
     void setFormatNo(int i);
-    void setBoatList(BoatManager* boatlist);
+
 signals:
     void sendCommand(int ID, QString command, int PCPort);
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
@@ -91,7 +91,7 @@ public slots:
     void resetBoatName(QString boatname,QString newboatname);
     void AddBoat(BoatItem *boat);
     void onBoatNameChange(int boatIndex, QString newname);
-    void onDeleteBoat(QString boatname);
+    void onDeleteBoat(int index);
     void onConnectionChanged();
 
 protected slots:
@@ -126,8 +126,7 @@ private:
     Worker *worker;
     QUdpSocket *serverSocket;
     QUdpSocket *clientSocket;
-    BoatManager* boatList;
-
+    GPBCore* _core;
 
 };
 

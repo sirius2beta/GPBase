@@ -37,14 +37,12 @@ public:
 
 signals:
     void changeBoatName(int boatIndex, QString newboatname);
-    void deleteBoat(QString boatname);
+
     void connectionTypeChanged();
 
 
 public slots:
     void onMsg(QByteArray data);
-
-    void onBoatAdded(BoatItem* newboat);
     void onBoatNameChange();
     void onAddBoat();
     void onDeleteBoat();

@@ -6,6 +6,11 @@ BoatItem::BoatItem(QObject *parent)
 {
 }
 
+BoatItem::~BoatItem()
+{
+    qDebug()<<"BoatItem::deleted";
+}
+
 void BoatItem::setName(QString name)
 {
     _name = name;

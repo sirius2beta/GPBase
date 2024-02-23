@@ -16,10 +16,11 @@ class BoatManager: public QObject
 public:
     BoatManager(QObject* parent = nullptr, GPBCore* core = nullptr);
     ~BoatManager();
+
     QAbstractItemModel* model() const {return boatItemModel;}
     void init();
     BoatItem* addBoat(int ID, QString boatname, QString PIP, QString SIP);
-    void deleteBoat(int ID);
+    void deleteBoat(int index);
 
     BoatItem* getBoatbyIndex(int index);
     BoatItem* getBoatbyID(int ID);
@@ -33,7 +34,7 @@ public slots:
     void onDisonnected(int ID, bool isprimary);
 signals:
     void boatAdded(BoatItem* newboat);
-
+    void boatDeleted(int index);
 private:
     QSettings *settings;
     QStandardItemModel* boatItemModel;

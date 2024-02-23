@@ -20,15 +20,14 @@ BoatManager::~BoatManager()
 
 void BoatManager::init()
 {
+    qDebug()<<"BoatManager::init(): Initiating...";
     settings->beginGroup(QString("%1").arg(_core->config()));
     int size = settings->beginReadArray("boat");
 
     for(int i = 0; i < size; i++){
-        qDebug()<<"boatList size:"<<boatList.size();
         settings->setArrayIndex(i);
         QString boatname = settings->value("boatname").toString();
         int ID = settings->value("ID").toInt();
-        qDebug()<<"ID:"<<ID;
         QString boatPIP = settings->value("/PIP").toString();
         QString boatSIP = settings->value("/SIP").toString();
 
@@ -53,10 +52,9 @@ void BoatManager::init()
         connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
         connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
 
-        HeartBeat* _primaryHeartBeat = new HeartBeat(boat, 50006, true, this, _core);
+        HeartBeat* _primaryHeartBeat = new HeartBeat(boat, 50006, true, boat, _core);
         _primaryHeartBeat->HeartBeatLoop();
-        qDebug()<<"ck1";
-        HeartBeat* _secondaryHeartBeat = new HeartBeat(boat, 50006, false, this, _core);
+        HeartBeat* _secondaryHeartBeat = new HeartBeat(boat, 50006, false, boat, _core);
         _secondaryHeartBeat->HeartBeatLoop();
 
         connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
@@ -67,35 +65,18 @@ void BoatManager::init()
 
 
         emit boatAdded(boat);
-        qDebug()<<"BoatManager:: addboat";
+        qDebug()<<"  - Add boat: ID:"<<ID<<", name:"<<boatname ;
 
     }
 
     settings->endArray();
     settings->endGroup();
+    qDebug()<<"BoatManager::init(): Initiate complete";
 }
 
 BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SIP)
 {
     BoatItem* boat = new BoatItem(this);
-
-
-    //int count = 0;
-    QVector<bool> indexfree(256, true);
-    int index = 0;
-    for(int i = 0; i< size(); i++){
-        indexfree[getBoatbyIndex(i)->ID()] = false;
-
-    }
-    for(int i =0; i<256; i++){
-        if(indexfree[i] == true){
-            index = i;
-
-            break;
-        }
-    }
-    QString newboatname = "unknown";
-
     boat->setID(ID);
     boat->setName(boatname);
     boat->setPIP(PIP);
@@ -104,15 +85,14 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
     connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
 
-    HeartBeat* _primaryHeartBeat = new HeartBeat(boat, 50006, true, this, _core);
-    _primaryHeartBeat->HeartBeatLoop();
-    HeartBeat* _secondaryHeartBeat = new HeartBeat(boat, 50006, false, this, _core);
-    _secondaryHeartBeat->HeartBeatLoop();
-    qDebug()<<"ck1";
+    HeartBeat* primaryHeartBeat = new HeartBeat(boat, 50006, true, boat, _core);
+    primaryHeartBeat->HeartBeatLoop();
+    HeartBeat* secondaryHeartBeat = new HeartBeat(boat, 50006, false, boat, _core);
+    secondaryHeartBeat->HeartBeatLoop();
     connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
     connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
-    connect(boat, &BoatItem::IPChanged, _primaryHeartBeat, &HeartBeat::onChangeIP);
-    connect(boat, &BoatItem::IPChanged, _secondaryHeartBeat, &HeartBeat::onChangeIP);
+    connect(boat, &BoatItem::IPChanged, primaryHeartBeat, &HeartBeat::onChangeIP);
+    connect(boat, &BoatItem::IPChanged, secondaryHeartBeat, &HeartBeat::onChangeIP);
 
 
     int current = boatItemModel->rowCount();
@@ -126,15 +106,15 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     boatItemModel->setItem(current,0,item1);
     boatItemModel->setItem(current,1,item2);
     boatItemModel->setItem(current,2,item3);
-    //1
+
+
     settings->beginGroup(QString("%1").arg(_core->config()));
     int size = settings->beginReadArray("boat");
-
     settings->endArray();
     settings->beginWriteArray("boat");
     settings->setArrayIndex(size);
-    settings->setValue(QString("boatname"), newboatname);
-    settings->setValue(QString("ID"), index);
+    settings->setValue(QString("boatname"), boatname);
+    settings->setValue(QString("ID"), ID);
     settings->setValue(QString("PIP"), "");
     settings->setValue(QString("SIP"), "");
     settings->endArray();
@@ -144,18 +124,36 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     return boat;
 }
 
-void BoatManager::deleteBoat(int ID)
+void BoatManager::deleteBoat(int index)
 {
+
+    delete boatList[index];
+    boatList.remove(index);
+
+    settings->beginGroup(QString("%1").arg(_core->config()));
+    settings->remove("");
+    settings->beginWriteArray("boat");
+
+
     for(int i = 0; i<boatList.size(); i++){
-        if(boatList[i]->ID() == ID){
-            boatList.remove(i);
-        }
+        BoatItem* boat = boatList[i];
+        settings->setArrayIndex(i);
+        settings->setValue("boatname",boat->name());
+        settings->setValue("PIP", boat->PIP());
+        settings->setValue("SIP", boat->SIP());
+        settings->setValue("ID", boat->ID());
     }
+
+    settings->endArray();
+    settings->endGroup();
+
+    boatItemModel->removeRows(index,1);
+    emit boatDeleted(index);
 }
 
 BoatItem* BoatManager::getBoatbyIndex(int index)
 {
-    if(index > boatList.size()){
+    if(index >= boatList.size()){
         return 0;
     }
     return boatList[index];
@@ -227,8 +225,7 @@ void BoatManager::onConnected(int ID, bool isprimary)
 void BoatManager::onDisonnected(int ID, bool isprimary)
 {
 
-    qDebug()<<"boatItemModel.size:"<<boatItemModel->rowCount();
-    qDebug()<<"boatList.size:"<<boatList.size();
+    qDebug()<<"BoatManager::Disconnect "<<ID<<" "<<(isprimary?"primary":"secondary");
     for(int i = 0; i < boatList.size();i++){
         if(getBoatbyID(ID) == 0 || boatItemModel->item(i,0) == 0) return;
         if(boatItemModel->item(i,0)->text() == getBoatbyID(ID)->name()){

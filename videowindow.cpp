@@ -6,7 +6,9 @@
 #define COMMAND 0x30
 #define QUIT 0x40
 
-VideoWindow::VideoWindow(QWidget *parent, QString config) :
+#include "gpbcore.h"
+
+VideoWindow::VideoWindow(QWidget *parent, QString config, GPBCore* core) :
     QWidget(parent),
     ui(new Ui::VideoWindow),
     PCPort(0),
@@ -15,10 +17,14 @@ VideoWindow::VideoWindow(QWidget *parent, QString config) :
     isPlaying(false),
     _config(config)
 {
+    _core = core;
+
     ui->setupUi(this);
     ui->playButton->setIcon(QIcon(":/icon/playbutton.png"));
     ui->stopButton->setIcon(QIcon(":/icon/stopbutton.png"));
     ui->settingsButton->setIcon(QIcon(":/icon/settingbutton-02.png"));
+    ui->boatcomboBox->setModel(_core->boatManager()->model());
+
 
     QCoreApplication::setOrganizationName("Ezosirius");
     QCoreApplication::setApplicationName("GPlayer_v1");
@@ -141,8 +147,8 @@ void VideoWindow::onPlay()
 
 
     ui->playButton->setEnabled(false);
-    int boatID = boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID();
-    QHostAddress ip = QHostAddress(boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
+    int boatID = _core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID();
+    QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
     QString msg = ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90"+" "+QString::number(port);
     emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
 
@@ -173,7 +179,7 @@ void VideoWindow::onPlay()
 void VideoWindow::onStop()
 {
     std::string s = QString(ui->videoportComboBox->currentText()).toStdString();
-    QHostAddress ip = QHostAddress(boatList->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
+    QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
     emit sendMsg(ip, char(QUIT), QByteArray(s.c_str()));
 
     if(isPlaying == false){
@@ -188,7 +194,7 @@ void VideoWindow::onStop()
 void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
 {   
 
-    if(ui->boatcomboBox->currentText() == boatList->getBoatbyID(ID)->name()){
+    if(ui->boatcomboBox->currentText() == _core->boatManager()->getBoatbyID(ID)->name()){
 
 
         int preVideoNo = ui->videoportComboBox->currentIndex();
@@ -242,14 +248,6 @@ void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
 
 }
 
-void VideoWindow::setBoatList(BoatManager* boatlist)
-{
-    boatList = boatlist;
-    for(int i = 0; i < boatlist->size(); i++){
-        QString boat_name = boatlist->getBoatbyIndex(i)->name();
-        ui->boatcomboBox->addItem(boat_name,boat_name);
-    }
-}
 
 void VideoWindow::changeSettings(VWSetting settings)
 {
@@ -456,7 +454,6 @@ void VideoWindow::resetBoatName(QString boatname,QString newboatname)
 void VideoWindow::AddBoat(BoatItem* boat)
 {
     qDebug()<<"Videowindow: add boat: "<<boat->name();
-    ui->boatcomboBox->addItem(boat->name());
 }
 
 void VideoWindow::onBoatNameChange(int boatIndex, QString newname)
@@ -465,15 +462,8 @@ void VideoWindow::onBoatNameChange(int boatIndex, QString newname)
     ui->boatcomboBox->setItemText(boatIndex, newname);
 }
 
-void VideoWindow::onDeleteBoat(QString boatname)
+void VideoWindow::onDeleteBoat(int index)
 {
-
-    for(int i = 0; i < ui->boatcomboBox->count(); i++){
-        if(ui->boatcomboBox->itemText(i) == boatname){
-            ui->boatcomboBox->removeItem(i);
-        }
-    }
-
 }
 
 void VideoWindow::setVideoNo(int i)
@@ -504,11 +494,15 @@ void VideoWindow::onSetFormatNo(int i)
 
 void VideoWindow::onSetBoatNo(int i)
 {
-    qDebug()<<"vw:"<<boatList->getBoatbyIndex(i)->currentIP();
-    QHostAddress addr(boatList->getBoatbyIndex(i)->currentIP());
-    emit sendMsg(addr,char(FORMAT),"qformat");
+    if(ui->boatcomboBox->count()!=0){
+        qDebug()<<"VideoWindow:request format. IP:"<<_core->boatManager()->getBoatbyIndex(i)->currentIP();
+        QHostAddress addr(_core->boatManager()->getBoatbyIndex(i)->currentIP());
+        emit sendMsg(addr,char(FORMAT),"qformat");
+    }
+
     ui->videoFormatcomboBox->clear();
     ui->videoportComboBox->clear();
+
 }
 
 void VideoWindow::onConnectionChanged()

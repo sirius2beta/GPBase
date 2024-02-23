@@ -119,14 +119,13 @@ VideoWindow* MainWindow::addVideoWindow(int index)
 {
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
 
-    VideoWindow* vwindow = new VideoWindow(this,_config);
+    VideoWindow* vwindow = new VideoWindow(this, _config, gpbcore);
     vwindow->setIndex(index);
     vwindow->setPCPort(settings->value(QString("%1/w%2/in_port").arg(_config,QString::number(index))).toInt());
     vwindow->setTitle(settings->value(QString("%1/w%2/title").arg(_config,QString::number(index))).toString());
     vwindow->setVideoNo(settings->value(QString("%1/w%2/videono").arg(_config,QString::number(index))).toInt());
     vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
     vwindow->setFormat();
-    vwindow->setBoatList(gpbcore->boatManager());
 
     if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(index))) == 1){
         vwindow->setVideoInfo(true);
@@ -142,7 +141,7 @@ VideoWindow* MainWindow::addVideoWindow(int index)
     connect(gpbcore, &GPBCore::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
     connect(gpbcore->boatManager(), &BoatManager::boatAdded, vwindow, &VideoWindow::AddBoat);
     connect(gpbcore->boatSetting(), &BoatSetting::changeBoatName, vwindow, &VideoWindow::onBoatNameChange);
-    connect(gpbcore->boatSetting(), &BoatSetting::deleteBoat, vwindow, &VideoWindow::onDeleteBoat);
+    connect(gpbcore->boatManager(), &BoatManager::boatDeleted, vwindow, &VideoWindow::onDeleteBoat);
 
     return vwindow;
 

@@ -34,14 +34,13 @@ HeartBeat::HeartBeat(BoatItem* boat, int port, bool isPrimary, QObject *parent, 
     connect(_core->networkManager(), &NetworkManager::AliveResponse, this, &HeartBeat::alive);
     connect(this, &HeartBeat::sendMsg, _core->networkManager(), &NetworkManager::sendMsg);
 
-
-
-    qDebug()<<"HB init: "<<"ID "<< boat->ID();
+    qDebug()<<"HeartBeat: initiated (ID: "<< boat->ID()<<")";
 
 }
 
 HeartBeat::~HeartBeat()
 {
+    qDebug()<<"HeartBeat::deleted";
     run = false;
 }
 
@@ -79,10 +78,9 @@ void HeartBeat::onDeleteBoat(QString boatname)
 
 void HeartBeat::HeartBeatLoop()
 {
-    qDebug()<<"HeartBeat "<<", boatname:"<<boat->name()<<", boat ip:"<<boatIP<<", HB loop";
+    qDebug()<<"HeartBeat::HeartBeatLoop started ("<<boat->name()<<", "<<boatIP<<")";
 
     beat();
-
     heartBeatTimer->start(1000);
     isHearBeatLoop = true;
     isAlive = false;
@@ -101,7 +99,7 @@ void HeartBeat::alive(QString ip)
             isAlive = true;
         }else{
             // Enter alive loop
-            qDebug()<<"HeartBeat "<<", boatname:"<<boat->name()<<", boat ip:"<<ip<<", alive loop";
+            qDebug()<<"HeartBeat::AliveLoop started ("<<boat->name()<<", "<<ip<<")";
             heartBeatTimer->stop();
             checkAliveTimer->start(1500);
             isHearBeatLoop = false;

@@ -11,6 +11,7 @@ class BoatItem : public QObject
     Q_OBJECT
 public:
     explicit BoatItem(QObject *parent = nullptr);
+    ~BoatItem();
     QString name(void) {    return _name;   };
     int ID(void) {    return _ID; };
     QString PIP(void) {    return _PIP;    };
