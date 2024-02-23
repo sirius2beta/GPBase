@@ -11,7 +11,6 @@ GPBCore::GPBCore(QObject *parent, QString config)
 GPBCore::~GPBCore(){
     delete _boatSetting;
     delete _boatManager;
-    delete _sensorWidget;
 }
 
 void GPBCore::init(){
@@ -20,26 +19,12 @@ void GPBCore::init(){
 
 
     _boatSetting = new BoatSetting();
-    connect(_boatManager, &BoatManager::boatAdded, this, &GPBCore::onNewBoat);
 
     connect(_networkManager, &NetworkManager::sensorMsg, _boatSetting, &BoatSetting::onMsg);
     connect(_boatSetting, &BoatSetting::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
     _boatSetting->setconfig(_config);
     _boatSetting->initSettings(_boatManager);
-    qDebug()<<"ck03";
-    _sensorWidget = new SensorWidget();
-    _sensorWidget->setBoatList(_boatManager);
-    connect(_sensorWidget, &SensorWidget::sendMsg, _networkManager, &NetworkManager::sendMsg);
-    qDebug()<<"ck04";
     _networkManager->init();
-}
-
-void GPBCore::onNewBoat(BoatItem* newboat)
-{
-    qDebug()<<"ck1-1";
-
-
-
 
 }
 

@@ -27,39 +27,6 @@ namespace Ui {
 class VideoWindow;
 }
 
-
-
-class Worker : public QObject
-{
-    Q_OBJECT
-public:
-    explicit Worker(QObject *parent = nullptr);
-    Worker(QString name , QObject *parent = nullptr);
-    ~Worker();
-
-    void setGstcmd(const QString cmd);
-
-signals:
-    void resultReady(const QPixmap& result); //工作完成信号
-
-public slots:
-
-    void doWork(const QString cmd=QString()); //工作函数
-    void update();
-    void exit();
-    void stop();
-    void restart(const QString cmd);
-private:
-    //cv::VideoCapture *capture;
-    //YOLOV5 *yolov5;
-    QString name;
-    bool initiated;
-    QTimer* timer;
-    QString gstcmd;
-};
-
-
-
 class VideoWindow : public QWidget
 {
     Q_OBJECT
@@ -88,9 +55,6 @@ signals:
 public slots:
     void handleResult(const QPixmap& result);
     void setVideoFormat(int ID, QStringList videoformat);
-    void resetBoatName(QString boatname,QString newboatname);
-    void AddBoat(BoatItem *boat);
-    void onDeleteBoat(int index);
     void onConnectionChanged();
 
 protected slots:
@@ -122,7 +86,7 @@ private:
 
     QString _config;
     QThread workThread; //worker 线程
-    Worker *worker;
+    //Worker *worker;
     QUdpSocket *serverSocket;
     QUdpSocket *clientSocket;
     GPBCore* _core;

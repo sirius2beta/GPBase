@@ -13,6 +13,7 @@ class GPBCore;
 class BoatManager: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QAbstractItemModel* model READ model)
 public:
     BoatManager(QObject* parent = nullptr, GPBCore* core = nullptr);
     ~BoatManager();
@@ -29,13 +30,13 @@ public:
 
     QString CurrentIP(QString boatname);
     int size();
+
 public slots:
     void onBoatNameChange(int ID, QString newname);
+    void onIPChanged(int ID);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
-signals:
-    void boatAdded(BoatItem* newboat);
-    void boatDeleted(int index);
+
 private:
     QSettings *settings;
     QStandardItemModel* boatItemModel;

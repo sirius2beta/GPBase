@@ -8,6 +8,7 @@
 #include "sensorwidget.h"
 #include "heartbeat.h"
 #include "sensorwidget.h"
+#include "dnvideomanager.h"
 
 class GPBCore : public QObject
 {
@@ -21,13 +22,11 @@ public:
     BoatManager* boatManager() { return _boatManager; }
     BoatSetting* boatSetting() { return _boatSetting; }
     NetworkManager* networkManager() { return _networkManager; }
-    SensorWidget* sensorWidget() { return _sensorwidget; }
     QString config() {return _config;}
 
 signals:
     void connectionChanged();
 public slots:
-    void onNewBoat(BoatItem* newboat);
     void onConnectionTypeChanged();
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
@@ -40,9 +39,7 @@ private:
     BoatManager* _boatManager;
     BoatSetting* _boatSetting;
     NetworkManager* _networkManager;
-    SensorWidget* _sensorwidget;
-
-    SensorWidget* _sensorWidget;
+    DNVideoManager* _videoManager;
 
 };
 

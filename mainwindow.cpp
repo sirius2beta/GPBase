@@ -21,8 +21,6 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     this->setDockOptions( QMainWindow::AnimatedDocks);
     this->setWindowTitle(QString("GPlayer"));
 
-
-
     // Setup toolbar icon
     QAction * act;
     act = new QAction(tr("GPlayer"), this);
@@ -79,9 +77,7 @@ void MainWindow::initVideoWindows()
             settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(i)), 0);
         }
 
-
         VideoWindow* vwindow = addVideoWindow(i);
-
 
         if(i == 1){
             setCentralWidget(vwindow);
@@ -99,7 +95,10 @@ void MainWindow::initSensorWidget()
 {
     //init sensor panel
     QDockWidget* dockwidget = new QDockWidget("Sensor",this);
-    sensor_widget = gpbcore->sensorWidget();
+    sensor_widget = new SensorWidget(this);
+    sensor_widget->setBoatList(gpbcore->boatManager());
+    connect(sensor_widget, &SensorWidget::sendMsg, gpbcore->networkManager(), &NetworkManager::sendMsg);
+
 
     dockwidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockwidget->setWidget(sensor_widget);
@@ -110,9 +109,6 @@ void MainWindow::initSensorWidget()
 
     dockwidget->toggleViewAction()->setIcon(QIcon(":/icon/sensor-02.png"));
     ui->toolBar->addAction(dockwidget->toggleViewAction());
-
-
-
 }
 
 VideoWindow* MainWindow::addVideoWindow(int index)
@@ -134,13 +130,9 @@ VideoWindow* MainWindow::addVideoWindow(int index)
     }
     vwindow->init();
 
-
-
     connect(vwindow,&VideoWindow::sendMsg,gpbcore->networkManager(),&NetworkManager::sendMsg);
     connect(gpbcore->networkManager(), &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);
     connect(gpbcore, &GPBCore::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
-    connect(gpbcore->boatManager(), &BoatManager::boatAdded, vwindow, &VideoWindow::AddBoat);
-    connect(gpbcore->boatManager(), &BoatManager::boatDeleted, vwindow, &VideoWindow::onDeleteBoat);
 
     return vwindow;
 
@@ -151,11 +143,6 @@ void MainWindow::openCreateWindowDialog()
     CreateWindowDialog* dialog = new CreateWindowDialog(this);
     dialog->exec();
 }
-
-
-
-
-
 
 MainWindow::~MainWindow()
 {

@@ -24,6 +24,7 @@ SOURCES += \
     configdialog.cpp \
     createwindowdialog.cpp \
     device.cpp \
+    dnvideomanager.cpp \
     gpbcore.cpp \
     heartbeat.cpp \
     main.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     configdialog.h \
     createwindowdialog.h \
     device.h \
+    dnvideomanager.h \
     gpbcore.h \
     heartbeat.h \
     mainwindow.h \

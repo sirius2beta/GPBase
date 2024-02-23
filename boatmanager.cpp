@@ -50,6 +50,7 @@ void BoatManager::init()
         boatItemModel->setItem(current,2,item3);
 
         connect(boat, &BoatItem::nameChanged, this, &BoatManager::onBoatNameChange);
+        connect(boat, &BoatItem::IPChanged, this, &BoatManager::onIPChanged);
         connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
         connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
 
@@ -63,9 +64,6 @@ void BoatManager::init()
         connect(boat, &BoatItem::IPChanged, _primaryHeartBeat, &HeartBeat::onChangeIP);
         connect(boat, &BoatItem::IPChanged, _secondaryHeartBeat, &HeartBeat::onChangeIP);
 
-
-
-        emit boatAdded(boat);
         qDebug()<<"  - Add boat: ID:"<<ID<<", name:"<<boatname ;
 
     }
@@ -122,7 +120,6 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     settings->endArray();
     settings->endGroup();
 
-    emit boatAdded(boat);
     return boat;
 }
 
@@ -150,7 +147,6 @@ void BoatManager::deleteBoat(int index)
     settings->endGroup();
 
     boatItemModel->removeRows(index,1);
-    emit boatDeleted(index);
 }
 
 BoatItem* BoatManager::getBoatbyIndex(int index)
@@ -218,6 +214,24 @@ void BoatManager::onBoatNameChange(int ID, QString newname)
     settings->endArray();
     settings->endGroup();
     qDebug()<<"changename";
+}
+
+void BoatManager::onIPChanged(int ID)
+{
+    int index = getIndexbyID(ID);
+    BoatItem* boat = boatList[index];
+    boatItemModel->item(index,1)->setData(boat->PIP());
+    boatItemModel->item(index,2)->setData(boat->SIP());
+
+    settings->beginGroup(QString("%1").arg(_core->config()));
+    int size = settings->beginReadArray("boat");
+
+    settings->setArrayIndex(index);
+    settings->setValue("PIP", boat->PIP());
+    settings->setValue("SIP", boat->SIP());
+
+    settings->endArray();
+    settings->endGroup();
 }
 
 void BoatManager::onConnected(int ID, bool isprimary)

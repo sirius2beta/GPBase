@@ -183,10 +183,6 @@ void BoatSetting::deleteDevice(int ID)
 
 }
 
-
-
-
-
 void BoatSetting::onMsg(QByteArray data)
 {
     int ID = int(data[0]);
@@ -294,9 +290,9 @@ void BoatSetting::onMsg(QByteArray data)
 void BoatSetting::onBoatNameChange()
 {
 
-    BoatItem* _boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     QString newname = ui->BoatlineEdit->text();
-    _boat->setName(newname);
+    boat->setName(newname);
     ui->BoatcomboBox->setItemText(ui->BoatcomboBox->currentIndex(),ui->BoatlineEdit->text());
 
 }
@@ -317,6 +313,7 @@ void BoatSetting::onAddBoat()
             break;
         }
     }
+
     QString newboatname = "unknown";
     boatManager->addBoat(index, newboatname, "", "");
 
@@ -330,8 +327,9 @@ void BoatSetting::onAddBoat()
 
 void BoatSetting::onDeleteBoat()
 {
-    int index = ui->BoatcomboBox->currentIndex();
     qDebug()<<"BoatSetting::delete: " <<index;
+
+    // double check dialog
     QMessageBox msgBox;
     msgBox.setText(QString("Are you sure you want to delete ")+ui->BoatcomboBox->currentText());
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -341,9 +339,11 @@ void BoatSetting::onDeleteBoat()
         return;
     }
 
+    int index = ui->BoatcomboBox->currentIndex();
     boatManager->deleteBoat(index);
 
     ui->BoatcomboBox->removeItem(index);
+
     if(ui->BoatcomboBox->count() == 0){
         ui->infoBox->setVisible(false);
     }
@@ -410,21 +410,21 @@ void BoatSetting::onBoatDoubleClicked(QModelIndex index)
 
 void BoatSetting::onChangeIP()
 {
-    /*
+
     bool breakout = false;
     QString repeatedBoat;
-
-    for(int i = 0; i< boatItemModel->rowCount(); i++){
+    /*
+    for(int i = 0; i< boatManager->model()->rowCount(); i++){
         if(ui->BoatcomboBox->currentIndex() == i){
             continue;
         }
-        if((boatItemModel->item(i,1)->data() == ui->PIPlineEdit->text()) && (ui->PIPlineEdit->text() != "")){
+        if((boatManager->model()->item(i,1)->data() == ui->PIPlineEdit->text()) && (ui->PIPlineEdit->text() != "")){
             ui->PIPlineEdit->setText("");
-            repeatedBoat = boatItemModel->item(i,0)->text();
+            repeatedBoat = boatManager->model()->item(i,0)->text();
             breakout = true;
-        }else if((boatItemModel->item(i,2)->data() == ui->SIPlineEdit->text()) && ui->SIPlineEdit->text() != ""){
+        }else if((boatManager->model()->item(i,2)->data() == ui->SIPlineEdit->text()) && ui->SIPlineEdit->text() != ""){
             ui->SIPlineEdit->setText("");
-            repeatedBoat = boatItemModel->item(i,0)->text();
+            repeatedBoat = boatManager->model()->item(i,0)->text();
             breakout = true;
         }
 
@@ -434,6 +434,7 @@ void BoatSetting::onChangeIP()
         msgBox.setText(QStringLiteral("IP與其他船衝突: ")+repeatedBoat);
         msgBox.exec();
     }
+    */
 
     BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     if(boat->PIP() != ui->PIPlineEdit->text()){
@@ -442,21 +443,8 @@ void BoatSetting::onChangeIP()
         boat->setSIP(ui->SIPlineEdit->text());
     }
 
-    settings->beginGroup(QString("%1").arg(config));
-    int size = settings->beginReadArray("boat");
-    int index = 0;
-    for(int i = 0; i<size; i++){
-        settings->setArrayIndex(i);
-        if(settings->value("boatname").toString() == ui->BoatcomboBox->currentText()){
-            settings->setValue("PIP",ui->PIPlineEdit->text());
-            settings->setValue("SIP",ui->SIPlineEdit->text());
-        }
-    }
-    boatItemModel->item(ui->BoatcomboBox->currentIndex(),1)->setData(ui->PIPlineEdit->text());
-    boatItemModel->item(ui->BoatcomboBox->currentIndex(),2)->setData(ui->SIPlineEdit->text());
-    settings->endArray();
-    settings->endGroup();
-    */
+
+
 }
 
 void BoatSetting::onAddDeviceButtonClicked()

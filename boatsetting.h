@@ -38,7 +38,6 @@ public:
 signals:
     void connectionTypeChanged();
 
-
 public slots:
     void onMsg(QByteArray data);
     void onBoatNameChange();

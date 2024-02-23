@@ -26,13 +26,13 @@ void BoatItem::setID(int ID)
 void BoatItem::setPIP(QString PIP)
 {
     _PIP = PIP;
-    emit IPChanged(true);
+    emit IPChanged(_ID);
 }
 
 void BoatItem::setSIP(QString SIP)
 {
     _SIP = SIP;
-    emit IPChanged(false);
+    emit IPChanged(_ID);
 }
 
 void BoatItem::setCurrentIP(QString currentIP)
