@@ -19,14 +19,10 @@ BoatSetting::BoatSetting(QWidget *parent) :
     connect(ui->BoatTableView, &QTableView::clicked, this, &BoatSetting::onBoatDoubleClicked);
     connect(ui->PIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
     connect(ui->SIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
-
-
-
     ui->BoatTableView->verticalHeader()->setDefaultSectionSize(30);
     ui->DeviceTableView->verticalHeader()->setDefaultSectionSize(10);
     //setup boat tableview
-    ui->BoatTableView->setColumnWidth(1,100);
-    ui->BoatTableView->setColumnWidth(2,100);
+
     ui->BoatTableView->verticalHeader()->setVisible(false);
 
 
@@ -68,6 +64,8 @@ void BoatSetting::initSettings(BoatManager* _boatList)
 {
     boatManager = _boatList;
     ui->BoatTableView->setModel(boatManager->model());
+    ui->BoatTableView->setColumnWidth(1,80);
+    ui->BoatTableView->setColumnWidth(2,80);
     int size = boatManager->size();
 
     if(size==0){
