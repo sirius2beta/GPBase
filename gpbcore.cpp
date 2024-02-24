@@ -24,6 +24,7 @@ void GPBCore::init(){
     connect(_boatSetting, &BoatSetting::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
     _boatSetting->setconfig(_config);
     _boatSetting->initSettings(_boatManager);
+    _videoManager->init();
     _networkManager->init();
 
 }

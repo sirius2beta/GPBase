@@ -19,6 +19,7 @@
 #include "videosettingsdialog.h"
 #include "boatmanager.h"
 #include "QTypes.h"
+#include "videoitem.h"
 
 //Q_DECLARE_METATYPE(cv::Mat)
 
@@ -33,28 +34,24 @@ class VideoWindow : public QWidget
 public:
     explicit VideoWindow(QWidget *parent = nullptr, QString config=QString(), GPBCore *core = nullptr);
     ~VideoWindow();
-    void init();
+    void init(VideoItem* videoItem);
     void setFormat();
-    void setPCPort(int p);
-    void setTitle(QString t);
-    void setIndex(int i);
+
     void setVideoInfo(bool i);
     void clearScreen();
     void setVideoNo(int i);
     void setFormatNo(int i);
 
 signals:
-    void sendCommand(int ID, QString command, int PCPort);
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
-
-    void nextframe();
-    void order(const QString cmd=QString());
-    void stopworker();
 
 public slots:
     void handleResult(const QPixmap& result);
     void setVideoFormat(int ID, QStringList videoformat);
     void onConnectionChanged();
+    void onPCPortChanged(int port);
+    void onTitleChanged(QString t);
+    void onIndexChanged(int i);
 
 protected slots:
     void onSettings();
@@ -67,11 +64,10 @@ protected slots:
 
 private:
     Ui::VideoWindow *ui;
-    int PCPort;
+    VideoItem* _videoItem;
     bool proxyMode;
 
-    int index;
-    QString title;
+    //int index;
     QSettings* settings;
     int formatNo;
     int videoNo;

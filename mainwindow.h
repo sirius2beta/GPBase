@@ -20,6 +20,7 @@
 #include "heartbeat.h"
 #include "gpbcore.h"
 #include "videowindow.h"
+#include "videoitem.h"
 
 
 QT_BEGIN_NAMESPACE

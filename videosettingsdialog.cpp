@@ -7,7 +7,6 @@ VideoSettingsDialog::VideoSettingsDialog(QWidget *parent) :
     ui(new Ui::VideoSettingsDialog)
 {
     ui->setupUi(this);
-    ui->PC_port_edit->setInputMask(QString("99999"));
     setWindowTitle("Streaming Settings");
 
     ui->videonoComboBox->addItem("video0", "video0");
@@ -28,7 +27,6 @@ VideoSettingsDialog::VideoSettingsDialog(QWidget *parent) :
 
     connect(ui->boat_name_edit,SIGNAL(textChanged(QString)),this, SLOT(onTitleChanged(QString)));
     connect(ui->optionEdit,SIGNAL(textChanged(QString)),this, SLOT(onOptionsChanged(QString)));
-    connect(ui->PC_port_edit, SIGNAL(textChanged(QString)),this,SLOT(onPCPortChanged(QString)));
     connect(ui->videoinfoCheckBox, &QCheckBox::stateChanged,this,&VideoSettingsDialog::onVideoInfoChanged);
     connect(ui->ProxyCheckBox, &QCheckBox::stateChanged,this,&VideoSettingsDialog::onProxyChanged);
 
@@ -41,7 +39,6 @@ void VideoSettingsDialog::setInfo(VWSetting settings)
     ui->titleLineEdit->setText(settings.title);
     ui->videonoComboBox->setCurrentIndex(settings.videono);
     ui->formatComboBox->setCurrentIndex(settings.formatno);
-    ui->PC_port_edit->setText(QString::number(settings.boatPort));
 
     if(settings.video_info){
         ui->videoinfoCheckBox->setChecked(true);

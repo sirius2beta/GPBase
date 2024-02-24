@@ -1,4 +1,4 @@
-#include "videoitem.h"
+﻿#include "videoitem.h"
 
 VideoItem::VideoItem(QObject *parent, QString title, int boatID, int videoNo, int formatNo, int PCPort)
     : QObject{parent},
@@ -18,36 +18,65 @@ VideoItem::~VideoItem()
     delete _qualityModel;
 }
 
+void VideoItem::setTitle(QString title)
+{
+    _title = title;
+    emit titleChanged(title);
+}
+
+void VideoItem::setPCPort(int port)
+{
+    _PCPort = port;
+    emit PCPortChanged(port);
+}
+
 void VideoItem::setBoatID(int ID)
 {
     _boatID = ID;
     emit boatIDSet(ID);
 }
 
-void VideoItem::setVideoFormat(QStringList videoformat)
+void VideoItem::setIndex(int index)
 {
-    QStringList videoFormatList;
-    int index = -1;
-    /*
-    for(const auto &vf:videoformat){
-        QString videoNo = vf.split(' ')[0];
-        if(videoNo == thisvideoNo){ //the same videox
-            QStringList vfl = vf.split(' ');
-            vfl.pop_front();
-            if(vfl[1].split('=')[1].toInt()<= 1920){  //limit with<1920
-                QString vfstring = vfl.join(' ');
-                videoFormatList<<vfstring; //save videoformat of videox to videoFormatList
-            }
+    _index = index;
+    emit indexChanged(index);
+}
 
-        }else{ //next video port(ex. video1 to video2)
-            ui->videoportComboBox->setItemData(index, videoFormatList);
-            ui->videoportComboBox->addItem(videoNo, 0);
-            thisvideoNo = videoNo;
-            videoFormatList.clear();
-            index++;
+void VideoItem::setVideoNo(int videoNo)
+{
+    _qualityModel->removeRows(0, _qualityModel->rowCount());
+    for(const auto &formatlist:_videoFormatList){
+        if(formatlist[0] == _videoNo){
+            QStringList fl = formatlist.split(' ');
+            fl.pop_front();
+            int current = _videoNoModel->rowCount();
+            QStandardItem* item = new QStandardItem(fl.join(" "));
+            _videoNoModel->setItem(current, 0, item);
         }
     }
-*/
+}
+
+void VideoItem::setVideoFormat(QStringList videoformat)
+{
+    int index = -1;
+    QString currentvideoNo = QString();
+    for(const auto &vf:videoformat){
+
+        QString videoNo = vf.split(' ')[0];
+        if(currentvideoNo != videoNo){
+            currentvideoNo = videoNo;
+            int current = _videoNoModel->rowCount();
+            QStandardItem* item = new QStandardItem(currentvideoNo);
+            _videoNoModel->setItem(current, 0, item);
+
+        }
+        QStringList vfl = vf.split(' ');
+        if(vfl[2].split('=')[1].toInt()<= 1920){  //limit with<1920
+            QString vfstring = vfl.join(' ');
+            _videoFormatList<<vfstring; //save videoformat of videox to videoFormatList
+        }
+    }
+
 }
 
 void VideoItem::setDisplay(WId xwinid)

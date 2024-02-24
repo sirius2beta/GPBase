@@ -11,9 +11,7 @@
 VideoWindow::VideoWindow(QWidget *parent, QString config, GPBCore* core) :
     QWidget(parent),
     ui(new Ui::VideoWindow),
-    PCPort(0),
     proxyMode(false),
-    title(QString("VideoWindow")),
     isPlaying(false),
     _config(config)
 {
@@ -43,7 +41,6 @@ VideoWindow::VideoWindow(QWidget *parent, QString config, GPBCore* core) :
 
 VideoWindow::~VideoWindow()
 {
-    emit stopworker();
     if(isPlaying == false){
 
     }else{
@@ -55,37 +52,33 @@ VideoWindow::~VideoWindow()
 
 }
 
-void VideoWindow::init()
+void VideoWindow::init(VideoItem *videoItem)
 {
-    /*
-    QHostAddress addr = QHostAddress(boatIP);
-    QString cmd = QString("qformat 1");
-    serverSocket->writeDatagram(cmd.toUtf8().data(),cmd.toUtf8().size(), addr, 50007);
-    qDebug()<<"format "+boatIP;
-    */
+    _videoItem = videoItem;
+    connect(videoItem, &VideoItem::titleChanged, this, &VideoWindow::onTitleChanged);
+    connect(videoItem, &VideoItem::PCPortChanged, this, &VideoWindow::onPCPortChanged);
+    connect(videoItem, &VideoItem::indexChanged, this, &VideoWindow::onIndexChanged);
 }
 
 void VideoWindow::setFormat()
 {
-    ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(title, QString::number(PCPort),ui->videoportComboBox->currentText()));
+    ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(_videoItem->title(), QString::number(_videoItem->PCPort()),ui->videoportComboBox->currentText()));
 }
 
-void VideoWindow::setPCPort(int p)
+void VideoWindow::onPCPortChanged(int port)
 {
-    PCPort = p;
-    ui->screen_text->setText(QString("%1 (port : %2)").arg(title, QString::number(PCPort)));
+    ui->screen_text->setText(QString("%1 (port : %2)").arg(_videoItem->title(), QString::number(port)));
 }
 
 
-void VideoWindow::setTitle(QString t)
+void VideoWindow::onTitleChanged(QString t)
 {
-    title = t;
-    ui->screen_text->setText(QString("%1 (port : %2)").arg(title, QString::number(PCPort)));
+    ui->screen_text->setText(QString("%1 (port : %2)").arg(t, QString::number(_videoItem->PCPort())));
 }
 
-void VideoWindow::setIndex(int i)
+void VideoWindow::onIndexChanged(int i)
 {
-    index = i;
+    //index = i;
 }
 
 void VideoWindow::setVideoInfo(bool i)
@@ -97,7 +90,7 @@ void VideoWindow::onSettings()
 {
     VideoSettingsDialog* dialog = new VideoSettingsDialog(this);
     VWSetting vwsetting;
-    vwsetting.title = title;
+    vwsetting.title = _videoItem->title();
     vwsetting.videono =videoNo;
     vwsetting.formatno =formatNo;
     vwsetting.video_info = isVideoInfo;
@@ -115,7 +108,7 @@ void VideoWindow::onPlay()
 
     QString gstcmd;
     QString encoder = "jpegenc";
-    int port = PCPort;
+    int port = _videoItem->PCPort();
     if(proxyMode){
         port += 100;
     }
@@ -123,22 +116,22 @@ void VideoWindow::onPlay()
         if(ui->H264checkBox->isChecked()){
             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
              textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 14\" !\
-             glimagesink name=mySink2").arg(QString::number(PCPort),title,ui->videoportComboBox->currentText());
+             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()),_videoItem->title(),ui->videoportComboBox->currentText());
             encoder = "h264";
         }else{
              gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
              textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 14\" !\
-             glimagesink name=mySink2").arg(QString::number(PCPort),title,ui->videoportComboBox->currentText());
+             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()),_videoItem->title(),ui->videoportComboBox->currentText());
         }
 
     }else{
         if(ui->H264checkBox->isChecked()){
             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
-             glimagesink name=mySink2").arg(QString::number(PCPort));
+             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()));
             encoder = "h264";
         }else{
              gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
-             glimagesink name=mySink2").arg(QString::number(PCPort));
+             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()));
         }
     }
 
@@ -216,7 +209,7 @@ void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
             }
         }
         ui->videoportComboBox->setItemData(index, videoFormatList);
-        qDebug()<<"VideoWindow "<<this->index<<", pre-index count: "<< ui->videoportComboBox->count()<<" , videoNo: "<<videoNo;
+        qDebug()<<"VideoWindow "<<_videoItem->index()<<", pre-index count: "<< ui->videoportComboBox->count()<<" , videoNo: "<<videoNo;
         videoFormatList = ui->videoportComboBox->currentData().toStringList();
         for(int i = 0;i<videoFormatList.size(); i++){
             ui->videoFormatcomboBox->addItem(videoFormatList[i],0);
@@ -245,19 +238,19 @@ void VideoWindow::changeSettings(VWSetting settings)
 {
 
     qDebug()<<"change settings";
-    setTitle(settings.title);
+    _videoItem->setTitle(settings.title);
     setVideoInfo(settings.video_info);
     ui->videoportComboBox->setCurrentIndex(settings.videono);
     ui->videoFormatcomboBox->setCurrentIndex(settings.formatno);
     proxyMode = settings.proxy;
 
-    this->settings->setValue(QString("%1/w%2/videono").arg(_config,QString::number(index)), settings.videono);
-    this->settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(index)), settings.formatno);
-    this->settings->setValue(QString("%1/w%2/title").arg(_config,QString::number(index)), title);
+    this->settings->setValue(QString("%1/w%2/videono").arg(_config,QString::number(_videoItem->index())), settings.videono);
+    this->settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(_videoItem->index())), settings.formatno);
+    this->settings->setValue(QString("%1/w%2/title").arg(_config,QString::number(_videoItem->index())), _videoItem->title());
     if(isVideoInfo){
-        this->settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(index)), 1);
+        this->settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(_videoItem->index())), 1);
     }else{
-        this->settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(index)), 0);
+        this->settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(_videoItem->index())), 0);
     }
     qDebug()<<"start changesettings3";
 
@@ -265,16 +258,16 @@ void VideoWindow::changeSettings(VWSetting settings)
     if(isVideoInfo){
         gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
      textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 18\" !\
-     glimagesink name=mySink2").arg(QString::number(PCPort),title,ui->videoportComboBox->currentText());
+     glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()),_videoItem->title(),ui->videoportComboBox->currentText());
     }else{
         gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
-     glimagesink name=mySink2").arg(QString::number(PCPort),title,ui->videoportComboBox->currentText());
+     glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()),_videoItem->title(),ui->videoportComboBox->currentText());
     }
     //worker->setGstcmd(gstcmd);
 
 
     QDockWidget* dockwidget = (QDockWidget*)parent();
-    dockwidget->setWindowTitle(title);
+    dockwidget->setWindowTitle(_videoItem->title());
     //ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(title, QString::number(port),ui->videoportComboBox->currentText()));
 
 }
@@ -290,7 +283,7 @@ void VideoWindow::handleResult(const QPixmap &result)
 
 void VideoWindow::clearScreen(){
     ui->screen_text->clear();
-    ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(title, QString::number(PCPort),ui->videoportComboBox->currentText()));
+    ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(_videoItem->title(), QString::number(_videoItem->PCPort()),ui->videoportComboBox->currentText()));
 }
 
 
@@ -299,7 +292,7 @@ void VideoWindow::setVideoNo(int i)
 {
     videoNo = i;
     ui->videoFormatcomboBox->clear();
-    qDebug()<<"VideoWindow "<<this->index<<" set videoNo : "<<videoNo;
+    qDebug()<<"VideoWindow "<<_videoItem->index()<<" set videoNo : "<<videoNo;
     QStringList formatList = ui->videoportComboBox->itemData(i).toStringList();
     for(int j = 0; j<formatList.size(); j++){
         ui->videoFormatcomboBox->addItem(formatList[j],0);
@@ -317,7 +310,7 @@ void VideoWindow::setFormatNo(int i)
 void VideoWindow::onSetFormatNo(int i)
 {
     formatNo = i;
-    settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(this->index)), i);
+    settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(_videoItem->index())), i);
     qDebug()<<"setformatno 2: "<<i;
 }
 

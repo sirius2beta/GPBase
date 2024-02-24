@@ -1,7 +1,9 @@
-#ifndef DNVIDEOMANAGER_H
+﻿#ifndef DNVIDEOMANAGER_H
 #define DNVIDEOMANAGER_H
 
 #include <QObject>
+#include <QCoreApplication>
+#include <QSettings>
 #include "videoitem.h"
 
 class DNVideoManager : public QObject
@@ -15,6 +17,7 @@ public:
 signals:
 private:
     QVector<VideoItem*> videoList;
+    QSettings* settings;
 };
 
 #endif // DNVIDEOMANAGER_H

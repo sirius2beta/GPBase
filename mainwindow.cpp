@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     settings = new QSettings("Ezosirius", "GPlayer_v1",this);
 
     initBoatSettings();
+
     initVideoWindows();
     //initSensorWidget();
 
@@ -115,20 +116,25 @@ VideoWindow* MainWindow::addVideoWindow(int index)
 {
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
 
+    QString title = settings->value(QString("%1/w%2/title").arg(_config,QString::number(index))).toString();
+    int PCPort = 5201+index;
+    VideoItem* videoItem = new VideoItem(this);
     VideoWindow* vwindow = new VideoWindow(this, _config, gpbcore);
-    vwindow->setIndex(index);
-    vwindow->setPCPort(settings->value(QString("%1/w%2/in_port").arg(_config,QString::number(index))).toInt());
-    vwindow->setTitle(settings->value(QString("%1/w%2/title").arg(_config,QString::number(index))).toString());
-    vwindow->setVideoNo(settings->value(QString("%1/w%2/videono").arg(_config,QString::number(index))).toInt());
-    vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
-    vwindow->setFormat();
-
     if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(index))) == 1){
         vwindow->setVideoInfo(true);
     }else{
         vwindow->setVideoInfo(false);
     }
-    vwindow->init();
+
+
+
+    vwindow->init(videoItem);
+    videoItem->setTitle(title);
+    videoItem->setPCPort(PCPort);
+    videoItem->setIndex(index);
+    //vwindow->setVideoNo(settings->value(QString("%1/w%2/videono").arg(_config,QString::number(index))).toInt());
+    //vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
+    vwindow->setFormat();
 
     connect(vwindow,&VideoWindow::sendMsg,gpbcore->networkManager(),&NetworkManager::sendMsg);
     connect(gpbcore->networkManager(), &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);

@@ -1,9 +1,11 @@
-#include "dnvideomanager.h"
+﻿#include "dnvideomanager.h"
 
 DNVideoManager::DNVideoManager(QObject *parent)
     : QObject{parent}
 {
-
+    QCoreApplication::setOrganizationName("Ezosirius");
+    QCoreApplication::setApplicationName("GPlayer_v1");
+    settings = new QSettings;
 }
 
 void DNVideoManager::init()

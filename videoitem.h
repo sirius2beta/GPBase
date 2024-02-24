@@ -1,4 +1,4 @@
-#ifndef VIDEOITEM_H
+﻿#ifndef VIDEOITEM_H
 #define VIDEOITEM_H
 
 #include <QObject>
@@ -16,18 +16,29 @@ public:
     void setDisplay(WId xwinid);
     void play();
 
+    void setTitle(QString title);
+    void setPCPort(int port);
     void setBoatID(int ID);
+    void setIndex(int index);
+    void setVideoNo(int videoNo);
     void setVideoFormat(QStringList videoformat);
 
+    QString title() { return _title;   }
     int boatID() {  return _boatID; }
+    int PCPort() {  return _PCPort; }
+    int index() {return _index; }
     QAbstractItemModel* videoNoModel(){ return _videoNoModel;   }
     QAbstractItemModel* qualityModel(){ return _qualityModel;   }
 
 signals:
     void boatIDSet(int ID);
+    void PCPortChanged(int port);
+    void titleChanged(QString title);
+    void indexChanged(int index);
 private:
     QString _title;
     int _boatID;
+    int _index;
     int _videoNo;
     int _formatNo;
     int _PCPort;
@@ -37,7 +48,7 @@ private:
     bool _isVideoInfo;
 
     bool _proxyMode;
-
+    QStringList _videoFormatList;
     QStandardItemModel* _videoNoModel;
     QStandardItemModel* _qualityModel;
 
