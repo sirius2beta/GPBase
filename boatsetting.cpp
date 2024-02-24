@@ -327,6 +327,7 @@ void BoatSetting::onAddBoat()
 
 void BoatSetting::onDeleteBoat()
 {
+    int index = ui->BoatcomboBox->currentIndex();
     qDebug()<<"BoatSetting::delete: " <<index;
 
     // double check dialog
@@ -339,7 +340,7 @@ void BoatSetting::onDeleteBoat()
         return;
     }
 
-    int index = ui->BoatcomboBox->currentIndex();
+
     boatManager->deleteBoat(index);
 
     ui->BoatcomboBox->removeItem(index);
