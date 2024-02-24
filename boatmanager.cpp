@@ -14,7 +14,7 @@ BoatManager::BoatManager(QObject* parent, GPBCore *core): QObject(parent)
 
 BoatManager::~BoatManager()
 {
-
+    delete boatItemModel;
 
 }
 

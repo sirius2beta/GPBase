@@ -33,6 +33,7 @@ SOURCES += \
     sensorlabel.cpp \
     sensorwidget.cpp \
     setpindialog.cpp \
+    videoitem.cpp \
     videosettingsdialog.cpp \
     videowindow.cpp \
     #yolov5.cpp
@@ -55,6 +56,7 @@ HEADERS += \
     sensorlabel.h \
     sensorwidget.h \
     setpindialog.h \
+    videoitem.h \
     videosettingsdialog.h \
     videowindow.h \
     #yolov5.h

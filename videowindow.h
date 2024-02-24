@@ -8,16 +8,15 @@
 #include <QSettings>
 #include <QTimer>
 #include <QList>
-//#include <opencv2/opencv.hpp>
-#include "videosettingsdialog.h"
 
-//#include "yolov5.h"
+
 #include <QObject>
 #include <QThread>
 #include <QMetaType>
 #include <QUdpSocket>
 #include <QMap>
 #include <QHostAddress>
+#include "videosettingsdialog.h"
 #include "boatmanager.h"
 #include "QTypes.h"
 
@@ -62,7 +61,6 @@ protected slots:
     void changeSettings(VWSetting settings);
     void onPlay();
     void onStop();
-    void onUDPMsg();
     void onSetFormatNo(int i);
     void onSetBoatNo(int i);
 
@@ -73,7 +71,6 @@ private:
     bool proxyMode;
 
     int index;
-    int index2;
     QString title;
     QSettings* settings;
     int formatNo;
@@ -85,10 +82,6 @@ private:
     bool isPlaying;
 
     QString _config;
-    QThread workThread; //worker 线程
-    //Worker *worker;
-    QUdpSocket *serverSocket;
-    QUdpSocket *clientSocket;
     GPBCore* _core;
 
 };

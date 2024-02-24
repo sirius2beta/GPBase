@@ -52,9 +52,7 @@ VideoWindow::~VideoWindow()
     }
 
     delete ui;
-    workThread.quit();
-    workThread.wait();
-    workThread.destroyed();
+
 }
 
 void VideoWindow::init()
@@ -158,11 +156,6 @@ void VideoWindow::onPlay()
     });
 
 
-    //if(isPlaying == false){
-
-    //}else{
-    //    gst_element_set_state (pipeline, GST_STATE_NULL);
-    //}
     qDebug()<<"play";
     if(!isPlaying){
         pipeline= gst_parse_launch(gstcmd.toLocal8Bit(), NULL);
@@ -198,7 +191,6 @@ void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
 
 
         int preVideoNo = ui->videoportComboBox->currentIndex();
-        int preVideoFormat = ui->videoFormatcomboBox->currentIndex();
         ui->videoportComboBox->clear();
         ui->videoFormatcomboBox->clear();
 
@@ -301,32 +293,6 @@ void VideoWindow::clearScreen(){
     ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(title, QString::number(PCPort),ui->videoportComboBox->currentText()));
 }
 
-
-void VideoWindow::onUDPMsg()
-{
-    while(clientSocket->hasPendingDatagrams()){
-        QByteArray data;
-        QHostAddress addr;
-        QString ip;
-        data.resize(clientSocket->pendingDatagramSize());
-        clientSocket->readDatagram(data.data(),data.size(),&addr);
-
-        QString topic = data.split(' ')[0];
-        QString message;
-        if(data.split(' ').size() >1){
-            message = data.split(' ')[1];
-        }
-        if(topic == QString("alive")){
-
-        }
-        const QString content = QLatin1String(" Received Topic: ")
-                    + topic
-                    + QLatin1String(" Message: ")
-                    + message
-                    + QLatin1Char('\n');
-        qDebug() << content;
-    }
-}
 
 
 void VideoWindow::setVideoNo(int i)
