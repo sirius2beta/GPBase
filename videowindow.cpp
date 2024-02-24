@@ -55,6 +55,7 @@ VideoWindow::~VideoWindow()
 void VideoWindow::init(VideoItem *videoItem)
 {
     _videoItem = videoItem;
+    _videoItem->setWID(ui->screen_text->winId());
     connect(videoItem, &VideoItem::titleChanged, this, &VideoWindow::onTitleChanged);
     connect(videoItem, &VideoItem::PCPortChanged, this, &VideoWindow::onPCPortChanged);
     connect(videoItem, &VideoItem::indexChanged, this, &VideoWindow::onIndexChanged);
@@ -106,36 +107,17 @@ void VideoWindow::onSettings()
 void VideoWindow::onPlay()
 {
 
-    QString gstcmd;
+
     QString encoder = "jpegenc";
+    if(ui->H264checkBox->isChecked()){
+        encoder = "h264";
+    }
     int port = _videoItem->PCPort();
     if(proxyMode){
         port += 100;
     }
-    if(isVideoInfo){
-        if(ui->H264checkBox->isChecked()){
-            gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
-             textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 14\" !\
-             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()),_videoItem->title(),ui->videoportComboBox->currentText());
-            encoder = "h264";
-        }else{
-             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
-             textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 14\" !\
-             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()),_videoItem->title(),ui->videoportComboBox->currentText());
-        }
 
-    }else{
-        if(ui->H264checkBox->isChecked()){
-            gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
-             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()));
-            encoder = "h264";
-        }else{
-             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
-             glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()));
-        }
-    }
-
-
+    _videoItem->play(encoder);
 
     ui->playButton->setEnabled(false);
     int boatID = _core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID();
@@ -143,22 +125,12 @@ void VideoWindow::onPlay()
     QString msg = ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90"+" "+QString::number(port);
     emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
 
-    ui->playButton->setEnabled(false);
     QTimer::singleShot(100,[=]{
         ui->playButton->setEnabled(true);
     });
 
-
     qDebug()<<"play";
-    if(!isPlaying){
-        pipeline= gst_parse_launch(gstcmd.toLocal8Bit(), NULL);
-        sink = gst_bin_get_by_name((GstBin*)pipeline,"mySink2");
-        WId xwinid = ui->screen_text->winId();
-        gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY (sink), xwinid);
-        gst_element_set_state (pipeline,
-            GST_STATE_PLAYING);
-        isPlaying = true;
-    }
+
 
 }
 
@@ -168,12 +140,7 @@ void VideoWindow::onStop()
     QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
     emit sendMsg(ip, char(QUIT), QByteArray(s.c_str()));
 
-    if(isPlaying == false){
-
-    }else{
-        gst_element_set_state (pipeline, GST_STATE_NULL);
-        isPlaying = false;
-    }
+    _videoItem->stop();
 }
 
 

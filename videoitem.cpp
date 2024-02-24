@@ -6,7 +6,8 @@ VideoItem::VideoItem(QObject *parent, QString title, int boatID, int videoNo, in
     _boatID(boatID),
     _videoNo(videoNo),
     _formatNo(formatNo),
-    _PCPort(PCPort)
+    _PCPort(PCPort),
+    _isPlaying(false)
 {
     _videoNoModel = new QStandardItemModel;
     _qualityModel = new QStandardItemModel;
@@ -14,6 +15,12 @@ VideoItem::VideoItem(QObject *parent, QString title, int boatID, int videoNo, in
 
 VideoItem::~VideoItem()
 {
+    if(_isPlaying == false){
+
+    }else{
+        gst_element_set_state (_pipeline, GST_STATE_NULL);
+        gst_object_unref (_pipeline);
+    }
     delete _videoNoModel;
     delete _qualityModel;
 }
@@ -84,8 +91,48 @@ void VideoItem::setDisplay(WId xwinid)
     _xwinid = xwinid;
 }
 
-void VideoItem::play()
+void VideoItem::play(QString encoder)
 {
+    QString gstcmd;
 
+    if(false){
+        if(encoder == "h264"){
+            gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
+             textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 14\" !\
+             glimagesink name=mySink2").arg(QString::number(_PCPort),_title, QString::number(_videoNo));
+        }else{
+             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
+             textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 14\" !\
+             glimagesink name=mySink2").arg(QString::number(_PCPort),_title, QString::number(_videoNo));
+        }
+
+    }else{
+        if(encoder == "h264"){
+            gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
+             glimagesink name=mySink2").arg(QString::number(_PCPort));
+        }else{
+             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtpjpegdepay ! jpegdec ! videoconvert  !\
+             glimagesink name=mySink2").arg(QString::number(_PCPort));
+        }
+    }
+
+
+    if(!_isPlaying){
+        _pipeline= gst_parse_launch(gstcmd.toLocal8Bit(), NULL);
+        _sink = gst_bin_get_by_name((GstBin*)_pipeline,"mySink2");
+        gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY (_sink), _xwinid);
+        gst_element_set_state (_pipeline,
+            GST_STATE_PLAYING);
+        _isPlaying = true;
+    }
 }
 
+void VideoItem::stop()
+{
+    if(_isPlaying == false){
+
+    }else{
+        gst_element_set_state (_pipeline, GST_STATE_NULL);
+        _isPlaying = false;
+    }
+}

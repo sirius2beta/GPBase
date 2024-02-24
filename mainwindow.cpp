@@ -67,7 +67,7 @@ void MainWindow::initVideoWindows()
     int window_count = 4;
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
     //settings->endGroup();
-    for(int i = 1; i <= window_count; i++){
+    for(int i = 1; i <= gpbcore->videoManager()->count(); i++){
         //create settings if first time opened
         if(settings->value(QString("%1/w%2/in_port").arg(_config,QString::number(i))) == QVariant()){
             QList<QString> formatlist = {"video0", "YUYV", "640-480-15", "nan", "80", "192.168.0.100", "5200"};
@@ -132,6 +132,7 @@ VideoWindow* MainWindow::addVideoWindow(int index)
     videoItem->setTitle(title);
     videoItem->setPCPort(PCPort);
     videoItem->setIndex(index);
+
     //vwindow->setVideoNo(settings->value(QString("%1/w%2/videono").arg(_config,QString::number(index))).toInt());
     //vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
     vwindow->setFormat();

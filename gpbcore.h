@@ -22,6 +22,7 @@ public:
     BoatManager* boatManager() { return _boatManager; }
     BoatSetting* boatSetting() { return _boatSetting; }
     NetworkManager* networkManager() { return _networkManager; }
+    DNVideoManager* videoManager() { return _videoManager; }
     QString config() {return _config;}
 
 signals:

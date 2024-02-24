@@ -16,7 +16,7 @@ GPBCore::~GPBCore(){
 void GPBCore::init(){
     _networkManager = new NetworkManager(this, this);
     _boatManager = new BoatManager(this, this);
-
+    _videoManager = new DNVideoManager(this, this);
 
     _boatSetting = new BoatSetting();
 

@@ -14,7 +14,8 @@ public:
     explicit VideoItem(QObject *parent = nullptr, QString title=QString(), int boatID=-1, int videoNo=-1, int formatNo=-1, int PCPort=0);
     ~VideoItem();
     void setDisplay(WId xwinid);
-    void play();
+    void play(QString encoder);
+    void stop();
 
     void setTitle(QString title);
     void setPCPort(int port);
@@ -22,6 +23,7 @@ public:
     void setIndex(int index);
     void setVideoNo(int videoNo);
     void setVideoFormat(QStringList videoformat);
+    void setWID(WId wid){_xwinid = wid;}
 
     QString title() { return _title;   }
     int boatID() {  return _boatID; }
@@ -35,6 +37,8 @@ signals:
     void PCPortChanged(int port);
     void titleChanged(QString title);
     void indexChanged(int index);
+    void videoPlayed(VideoItem* v);
+    void videoStoped(VideoItem* v);
 private:
     QString _title;
     int _boatID;
@@ -44,6 +48,8 @@ private:
     int _PCPort;
     WId _xwinid;
 
+    GstElement *_pipeline;
+    GstElement *_sink;
     bool _isPlaying;
     bool _isVideoInfo;
 
