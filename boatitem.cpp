@@ -26,13 +26,13 @@ void BoatItem::setID(int ID)
 void BoatItem::setPIP(QString PIP)
 {
     _PIP = PIP;
-    emit IPChanged(_ID);
+    emit IPChanged(true);
 }
 
 void BoatItem::setSIP(QString SIP)
 {
     _SIP = SIP;
-    emit IPChanged(_ID);
+    emit IPChanged(false);
 }
 
 void BoatItem::setCurrentIP(QString currentIP)
@@ -63,8 +63,17 @@ void BoatItem::connect(bool isPrimary)
     if(isPrimary){
         _currentIP = _PIP;
         primaryConnected = true;
+
     }
+    qDebug()<<"BoatItem::connect "<<(isPrimary?"Primary":"Secondary")<<" "<<QString::number(_ID);
     emit connected(_ID, isPrimary);
+    if(isPrimary){
+        emit connectionChanged();
+    }else{
+        if(_currentIP != _PIP){
+            emit connectionChanged();
+        }
+    }
 }
 
 void BoatItem::disconnect(bool isPrimary)
@@ -73,7 +82,13 @@ void BoatItem::disconnect(bool isPrimary)
         primaryConnected = false;
     }else{
     }
+    qDebug()<<"BoatItem::disconnect "<<(isPrimary?"Primary":"Secondary")<<" "<<QString::number(_ID);
     emit disconnected(_ID, isPrimary);
+
+    if(isPrimary){
+        emit connectionChanged();
+    }
+
 }
 
 Device& BoatItem::getDevbyID(int ID)

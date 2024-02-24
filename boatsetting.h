@@ -45,7 +45,8 @@ public slots:
     void onDeleteBoat();
     void onBoatSelected(int index);
     void onBoatDoubleClicked(QModelIndex index);
-    void onChangeIP();
+    void onChangePIP();
+    void onChangeSIP();
     void onAddDeviceButtonClicked();
 
 private:

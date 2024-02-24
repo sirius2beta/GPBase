@@ -237,7 +237,6 @@ void BoatManager::onIPChanged(int ID)
 void BoatManager::onConnected(int ID, bool isprimary)
 {
     for(int i = 0; i < boatItemModel->rowCount();i++){
-        qDebug()<<"boatItem: "<<boatItemModel->item(i,0)->text()<<"boatName: "<<getBoatbyID(ID)->name();
         if(boatItemModel->item(i,0)->text() == getBoatbyID(ID)->name()){
 
             if(isprimary){
@@ -255,7 +254,6 @@ void BoatManager::onConnected(int ID, bool isprimary)
 void BoatManager::onDisonnected(int ID, bool isprimary)
 {
 
-    qDebug()<<"BoatManager::Disconnect "<<ID<<" "<<(isprimary?"primary":"secondary");
     for(int i = 0; i < boatList.size();i++){
         if(getBoatbyID(ID) == 0 || boatItemModel->item(i,0) == 0) return;
         if(boatItemModel->item(i,0)->text() == getBoatbyID(ID)->name()){

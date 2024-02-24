@@ -128,7 +128,7 @@ void VideoWindow::onPlay()
     QTimer::singleShot(100,[=]{
         ui->playButton->setEnabled(true);
     });
-
+    isPlaying = true;
     qDebug()<<"play";
 
 
@@ -139,15 +139,15 @@ void VideoWindow::onStop()
     std::string s = QString(ui->videoportComboBox->currentText()).toStdString();
     QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
     emit sendMsg(ip, char(QUIT), QByteArray(s.c_str()));
-
+    isPlaying = false;
     _videoItem->stop();
 }
 
 
-void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
+void VideoWindow::setVideoFormat(int index, QStringList videoformat)
 {   
 
-    if(ui->boatcomboBox->currentText() == _core->boatManager()->getBoatbyID(ID)->name()){
+    if(ui->boatcomboBox->currentIndex() == index){
 
 
         int preVideoNo = ui->videoportComboBox->currentIndex();
@@ -176,7 +176,7 @@ void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
             }
         }
         ui->videoportComboBox->setItemData(index, videoFormatList);
-        qDebug()<<"VideoWindow "<<_videoItem->index()<<", pre-index count: "<< ui->videoportComboBox->count()<<" , videoNo: "<<videoNo;
+        //qDebug()<<"VideoWindow "<<_videoItem->index()<<", pre-index count: "<< ui->videoportComboBox->count()<<" , videoNo: "<<videoNo;
         videoFormatList = ui->videoportComboBox->currentData().toStringList();
         for(int i = 0;i<videoFormatList.size(); i++){
             ui->videoFormatcomboBox->addItem(videoFormatList[i],0);
@@ -259,7 +259,6 @@ void VideoWindow::setVideoNo(int i)
 {
     videoNo = i;
     ui->videoFormatcomboBox->clear();
-    qDebug()<<"VideoWindow "<<_videoItem->index()<<" set videoNo : "<<videoNo;
     QStringList formatList = ui->videoportComboBox->itemData(i).toStringList();
     for(int j = 0; j<formatList.size(); j++){
         ui->videoFormatcomboBox->addItem(formatList[j],0);
@@ -278,7 +277,6 @@ void VideoWindow::onSetFormatNo(int i)
 {
     formatNo = i;
     settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(_videoItem->index())), i);
-    qDebug()<<"setformatno 2: "<<i;
 }
 
 void VideoWindow::onSetBoatNo(int i)

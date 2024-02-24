@@ -17,8 +17,8 @@ BoatSetting::BoatSetting(QWidget *parent) :
     ui->BoatTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(ui->BoatlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onBoatNameChange);
     connect(ui->BoatTableView, &QTableView::clicked, this, &BoatSetting::onBoatDoubleClicked);
-    connect(ui->PIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
-    connect(ui->SIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeIP);
+    connect(ui->PIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangePIP);
+    connect(ui->SIPlineEdit, &QLineEdit::editingFinished, this, &BoatSetting::onChangeSIP);
     ui->BoatTableView->verticalHeader()->setDefaultSectionSize(30);
     ui->DeviceTableView->verticalHeader()->setDefaultSectionSize(10);
     //setup boat tableview
@@ -407,43 +407,19 @@ void BoatSetting::onBoatDoubleClicked(QModelIndex index)
     ui->BoatcomboBox->setCurrentIndex(index.row());
 }
 
-void BoatSetting::onChangeIP()
+void BoatSetting::onChangePIP()
 {
 
-    bool breakout = false;
-    QString repeatedBoat;
-    /*
-    for(int i = 0; i< boatManager->model()->rowCount(); i++){
-        if(ui->BoatcomboBox->currentIndex() == i){
-            continue;
-        }
-        if((boatManager->model()->item(i,1)->data() == ui->PIPlineEdit->text()) && (ui->PIPlineEdit->text() != "")){
-            ui->PIPlineEdit->setText("");
-            repeatedBoat = boatManager->model()->item(i,0)->text();
-            breakout = true;
-        }else if((boatManager->model()->item(i,2)->data() == ui->SIPlineEdit->text()) && ui->SIPlineEdit->text() != ""){
-            ui->SIPlineEdit->setText("");
-            repeatedBoat = boatManager->model()->item(i,0)->text();
-            breakout = true;
-        }
+    BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
+    boat->setPIP(ui->PIPlineEdit->text());
 
-    }
-    if(breakout){
-        QMessageBox msgBox;
-        msgBox.setText(QStringLiteral("IP與其他船衝突: ")+repeatedBoat);
-        msgBox.exec();
-    }
-    */
+}
+
+void BoatSetting::onChangeSIP()
+{
 
     BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
-    if(boat->PIP() != ui->PIPlineEdit->text()){
-        boat->setPIP(ui->PIPlineEdit->text());
-    }else{
-        boat->setSIP(ui->SIPlineEdit->text());
-    }
-
-
-
+    boat->setSIP(ui->SIPlineEdit->text());
 }
 
 void BoatSetting::onAddDeviceButtonClicked()

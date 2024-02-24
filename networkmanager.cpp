@@ -59,10 +59,10 @@ void NetworkManager::onUDPMsg()
         }else if(topic == FORMAT){
             int ID = int(data[0]);
             QString format = data.remove(0,1);
-            qDebug()<<"MainWindow call from FORMAT, boat ID:"<<ID;
-            qDebug()<<format;
+            //qDebug()<<"MainWindow call from FORMAT, boat ID:"<<ID;
+            //qDebug()<<format;
             if(format != ""){
-                emit setFormat(ID, format.split('\n'));
+                emit setFormat(_core->boatManager()->getIndexbyID(ID), format.split('\n'));
             }
 
         }else if(topic == SENSOR){

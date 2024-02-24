@@ -20,6 +20,7 @@ void GPBCore::init(){
 
     _boatSetting = new BoatSetting();
 
+    connect(_videoManager, &DNVideoManager::sendMsg, _networkManager, &NetworkManager::sendMsg);
     connect(_networkManager, &NetworkManager::sensorMsg, _boatSetting, &BoatSetting::onMsg);
     connect(_boatSetting, &BoatSetting::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
     _boatSetting->setconfig(_config);
@@ -44,6 +45,7 @@ void GPBCore::onConnected(int ID, bool isprimary)
         if(isprimary){
             boat->setCurrentIP(boat->PIP());
             emit connectionChanged();
+            qDebug()<<"GPBCore onDisconnected "<<QString::number(ID);
         }else{
             if(boat->currentIP() != boat->PIP()){
                 boat->setCurrentIP(boat->SIP());
@@ -62,6 +64,7 @@ void GPBCore::onDisonnected(int ID, bool isprimary)
     if(boat != 0){
         if(isprimary){
             boat->setCurrentIP(boat->SIP());
+
             emit connectionChanged();
         }
 

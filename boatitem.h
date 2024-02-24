@@ -42,10 +42,11 @@ public:
 signals:
     void nameChanged(int ID, QString name);
     void IDChanged(int ID);
-    void IPChanged(int ID);
+    void IPChanged(bool isPrimary);
     void CurrentIPChanged(QString curretIP);
     void connected(int ID, bool isPrimary);
     void disconnected(int ID, bool isPrimary);
+    void connectionChanged();
 private:
     QString _name;
     int _ID;

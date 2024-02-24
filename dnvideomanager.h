@@ -22,6 +22,7 @@ public:
 public slots:
     void onPlay(VideoItem* videoItem);
     void onStop(VideoItem* videoItem);
+    void setVideoFormat(int index, QStringList videoformat);
 signals:
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
 private:

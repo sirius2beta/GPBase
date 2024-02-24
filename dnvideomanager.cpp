@@ -49,3 +49,12 @@ void DNVideoManager::onStop(VideoItem* videoItem)
 {
 
 }
+
+void DNVideoManager::setVideoFormat(int index, QStringList videoformat)
+{
+    for(int i = 0; i < videoList.size(); i++){
+        if(videoList[i]->index() == index){
+
+        }
+    }
+}
