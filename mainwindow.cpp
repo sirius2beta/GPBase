@@ -67,18 +67,11 @@ void MainWindow::initVideoWindows()
     int window_count = 4;
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
     //settings->endGroup();
-    for(int i = 1; i <= gpbcore->videoManager()->count(); i++){
+    qDebug()<<"count:"<<gpbcore->videoManager()->count();
+    for(int i = 0; i < gpbcore->videoManager()->count(); i++){
         //create settings if first time opened
-        if(settings->value(QString("%1/w%2/in_port").arg(_config,QString::number(i))) == QVariant()){
-            QList<QString> formatlist = {"video0", "YUYV", "640-480-15", "nan", "80", "192.168.0.100", "5200"};
-            settings->setValue(QString("%1/w%2/boat_name").arg(_config,QString::number(i)),QString("unknown"));
-            settings->setValue(QString("%1/w%2/in_port").arg(_config,QString::number(i)),5200+i);
-            settings->setValue(QString("%1/w%2/title").arg(_config,QString::number(i)),QString("window%1").arg(i));
-            settings->setValue(QString("%1/w%2/videoinfo").arg(_config,QString::number(i)), 1);
-            settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(i)), 0);
-        }
 
-        VideoWindow* vwindow = addVideoWindow(i);
+        VideoWindow* vwindow = addVideoWindow(gpbcore->videoManager()->getVideoItem(i));
 
         if(i == 1){
             setCentralWidget(vwindow);
@@ -89,7 +82,9 @@ void MainWindow::initVideoWindows()
             dockwidget->setWidget(vwindow);
             dockwidget->setMinimumHeight(300);
         }
+
     }
+
 }
 
 void MainWindow::initSensorWidget()
@@ -112,29 +107,18 @@ void MainWindow::initSensorWidget()
     ui->toolBar->addAction(dockwidget->toggleViewAction());
 }
 
-VideoWindow* MainWindow::addVideoWindow(int index)
+VideoWindow* MainWindow::addVideoWindow(VideoItem *videoItem)
 {
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
 
-    QString title = settings->value(QString("%1/w%2/title").arg(_config,QString::number(index))).toString();
-    int PCPort = 5201+index;
-    VideoItem* videoItem = new VideoItem(this);
     VideoWindow* vwindow = new VideoWindow(this, _config, gpbcore);
-    if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(index))) == 1){
+
+    if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(videoItem->index()))) == 1){
         vwindow->setVideoInfo(true);
     }else{
         vwindow->setVideoInfo(false);
     }
-
-
-
     vwindow->init(videoItem);
-    videoItem->setTitle(title);
-    videoItem->setPCPort(PCPort);
-    videoItem->setIndex(index);
-
-    //vwindow->setVideoNo(settings->value(QString("%1/w%2/videono").arg(_config,QString::number(index))).toInt());
-    //vwindow->setFormatNo(settings->value(QString("%1/w%2/formatno").arg(_config,QString::number(index))).toInt());
     vwindow->setFormat();
 
     connect(vwindow,&VideoWindow::sendMsg,gpbcore->networkManager(),&NetworkManager::sendMsg);

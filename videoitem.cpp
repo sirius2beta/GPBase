@@ -1,12 +1,15 @@
 ﻿#include "videoitem.h"
 
-VideoItem::VideoItem(QObject *parent, QString title, int boatID, int videoNo, int formatNo, int PCPort)
+VideoItem::VideoItem(QObject *parent, int index, QString title, int boatID, int videoNo, int formatNo, int PCPort)
     : QObject{parent},
-    _title(title),
-    _boatID(boatID),
+      _title(title),
+      _boatID(boatID),
+      _index(index),
     _videoNo(videoNo),
     _formatNo(formatNo),
     _PCPort(PCPort),
+    _encoder(QString("h264")),
+    _proxy(false),
     _isPlaying(false)
 {
     _videoNoModel = new QStandardItemModel;
@@ -91,9 +94,11 @@ void VideoItem::setDisplay(WId xwinid)
     _xwinid = xwinid;
 }
 
-void VideoItem::play(QString encoder)
+void VideoItem::play(QString encoder, bool proxy)
 {
     QString gstcmd;
+    _encoder = encoder;
+    _proxy = proxy;
 
     if(false){
         if(encoder == "h264"){
@@ -135,4 +140,10 @@ void VideoItem::stop()
         gst_element_set_state (_pipeline, GST_STATE_NULL);
         _isPlaying = false;
     }
+}
+
+QString VideoItem::videoFormat()
+{
+    return _qualityModel->item(_formatNo, 0)->text();
+
 }

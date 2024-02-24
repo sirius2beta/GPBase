@@ -51,7 +51,7 @@ signals:
 
 protected slots:
     void openCreateWindowDialog();
-    VideoWindow *addVideoWindow(int index);
+    VideoWindow *addVideoWindow(VideoItem* videoItem);
     void setConfig(QString config);
 
 

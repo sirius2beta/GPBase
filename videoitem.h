@@ -11,10 +11,10 @@ class VideoItem : public QObject
 {
     Q_OBJECT
 public:
-    explicit VideoItem(QObject *parent = nullptr, QString title=QString(), int boatID=-1, int videoNo=-1, int formatNo=-1, int PCPort=0);
+    explicit VideoItem(QObject *parent = nullptr, int index=-1, QString title=QString(), int boatID=-1, int videoNo=-1, int formatNo=-1, int PCPort=0);
     ~VideoItem();
     void setDisplay(WId xwinid);
-    void play(QString encoder);
+    void play(QString encoder, bool proxy);
     void stop();
 
     void setTitle(QString title);
@@ -28,7 +28,11 @@ public:
     QString title() { return _title;   }
     int boatID() {  return _boatID; }
     int PCPort() {  return _PCPort; }
+    int port() {return _proxy?_PCPort:(_PCPort+100);}
     int index() {return _index; }
+    int videoNo() { return _videoNo;}
+    QString encoder() {return _encoder;}
+    QString videoFormat();
     QAbstractItemModel* videoNoModel(){ return _videoNoModel;   }
     QAbstractItemModel* qualityModel(){ return _qualityModel;   }
 
@@ -47,6 +51,8 @@ private:
     int _formatNo;
     int _PCPort;
     WId _xwinid;
+    QString _encoder;
+    bool _proxy;
 
     GstElement *_pipeline;
     GstElement *_sink;

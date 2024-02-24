@@ -117,7 +117,7 @@ void VideoWindow::onPlay()
         port += 100;
     }
 
-    _videoItem->play(encoder);
+    _videoItem->play(encoder, proxyMode);
 
     ui->playButton->setEnabled(false);
     int boatID = _core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID();
