@@ -30,10 +30,11 @@ public:
 
     QString CurrentIP(QString boatname);
     int size();
-
+signals:
+    void BoatAdded();
 public slots:
     void onBoatNameChange(int ID, QString newname);
-    void onIPChanged(int ID);
+    void onIPChanged(int ID, bool primary);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
 

@@ -41,13 +41,6 @@ VideoWindow::VideoWindow(QWidget *parent, QString config, GPBCore* core) :
 
 VideoWindow::~VideoWindow()
 {
-    if(isPlaying == false){
-
-    }else{
-        gst_element_set_state (pipeline, GST_STATE_NULL);
-        gst_object_unref (pipeline);
-    }
-
     delete ui;
 
 }
@@ -56,6 +49,9 @@ void VideoWindow::init(VideoItem *videoItem)
 {
     _videoItem = videoItem;
     _videoItem->setWID(ui->screen_text->winId());
+    ui->videoportComboBox->setModel(videoItem->videoNoModel());
+
+    ui->videoFormatcomboBox->setModel(videoItem->qualityModel());
     connect(videoItem, &VideoItem::titleChanged, this, &VideoWindow::onTitleChanged);
     connect(videoItem, &VideoItem::PCPortChanged, this, &VideoWindow::onPCPortChanged);
     connect(videoItem, &VideoItem::indexChanged, this, &VideoWindow::onIndexChanged);
@@ -80,6 +76,22 @@ void VideoWindow::onTitleChanged(QString t)
 void VideoWindow::onIndexChanged(int i)
 {
     //index = i;
+}
+
+void VideoWindow::updateFormat()
+{
+    if(ui->videoportComboBox->currentIndex() == -1){
+        if(ui->videoportComboBox->model()->rowCount()>0){
+
+            ui->videoportComboBox->setCurrentIndex(0);
+        }
+    }
+    if(ui->videoFormatcomboBox->currentIndex() == -1){
+        if(ui->videoFormatcomboBox->model()->rowCount()>0){
+
+            ui->videoFormatcomboBox->setCurrentIndex(0);
+        }
+    }
 }
 
 void VideoWindow::setVideoInfo(bool i)
@@ -120,10 +132,11 @@ void VideoWindow::onPlay()
     _videoItem->play(encoder, proxyMode);
 
     ui->playButton->setEnabled(false);
-    int boatID = _core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID();
-    QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
-    QString msg = ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90"+" "+QString::number(port);
-    emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
+    //int boatID = _core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->ID();
+    //QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
+    //QString msg = ui->videoportComboBox->currentText()+" "+ui->videoFormatcomboBox->currentText()+" "+encoder+" nan"+" 90"+" "+QString::number(port);
+
+    //emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
 
     QTimer::singleShot(100,[=]{
         ui->playButton->setEnabled(true);
@@ -144,15 +157,16 @@ void VideoWindow::onStop()
 }
 
 
-void VideoWindow::setVideoFormat(int index, QStringList videoformat)
+void VideoWindow::setVideoFormat(int ID, QStringList videoformat)
 {   
-
+    /*
+    int index = _core->boatManager()->getIndexbyID(ID);
     if(ui->boatcomboBox->currentIndex() == index){
 
 
         int preVideoNo = ui->videoportComboBox->currentIndex();
-        ui->videoportComboBox->clear();
-        ui->videoFormatcomboBox->clear();
+        //ui->videoportComboBox->clear();
+        //ui->videoFormatcomboBox->clear();
 
         QStringList videoFormatList;
         QString thisvideoNo; //videox
@@ -197,6 +211,7 @@ void VideoWindow::setVideoFormat(int index, QStringList videoformat)
         }
 
     }
+    */
 
 }
 
@@ -257,8 +272,9 @@ void VideoWindow::clearScreen(){
 
 void VideoWindow::setVideoNo(int i)
 {
+    _videoItem->setVideoNo(ui->videoportComboBox->itemText(i).split("o")[1].toInt());
     videoNo = i;
-    ui->videoFormatcomboBox->clear();
+    //ui->videoFormatcomboBox->clear();
     QStringList formatList = ui->videoportComboBox->itemData(i).toStringList();
     for(int j = 0; j<formatList.size(); j++){
         ui->videoFormatcomboBox->addItem(formatList[j],0);
@@ -269,12 +285,14 @@ void VideoWindow::setVideoNo(int i)
 
 void VideoWindow::setFormatNo(int i)
 {
+    _videoItem->setFormatNo(i);
     formatNo = i;
 
 }
 
 void VideoWindow::onSetFormatNo(int i)
 {
+    _videoItem->setFormatNo(i);
     formatNo = i;
     settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(_videoItem->index())), i);
 }
@@ -282,13 +300,11 @@ void VideoWindow::onSetFormatNo(int i)
 void VideoWindow::onSetBoatNo(int i)
 {
     if(ui->boatcomboBox->count()!=0){
-        qDebug()<<"VideoWindow:request format. IP:"<<_core->boatManager()->getBoatbyIndex(i)->currentIP();
-        QHostAddress addr(_core->boatManager()->getBoatbyIndex(i)->currentIP());
-        emit sendMsg(addr,char(FORMAT),"qformat");
+        _videoItem->setBoatID(_core->boatManager()->getIDbyInex(i));
     }
-
-    ui->videoFormatcomboBox->clear();
-    ui->videoportComboBox->clear();
+    qDebug()<<"set boatNO";
+    //ui->videoFormatcomboBox->clear();
+    //ui->videoportComboBox->clear();
 
 }
 

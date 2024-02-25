@@ -292,6 +292,7 @@ void BoatSetting::onBoatNameChange()
     QString newname = ui->BoatlineEdit->text();
     boat->setName(newname);
     ui->BoatcomboBox->setItemText(ui->BoatcomboBox->currentIndex(),ui->BoatlineEdit->text());
+    qDebug()<<"namec";
 
 }
 

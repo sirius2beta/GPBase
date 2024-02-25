@@ -72,6 +72,7 @@ void MainWindow::initVideoWindows()
         //create settings if first time opened
 
         VideoWindow* vwindow = addVideoWindow(gpbcore->videoManager()->getVideoItem(i));
+        connect(gpbcore->videoManager()->getVideoItem(i), &VideoItem::UIUpdateFormat, vwindow, &VideoWindow::updateFormat);
 
         if(i == 1){
             setCentralWidget(vwindow);

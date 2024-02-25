@@ -8,7 +8,6 @@ BoatItem::BoatItem(QObject *parent)
 
 BoatItem::~BoatItem()
 {
-    qDebug()<<"BoatItem::deleted";
 }
 
 void BoatItem::setName(QString name)
@@ -26,13 +25,13 @@ void BoatItem::setID(int ID)
 void BoatItem::setPIP(QString PIP)
 {
     _PIP = PIP;
-    emit IPChanged(true);
+    emit IPChanged(_ID, true);
 }
 
 void BoatItem::setSIP(QString SIP)
 {
     _SIP = SIP;
-    emit IPChanged(false);
+    emit IPChanged(_ID, false);
 }
 
 void BoatItem::setCurrentIP(QString currentIP)
@@ -88,7 +87,6 @@ void BoatItem::disconnect(bool isPrimary)
     if(isPrimary){
         emit connectionChanged();
     }
-
 }
 
 Device& BoatItem::getDevbyID(int ID)

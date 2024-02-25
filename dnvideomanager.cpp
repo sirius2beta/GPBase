@@ -8,6 +8,7 @@ DNVideoManager::DNVideoManager(QObject *parent, GPBCore* core)
     QCoreApplication::setOrganizationName("Ezosirius");
     QCoreApplication::setApplicationName("GPlayer_v1");
     settings = new QSettings;
+
 }
 
 void DNVideoManager::init()
@@ -26,16 +27,24 @@ void DNVideoManager::init()
         }
         QString title = settings->value(QString("%1/w%2/title").arg(_config,QString::number(i))).toString();
         int PCPort = 5201+i;
-        addVideoItem(i, title, -1, -1, -1, PCPort);
+        if(_core->boatManager()->size() > 0){
+            addVideoItem(i, title, _core->boatManager()->getIDbyInex(0), -1, -1, PCPort);
+        }else{
+            addVideoItem(i, title, -1, -1, -1, PCPort);
+        }
     }
+
 }
 
 void DNVideoManager::addVideoItem(int index, QString title, int boatID, int videoNo, int formatNo, int PCPort)
 {
-    VideoItem* newvideoitem = new VideoItem(this, index, title, boatID, videoNo, formatNo, PCPort);
+    qDebug()<<"----------------"<<boatID;
+    VideoItem* newvideoitem = new VideoItem(this, _core, index, title, boatID, videoNo, formatNo, PCPort);
     videoList.append(newvideoitem);
     connect(newvideoitem, &VideoItem::videoPlayed, this, &DNVideoManager::onPlay);
     connect(newvideoitem, &VideoItem::videoStoped, this, &DNVideoManager::onStop);
+    connect(newvideoitem, &VideoItem::boatIDSet, this, &DNVideoManager::onBoatIDSet);
+
 }
 
 void DNVideoManager::onPlay(VideoItem* videoItem)
@@ -50,10 +59,28 @@ void DNVideoManager::onStop(VideoItem* videoItem)
 
 }
 
-void DNVideoManager::setVideoFormat(int index, QStringList videoformat)
+void DNVideoManager::onBoatAdded()
+{
+    for(int i = 0; i<videoList.size(); i++){
+        if(videoList[i]->boatID() == -1){
+            videoList[i]->setVideoNo(0);
+        }
+    }
+}
+
+void DNVideoManager::onBoatIDSet(VideoItem* videoItem)
+{
+
+    QHostAddress addr(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
+    emit sendMsg(addr,char(FORMAT),"qformat");
+    qDebug()<<"format call";
+}
+
+void DNVideoManager::setVideoFormat(int ID, QStringList videoformat)
 {
     for(int i = 0; i < videoList.size(); i++){
-        if(videoList[i]->index() == index){
+        if(videoList[i]->boatID() == ID){
+            videoList[i]->setVideoFormat(videoformat);
 
         }
     }

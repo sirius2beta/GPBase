@@ -22,9 +22,12 @@ public:
 public slots:
     void onPlay(VideoItem* videoItem);
     void onStop(VideoItem* videoItem);
-    void setVideoFormat(int index, QStringList videoformat);
+    void onBoatAdded();
+    void onBoatIDSet(VideoItem* videoItem);
+    void setVideoFormat(int ID, QStringList videoformat);
 signals:
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
+
 private:
     QVector<VideoItem*> videoList;
     QSettings* settings;

@@ -62,7 +62,7 @@ void NetworkManager::onUDPMsg()
             //qDebug()<<"MainWindow call from FORMAT, boat ID:"<<ID;
             //qDebug()<<format;
             if(format != ""){
-                emit setFormat(_core->boatManager()->getIndexbyID(ID), format.split('\n'));
+                emit setFormat(ID, format.split('\n'));
             }
 
         }else if(topic == SENSOR){

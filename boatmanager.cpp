@@ -81,19 +81,6 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     boat->setPIP(PIP);
     boat->setSIP(SIP);
     boatList.append(boat);
-    connect(boat, &BoatItem::nameChanged, this, &BoatManager::onBoatNameChange);
-    connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
-    connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
-
-    HeartBeat* primaryHeartBeat = new HeartBeat(boat, 50006, true, boat, _core);
-    primaryHeartBeat->HeartBeatLoop();
-    HeartBeat* secondaryHeartBeat = new HeartBeat(boat, 50006, false, boat, _core);
-    secondaryHeartBeat->HeartBeatLoop();
-    connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
-    connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
-    connect(boat, &BoatItem::IPChanged, primaryHeartBeat, &HeartBeat::onChangeIP);
-    connect(boat, &BoatItem::IPChanged, secondaryHeartBeat, &HeartBeat::onChangeIP);
-
 
     int current = boatItemModel->rowCount();
     QStandardItem* item1 = new QStandardItem(boatname);
@@ -106,6 +93,25 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     boatItemModel->setItem(current,0,item1);
     boatItemModel->setItem(current,1,item2);
     boatItemModel->setItem(current,2,item3);
+
+    connect(boat, &BoatItem::nameChanged, this, &BoatManager::onBoatNameChange);
+    connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
+    connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
+
+    HeartBeat* primaryHeartBeat = new HeartBeat(boat, 50006, true, boat, _core);
+
+    primaryHeartBeat->HeartBeatLoop();
+
+    HeartBeat* secondaryHeartBeat = new HeartBeat(boat, 50006, false, boat, _core);
+
+    secondaryHeartBeat->HeartBeatLoop();
+    connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
+    connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
+    connect(boat, &BoatItem::IPChanged, primaryHeartBeat, &HeartBeat::onChangeIP);
+    connect(boat, &BoatItem::IPChanged, secondaryHeartBeat, &HeartBeat::onChangeIP);
+
+
+
 
 
     settings->beginGroup(QString("%1").arg(_core->config()));
@@ -216,12 +222,15 @@ void BoatManager::onBoatNameChange(int ID, QString newname)
     qDebug()<<"changename";
 }
 
-void BoatManager::onIPChanged(int ID)
+void BoatManager::onIPChanged(int ID, bool primary)
 {
     int index = getIndexbyID(ID);
     BoatItem* boat = boatList[index];
-    boatItemModel->item(index,1)->setData(boat->PIP());
-    boatItemModel->item(index,2)->setData(boat->SIP());
+    if(primary){
+        boatItemModel->item(index,1)->setData(boat->PIP());
+    }else{
+        boatItemModel->item(index,2)->setData(boat->SIP());
+    }
 
     settings->beginGroup(QString("%1").arg(_core->config()));
     int size = settings->beginReadArray("boat");
@@ -236,17 +245,12 @@ void BoatManager::onIPChanged(int ID)
 
 void BoatManager::onConnected(int ID, bool isprimary)
 {
-    for(int i = 0; i < boatItemModel->rowCount();i++){
-        if(boatItemModel->item(i,0)->text() == getBoatbyID(ID)->name()){
-
-            if(isprimary){
-                boatItemModel->item(i,1)->setText("Active");
-                boatItemModel->item(i,1)->setBackground(QBrush(QColor(0,120,0)));
-            }else{
-                boatItemModel->item(i,2)->setText("Active");
-                boatItemModel->item(i,2)->setBackground(QBrush(QColor(0,120,0)));
-            }
-        }
+    if(isprimary){
+        boatItemModel->item(getIndexbyID(ID),1)->setText("Active");
+        boatItemModel->item(getIndexbyID(ID),1)->setBackground(QBrush(QColor(0,120,0)));
+    }else{
+        boatItemModel->item(getIndexbyID(ID),2)->setText("Active");
+        boatItemModel->item(getIndexbyID(ID),2)->setBackground(QBrush(QColor(0,120,0)));
     }
 
 }
@@ -254,18 +258,12 @@ void BoatManager::onConnected(int ID, bool isprimary)
 void BoatManager::onDisonnected(int ID, bool isprimary)
 {
 
-    for(int i = 0; i < boatList.size();i++){
-        if(getBoatbyID(ID) == 0 || boatItemModel->item(i,0) == 0) return;
-        if(boatItemModel->item(i,0)->text() == getBoatbyID(ID)->name()){
-
-            if(isprimary){
-                boatItemModel->item(i,1)->setText("SB");
-                boatItemModel->item(i,1)->setBackground(QBrush(QColor(120,0,0)));
-            }else{
-                boatItemModel->item(i,2)->setText("SB");
-                boatItemModel->item(i,2)->setBackground(QBrush(QColor(120,0,0)));
-            }
-        }
+    if(isprimary){
+        boatItemModel->item(getIndexbyID(ID),1)->setText("SB");
+        boatItemModel->item(getIndexbyID(ID),1)->setBackground(QBrush(QColor(120,0,0)));
+    }else{
+        boatItemModel->item(getIndexbyID(ID),2)->setText("SB");
+        boatItemModel->item(getIndexbyID(ID),2)->setBackground(QBrush(QColor(120,0,0)));
     }
 
 }

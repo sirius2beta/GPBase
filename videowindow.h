@@ -47,11 +47,12 @@ signals:
 
 public slots:
     void handleResult(const QPixmap& result);
-    void setVideoFormat(int index, QStringList videoformat);
+    void setVideoFormat(int ID, QStringList videoformat);
     void onConnectionChanged();
     void onPCPortChanged(int port);
     void onTitleChanged(QString t);
     void onIndexChanged(int i);
+    void updateFormat();
 
 protected slots:
     void onSettings();

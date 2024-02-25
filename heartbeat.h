@@ -24,7 +24,7 @@ public slots:
     void beat();
     void checkAlive();
     void alive(QString ip);
-    void onChangeIP(bool isPrimary);
+    void onChangeIP(int ID, bool isPrimary);
     void onDeleteBoat(QString boatname);
 
 private:

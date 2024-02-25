@@ -1,7 +1,15 @@
 ﻿#include "videoitem.h"
+#include "gpbcore.h"
+#include <QDebug>
 
-VideoItem::VideoItem(QObject *parent, int index, QString title, int boatID, int videoNo, int formatNo, int PCPort)
+#define HEARTBEAT 0x10
+#define FORMAT 0x20
+#define COMMAND 0x30
+#define QUIT 0x40
+
+VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, int boatID, int videoNo, int formatNo, int PCPort)
     : QObject{parent},
+      _core(core),
       _title(title),
       _boatID(boatID),
       _index(index),
@@ -10,6 +18,7 @@ VideoItem::VideoItem(QObject *parent, int index, QString title, int boatID, int 
     _PCPort(PCPort),
     _encoder(QString("h264")),
     _proxy(false),
+    _requestFormat(true),
     _isPlaying(false)
 {
     _videoNoModel = new QStandardItemModel;
@@ -42,8 +51,15 @@ void VideoItem::setPCPort(int port)
 
 void VideoItem::setBoatID(int ID)
 {
-    _boatID = ID;
-    emit boatIDSet(ID);
+    qDebug()<<"setBoatID";
+    if(_boatID != ID){
+        _videoNoModel->clear();
+        _boatID = ID;
+    }
+
+    _qualityModel->clear();
+    _requestFormat = true;
+    emit boatIDSet(this);
 }
 
 void VideoItem::setIndex(int index)
@@ -54,21 +70,29 @@ void VideoItem::setIndex(int index)
 
 void VideoItem::setVideoNo(int videoNo)
 {
-    _qualityModel->removeRows(0, _qualityModel->rowCount());
+
+    _videoNo = videoNo;
+    _qualityModel->clear();
     for(const auto &formatlist:_videoFormatList){
-        if(formatlist[0] == _videoNo){
+        //qDebug()<<"setvideoNO:"<<formatlist.split(' ')[0].split('o')[1]<<","<<videoNo;
+        if(formatlist.split(' ')[0].split('o')[1].toInt() == videoNo){
             QStringList fl = formatlist.split(' ');
             fl.pop_front();
-            int current = _videoNoModel->rowCount();
+            int current = _qualityModel->rowCount();
             QStandardItem* item = new QStandardItem(fl.join(" "));
-            _videoNoModel->setItem(current, 0, item);
+            _qualityModel->setItem(current, 0, item);
+            //qDebug()<<fl.join(" ");
         }
     }
+    emit UIUpdateFormat();
 }
 
 void VideoItem::setVideoFormat(QStringList videoformat)
 {
+    if(!_requestFormat) return;
+    _requestFormat = false;
     int index = -1;
+
     QString currentvideoNo = QString();
     for(const auto &vf:videoformat){
 
@@ -79,6 +103,8 @@ void VideoItem::setVideoFormat(QStringList videoformat)
             QStandardItem* item = new QStandardItem(currentvideoNo);
             _videoNoModel->setItem(current, 0, item);
 
+            qDebug()<<"DNVideoManager::setVideoFormat:"<<currentvideoNo;
+
         }
         QStringList vfl = vf.split(' ');
         if(vfl[2].split('=')[1].toInt()<= 1920){  //limit with<1920
@@ -86,7 +112,16 @@ void VideoItem::setVideoFormat(QStringList videoformat)
             _videoFormatList<<vfstring; //save videoformat of videox to videoFormatList
         }
     }
+    if(_videoNoModel->rowCount() >0){
+        setVideoNo(0);
+    }
+    emit UIUpdateFormat();
 
+}
+
+void VideoItem::setFormatNo(int no)
+{
+    _formatNo = no;
 }
 
 void VideoItem::setDisplay(WId xwinid)
@@ -99,6 +134,7 @@ void VideoItem::play(QString encoder, bool proxy)
     QString gstcmd;
     _encoder = encoder;
     _proxy = proxy;
+
 
     if(false){
         if(encoder == "h264"){
@@ -130,6 +166,7 @@ void VideoItem::play(QString encoder, bool proxy)
             GST_STATE_PLAYING);
         _isPlaying = true;
     }
+    emit videoPlayed(this);
 }
 
 void VideoItem::stop()
@@ -139,11 +176,13 @@ void VideoItem::stop()
     }else{
         gst_element_set_state (_pipeline, GST_STATE_NULL);
         _isPlaying = false;
+        emit videoStoped(this);
     }
 }
 
 QString VideoItem::videoFormat()
 {
+    qDebug()<<"no:"<<_formatNo<<", "<<_qualityModel->rowCount();
     return _qualityModel->item(_formatNo, 0)->text();
 
 }

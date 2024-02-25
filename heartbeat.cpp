@@ -40,13 +40,12 @@ HeartBeat::HeartBeat(BoatItem* boat, int port, bool isPrimary, QObject *parent, 
 
 HeartBeat::~HeartBeat()
 {
-    qDebug()<<"HeartBeat::deleted";
     run = false;
 }
 
 
 
-void HeartBeat::onChangeIP(bool isPrimary)
+void HeartBeat::onChangeIP(int ID, bool isPrimary)
 {
 
     if(primary == isPrimary){
@@ -86,6 +85,7 @@ void HeartBeat::HeartBeatLoop()
     boat->disconnect(primary);
 
 
+
 }
 
 
@@ -93,7 +93,7 @@ void HeartBeat::alive(QString ip)
 {
     if(ip == boatIP){
         if(isHearBeatLoop == false){
-            //qDebug()<<"HeartBeat: alive from "<<ip;
+
             isAlive = true;
         }else{
             // Enter alive loop
