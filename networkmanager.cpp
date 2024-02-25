@@ -50,9 +50,11 @@ void NetworkManager::onUDPMsg()
         if(topic == HEARTBEAT){
             int ID = int(data[0]);
             BoatItem* boat = _core->boatManager()->getBoatbyID(ID);
+
+            qDebug()<<"HB format ID:"<<ID;
             if( boat != 0){
 
-                emit AliveResponse(ip);
+                emit AliveResponse(ip, ID);
             }
 
 
@@ -60,7 +62,7 @@ void NetworkManager::onUDPMsg()
             int ID = int(data[0]);
             QString format = data.remove(0,1);
             //qDebug()<<"MainWindow call from FORMAT, boat ID:"<<ID;
-            //qDebug()<<format;
+            qDebug()<<"Net format ID:"<<ID;
             if(format != ""){
                 emit setFormat(ID, format.split('\n'));
             }

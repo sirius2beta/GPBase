@@ -303,10 +303,12 @@ void VideoWindow::onSetFormatNo(int i)
 
 void VideoWindow::onSetBoatNo(int i)
 {
+    qDebug()<<"set boatNO ui "<<ui->boatcomboBox->count();
     if(ui->boatcomboBox->count()!=0){
         _videoItem->setBoatID(_core->boatManager()->getIDbyInex(i));
+        qDebug()<<"set boatNO "<<_core->boatManager()->getIDbyInex(i);
     }
-    qDebug()<<"set boatNO";
+
     //ui->videoFormatcomboBox->clear();
     //ui->videoportComboBox->clear();
 

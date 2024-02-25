@@ -89,9 +89,9 @@ void HeartBeat::HeartBeatLoop()
 }
 
 
-void HeartBeat::alive(QString ip)
+void HeartBeat::alive(QString ip, int ID)
 {
-    if(ip == boatIP){
+    if((ip == boatIP) && (ID == boat->ID())){
         if(isHearBeatLoop == false){
 
             isAlive = true;
@@ -99,7 +99,7 @@ void HeartBeat::alive(QString ip)
             // Enter alive loop
             //qDebug()<<"HeartBeat::AliveLoop started ("<<boat->name()<<", "<<ip<<")";
             heartBeatTimer->stop();
-            checkAliveTimer->start(1500);
+            checkAliveTimer->start(2000);
             isHearBeatLoop = false;
             boat->connect(primary);
             emit sendMsg(QHostAddress(ip), char(FORMAT), QString("q").toLocal8Bit());

@@ -78,7 +78,9 @@ void DNVideoManager::onBoatIDSet(VideoItem* videoItem)
 void DNVideoManager::setVideoFormat(int ID, QStringList videoformat)
 {
     for(int i = 0; i < videoList.size(); i++){
+        qDebug()<<"set format, vid:"<<videoList[i]->boatID()<<", bid"<<ID;
         if(videoList[i]->boatID() == ID){
+            qDebug()<<"set format, index:"<<_core->boatManager()->getIndexbyID(ID);
             videoList[i]->setVideoFormat(videoformat);
 
         }
