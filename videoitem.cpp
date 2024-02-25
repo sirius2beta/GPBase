@@ -22,6 +22,7 @@ VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, i
     _isPlaying(false)
 {
     _videoNoModel = new QStandardItemModel;
+    int current = _videoNoModel->rowCount();
     _qualityModel = new QStandardItemModel;
 }
 
@@ -34,6 +35,7 @@ VideoItem::~VideoItem()
         gst_object_unref (_pipeline);
     }
     delete _videoNoModel;
+
     delete _qualityModel;
 }
 
@@ -100,8 +102,12 @@ void VideoItem::setVideoFormat(QStringList videoformat)
         if(currentvideoNo != videoNo){
             currentvideoNo = videoNo;
             int current = _videoNoModel->rowCount();
-            QStandardItem* item = new QStandardItem(currentvideoNo);
-            _videoNoModel->setItem(current, 0, item);
+
+                QStandardItem* item = new QStandardItem(currentvideoNo);
+                _videoNoModel->setItem(current, 0, item);
+
+
+
 
             qDebug()<<"DNVideoManager::setVideoFormat:"<<currentvideoNo;
 

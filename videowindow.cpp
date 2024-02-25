@@ -80,6 +80,9 @@ void VideoWindow::onIndexChanged(int i)
 
 void VideoWindow::updateFormat()
 {
+
+    //ui->videoportComboBox->setModel(_core->boatManager()->model());
+
     if(ui->videoportComboBox->currentIndex() == -1){
         if(ui->videoportComboBox->model()->rowCount()>0){
 
@@ -92,6 +95,7 @@ void VideoWindow::updateFormat()
             ui->videoFormatcomboBox->setCurrentIndex(0);
         }
     }
+
 }
 
 void VideoWindow::setVideoInfo(bool i)

@@ -70,7 +70,6 @@ void DNVideoManager::onBoatAdded()
 
 void DNVideoManager::onBoatIDSet(VideoItem* videoItem)
 {
-
     QHostAddress addr(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
     emit sendMsg(addr,char(FORMAT),"qformat");
     qDebug()<<"format call";

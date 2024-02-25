@@ -37,6 +37,7 @@ void BoatManager::init()
         boat->setPIP(boatPIP);
         boat->setSIP(boatSIP);
         boatList.append(boat);
+
         int current = boatItemModel->rowCount();
         QStandardItem* item1 = new QStandardItem(boatname);
         QStandardItem* item2 = new QStandardItem(QString("SB"));
@@ -95,16 +96,15 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     boatItemModel->setItem(current,2,item3);
 
     connect(boat, &BoatItem::nameChanged, this, &BoatManager::onBoatNameChange);
+    connect(boat, &BoatItem::IPChanged, this, &BoatManager::onIPChanged);
     connect(boat, &BoatItem::connected, this, &BoatManager::onConnected);
     connect(boat, &BoatItem::disconnected, this, &BoatManager::onDisonnected);
 
     HeartBeat* primaryHeartBeat = new HeartBeat(boat, 50006, true, boat, _core);
-
     primaryHeartBeat->HeartBeatLoop();
-
     HeartBeat* secondaryHeartBeat = new HeartBeat(boat, 50006, false, boat, _core);
-
     secondaryHeartBeat->HeartBeatLoop();
+
     connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
     connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
     connect(boat, &BoatItem::IPChanged, primaryHeartBeat, &HeartBeat::onChangeIP);
@@ -211,10 +211,11 @@ int BoatManager::size()
 void BoatManager::onBoatNameChange(int ID, QString newname)
 {
     int index = getIndexbyID(ID);
+    qDebug()<<"++id:"<<ID;
     boatItemModel->item(index, 0)->setText(newname);
     settings->beginGroup(QString("%1").arg(_core->config()));
     int size = settings->beginReadArray("boat");
-    settings->setArrayIndex(ID);
+    settings->setArrayIndex(index);
     settings->setValue("boatname",newname);
 
     settings->endArray();
@@ -225,6 +226,7 @@ void BoatManager::onBoatNameChange(int ID, QString newname)
 void BoatManager::onIPChanged(int ID, bool primary)
 {
     int index = getIndexbyID(ID);
+    qDebug()<<"++:"<<index;
     BoatItem* boat = boatList[index];
     if(primary){
         boatItemModel->item(index,1)->setData(boat->PIP());
