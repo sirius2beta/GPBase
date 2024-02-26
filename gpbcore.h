@@ -20,7 +20,6 @@ public:
     void init();
 
     BoatManager* boatManager() { return _boatManager; }
-    BoatSetting* boatSetting() { return _boatSetting; }
     NetworkManager* networkManager() { return _networkManager; }
     DNVideoManager* videoManager() { return _videoManager; }
     QString config() {return _config;}
@@ -38,7 +37,7 @@ private:
     QString _config;
 
     BoatManager* _boatManager;
-    BoatSetting* _boatSetting;
+
     NetworkManager* _networkManager;
     DNVideoManager* _videoManager;
 

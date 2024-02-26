@@ -13,6 +13,7 @@
 #include "qhostaddress.h"
 #include "boatitem.h"
 
+class GPBCore;
 
 namespace Ui {
 class BoatSetting;
@@ -25,21 +26,18 @@ class BoatSetting : public QWidget
 public:
     explicit BoatSetting(QWidget *parent = nullptr);
     ~BoatSetting();
-    void init(BoatManager *_boatList);
-    void setconfig(QString conf);
+    void init(GPBCore* core);
     void addDevice(int ID, QString Devicename, char format, bool IO);
     void deleteDevice(int ID);
     void addBoard(int ID, QString boardName, QString boardType, bool connected);
-    BoatItem* currentBoat();
     void upDateDeviceTableView();
+
     enum Connection {Auto = 0, Primary = 1, Secondary=2};
-    int connectionType();
 
 signals:
     void connectionTypeChanged(int connectiontype);
 
 public slots:
-    void onMsg(QByteArray data);
     void onBoatNameChange();
     void onAddBoat();
     void onDeleteBoat();
@@ -51,12 +49,9 @@ public slots:
 
 private:
     Ui::BoatSetting *ui;
-
     QStandardItemModel* deviceItemModel;
     QStandardItemModel* peripheralItemModel;
 
-
-    QString config;
     BoatManager* boatManager;
     bool initialized;
 

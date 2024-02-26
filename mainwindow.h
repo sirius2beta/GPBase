@@ -72,6 +72,7 @@ private:
 
 
     //NetworkManager* networkManager;
+    BoatSetting* _boatSetting;
     SensorWidget* sensor_widget;
     HeartBeat* primaryHeartBeat;
     HeartBeat* secondaryHeartBeat;

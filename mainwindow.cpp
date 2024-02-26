@@ -46,10 +46,11 @@ MainWindow::MainWindow(QWidget *parent, QString config)
 void MainWindow::initBoatSettings()
 {
     QDockWidget* dockwidget = new QDockWidget(QStringLiteral("無人船設定"),this);
-    BoatSetting* boatSetting = gpbcore->boatSetting();
+    _boatSetting = new BoatSetting(this);
+    _boatSetting->init(gpbcore);
 
     dockwidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    dockwidget->setWidget(boatSetting);
+    dockwidget->setWidget(_boatSetting);
     dockwidget->setMinimumWidth(300);
     addDockWidget(Qt::LeftDockWidgetArea, dockwidget);
 

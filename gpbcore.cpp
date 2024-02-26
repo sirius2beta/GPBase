@@ -9,7 +9,6 @@ GPBCore::GPBCore(QObject *parent, QString config)
 }
 
 GPBCore::~GPBCore(){
-    delete _boatSetting;
     delete _boatManager;
 }
 
@@ -18,14 +17,12 @@ void GPBCore::init(){
     _boatManager = new BoatManager(this, this);
     _videoManager = new DNVideoManager(this, this);
 
-    _boatSetting = new BoatSetting();
 
     connect(_videoManager, &DNVideoManager::sendMsg, _networkManager, &NetworkManager::sendMsg);
     connect(_networkManager, &NetworkManager::setFormat, _videoManager, &DNVideoManager::setVideoFormat);
     connect(_boatManager, &BoatManager::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
     connect(_boatManager, &BoatManager::BoatAdded, _videoManager, &DNVideoManager::onBoatAdded);
-    _boatSetting->setconfig(_config);
-    _boatSetting->init(_boatManager);
+
     _videoManager->init();
     _networkManager->init();
 

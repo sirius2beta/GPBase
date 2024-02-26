@@ -2,6 +2,7 @@
 #include "ui_boatsetting.h"
 #include <QComboBox>
 #include <QMessageBox>
+#include "gpbcore.h"
 #define SENSOR 0x50
 
 BoatSetting::BoatSetting(QWidget *parent) :
@@ -60,9 +61,9 @@ BoatSetting::BoatSetting(QWidget *parent) :
 
 }
 
-void BoatSetting::init(BoatManager* _boatList)
+void BoatSetting::init(GPBCore* core)
 {
-    boatManager = _boatList;
+    boatManager = core->boatManager();
     ui->BoatTableView->setModel(boatManager->model());
     ui->BoatTableView->setColumnWidth(1,80);
     ui->BoatTableView->setColumnWidth(2,80);
@@ -72,6 +73,7 @@ void BoatSetting::init(BoatManager* _boatList)
     if(size==0){
         ui->infoBox->setVisible(false);
     }else{
+
         for(int i = 0; i<size; i++){
             BoatItem* boat = boatManager->getBoatbyIndex(i);
             ui->BoatTableView->setRowHeight(boatManager->size(),30);
@@ -81,6 +83,7 @@ void BoatSetting::init(BoatManager* _boatList)
             ui->PIPlineEdit->setText(boat->PIP());
             ui->SIPlineEdit->setText(boat->SIP());
         }
+
     }
     initialized = true;
 }
@@ -112,22 +115,9 @@ void BoatSetting::addBoard(int ID, QString boardName, QString boardType, bool co
 
 }
 
-int BoatSetting::connectionType()
-{
-    if(ui->autoButton->isChecked()){
-        return Connection::Auto;
-    }else if(ui->primaryButton->isChecked()){
-        return Connection::Primary;
-    }
-    return Connection::Secondary;
-}
-
-BoatItem* BoatSetting::currentBoat(){
-    return boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
-}
-
- void BoatSetting::upDateDeviceTableView()
+void BoatSetting::upDateDeviceTableView()
  {
+    /*
      for(int i = 0; i < currentBoat()->devices.size(); i++){
          QStandardItem* item1 = new QStandardItem(QString::number(currentBoat()->devices[i].ID));
          QStandardItem* item2 = new QStandardItem(currentBoat()->devices[i].deviceName);
@@ -147,12 +137,8 @@ BoatItem* BoatSetting::currentBoat(){
          deviceItemModel->setItem(i,2, item3);
          deviceItemModel->setItem(i,3, item4);
      }
+*/
  }
-
-void BoatSetting::setconfig(QString conf)
-{
-    config = conf;
-}
 
 BoatSetting::~BoatSetting()
 {
@@ -182,8 +168,10 @@ void BoatSetting::deleteDevice(int ID)
 
 }
 
+/*
 void BoatSetting::onMsg(QByteArray data)
 {
+
     int ID = int(data[0]);
     char mode = char(data[1]);
     data.remove(0,1);
@@ -216,6 +204,7 @@ void BoatSetting::onMsg(QByteArray data)
                 qDebug()<<"---------"<<peripheralItemModel->item(i,0)->text().toInt()<<", "<<devID;
             }
 
+
             if(!cont){
                 Peripheral newperiperal;
                 BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
@@ -240,7 +229,7 @@ void BoatSetting::onMsg(QByteArray data)
 
                 addBoard(newperiperal.ID, newperiperal.boardName, dev_type, true);
                 currentBoat()->peripherals.append(newperiperal);
-                /*
+
                 settings->beginGroup(QString("%1").arg(config));
                 int size = settings->beginReadArray(QString("boat/%1/board").arg(ui->BoatcomboBox->currentIndex()+1));
 
@@ -252,15 +241,16 @@ void BoatSetting::onMsg(QByteArray data)
                 settings->setValue(QString("boardType"), dev_type);
                 settings->endArray();
                 settings->endGroup();
-                */
+
             }
+
 
 
 
         }
 
     }
-    /*
+
     int sensor_num = data.mid(1,1).toHex().toInt(&ok);
     int start = 1;
     for(int i = 0; i<sensor_num; i++){
@@ -279,10 +269,12 @@ void BoatSetting::onMsg(QByteArray data)
             label->setValue(QString::number(value));
             start+=7;
         }
-    }*/
+    }
+
 
 
 }
+*/
 
 
 
@@ -426,6 +418,7 @@ void BoatSetting::onChangeSIP()
 
 void BoatSetting::onAddDeviceButtonClicked()
 {
+    /*
     AddDeviceDialog* dialog = new AddDeviceDialog(this);
     dialog->setPeripheralModel(peripheralItemModel, boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex()));
     int ret = dialog->exec();
@@ -458,4 +451,5 @@ void BoatSetting::onAddDeviceButtonClicked()
         }
 
     }
+    */
 }
