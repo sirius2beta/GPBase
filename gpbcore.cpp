@@ -22,11 +22,10 @@ void GPBCore::init(){
 
     connect(_videoManager, &DNVideoManager::sendMsg, _networkManager, &NetworkManager::sendMsg);
     connect(_networkManager, &NetworkManager::setFormat, _videoManager, &DNVideoManager::setVideoFormat);
-    connect(_networkManager, &NetworkManager::sensorMsg, _boatSetting, &BoatSetting::onMsg);
-    connect(_boatSetting, &BoatSetting::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
+    connect(_boatManager, &BoatManager::connectionTypeChanged, this, &GPBCore::onConnectionTypeChanged);
     connect(_boatManager, &BoatManager::BoatAdded, _videoManager, &DNVideoManager::onBoatAdded);
     _boatSetting->setconfig(_config);
-    _boatSetting->initSettings(_boatManager);
+    _boatSetting->init(_boatManager);
     _videoManager->init();
     _networkManager->init();
 

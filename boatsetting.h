@@ -25,7 +25,7 @@ class BoatSetting : public QWidget
 public:
     explicit BoatSetting(QWidget *parent = nullptr);
     ~BoatSetting();
-    void initSettings(BoatManager *_boatList);
+    void init(BoatManager *_boatList);
     void setconfig(QString conf);
     void addDevice(int ID, QString Devicename, char format, bool IO);
     void deleteDevice(int ID);
@@ -36,7 +36,7 @@ public:
     int connectionType();
 
 signals:
-    void connectionTypeChanged();
+    void connectionTypeChanged(int connectiontype);
 
 public slots:
     void onMsg(QByteArray data);

@@ -81,8 +81,6 @@ void VideoWindow::onIndexChanged(int i)
 void VideoWindow::updateFormat()
 {
 
-    //ui->videoportComboBox->setModel(_core->boatManager()->model());
-
     if(ui->videoportComboBox->currentIndex() == -1){
         if(ui->videoportComboBox->model()->rowCount()>0){
 
@@ -141,9 +139,11 @@ void VideoWindow::onPlay()
 
 void VideoWindow::onStop()
 {
+    /*
     std::string s = QString(ui->videoportComboBox->currentText()).toStdString();
     QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyIndex(ui->boatcomboBox->currentIndex())->currentIP());
     emit sendMsg(ip, char(QUIT), QByteArray(s.c_str()));
+*/
     isPlaying = false;
     _videoItem->stop();
 }

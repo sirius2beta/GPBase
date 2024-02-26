@@ -29,19 +29,23 @@ public:
     int getIndexbyID(int ID);
 
     QString CurrentIP(QString boatname);
+    void setConnectionType(int connectiontype);
     int size();
 signals:
     void BoatAdded();
+    void connectionTypeChanged(int connectiontype);
 public slots:
     void onBoatNameChange(int ID, QString newname);
     void onIPChanged(int ID, bool primary);
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
+    void onConnectionTypeChanged(int connectiontype);
 
 private:
     QSettings *settings;
     QStandardItemModel* boatItemModel;
     QVector<BoatItem*> boatList;
+    int _connectionType;
     GPBCore* _core;
 };
 

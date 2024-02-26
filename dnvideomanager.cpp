@@ -56,7 +56,9 @@ void DNVideoManager::onPlay(VideoItem* videoItem)
 
 void DNVideoManager::onStop(VideoItem* videoItem)
 {
-
+    QString videoNo = QString("video")+QString::number(videoItem->videoNo());
+    QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
+    emit sendMsg(ip, char(QUIT), videoNo.toLocal8Bit());
 }
 
 void DNVideoManager::onBoatAdded()

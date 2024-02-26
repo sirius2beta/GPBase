@@ -10,6 +10,10 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     , ui(new Ui::MainWindow)
     , _config(config)
 {
+    // initialize settings
+    settings = new QSettings("Ezosirius", "GPlayer_v1",this);
+
+    //init gpbcore
     gpbcore = new GPBCore(this, config);
     gpbcore->init();
 
@@ -26,24 +30,17 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     act = new QAction(tr("GPlayer"), this);
     act->setIcon(QIcon(":/icon/GP_logo-04.png"));
     ui->toolBar->addAction(act);
-
-
-    // initialize settings
-    settings = new QSettings("Ezosirius", "GPlayer_v1",this);
-
-    initBoatSettings();
-
-    initVideoWindows();
-    //initSensorWidget();
-
     act = new QAction(tr("view"), this);
     act->setIcon(QIcon(":/icon/view-07.png"));
     ui->toolBar->addAction(act);
-
     act = new QAction(tr("control"), this);
     act->setIcon(QIcon(":/icon/control-03.png"));
     ui->toolBar->setIconSize(QSize(40, 40));
     ui->toolBar->addAction(act);
+
+    initBoatSettings();
+    initVideoWindows();   
+    //initSensorWidget();
 }
 
 void MainWindow::initBoatSettings()

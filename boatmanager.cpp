@@ -1,7 +1,8 @@
 ﻿#include "boatmanager.h"
 #include "gpbcore.h"
 
-BoatManager::BoatManager(QObject* parent, GPBCore *core): QObject(parent)
+BoatManager::BoatManager(QObject* parent, GPBCore *core): QObject(parent),
+    _connectionType(0)
 {
     _core = core;
     settings = new QSettings("Ezosirius", "GPlayer_v1", this);
@@ -208,6 +209,12 @@ int BoatManager::size()
     return boatList.size();
 }
 
+void BoatManager::setConnectionType(int connectiontype)
+{
+    _connectionType = connectiontype;
+    emit connectionTypeChanged(connectiontype);
+}
+
 void BoatManager::onBoatNameChange(int ID, QString newname)
 {
     int index = getIndexbyID(ID);
@@ -268,4 +275,11 @@ void BoatManager::onDisonnected(int ID, bool isprimary)
         boatItemModel->item(getIndexbyID(ID),2)->setBackground(QBrush(QColor(120,0,0)));
     }
 
+}
+
+void BoatManager::onConnectionTypeChanged(int connectiontype)
+{
+    qDebug()<<"ck1";
+    _connectionType = connectiontype;
+    emit connectionTypeChanged(connectiontype);
 }

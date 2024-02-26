@@ -60,13 +60,14 @@ BoatSetting::BoatSetting(QWidget *parent) :
 
 }
 
-void BoatSetting::initSettings(BoatManager* _boatList)
+void BoatSetting::init(BoatManager* _boatList)
 {
     boatManager = _boatList;
     ui->BoatTableView->setModel(boatManager->model());
     ui->BoatTableView->setColumnWidth(1,80);
     ui->BoatTableView->setColumnWidth(2,80);
     int size = boatManager->size();
+    connect(this, &BoatSetting::connectionTypeChanged, boatManager, &BoatManager::onConnectionTypeChanged);
 
     if(size==0){
         ui->infoBox->setVisible(false);
