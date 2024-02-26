@@ -51,7 +51,6 @@ void NetworkManager::onUDPMsg()
             int ID = int(data[0]);
             BoatItem* boat = _core->boatManager()->getBoatbyID(ID);
 
-            qDebug()<<"HB format ID:"<<ID;
             if( boat != 0){
 
                 emit AliveResponse(ip, ID);

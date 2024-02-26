@@ -24,6 +24,7 @@ VideoWindow::VideoWindow(QWidget *parent, QString config, GPBCore* core) :
     ui->boatcomboBox->setModel(_core->boatManager()->model());
 
 
+
     QCoreApplication::setOrganizationName("Ezosirius");
     QCoreApplication::setApplicationName("GPlayer_v1");
     settings = new QSettings;
@@ -83,14 +84,13 @@ void VideoWindow::updateFormat()
 
     if(ui->videoportComboBox->currentIndex() == -1){
         if(ui->videoportComboBox->model()->rowCount()>0){
-
-            ui->videoportComboBox->setCurrentIndex(0);
+            //ui->videoportComboBox->setCurrentIndex(0);
         }
     }
     if(ui->videoFormatcomboBox->currentIndex() == -1){
         if(ui->videoFormatcomboBox->model()->rowCount()>0){
 
-            ui->videoFormatcomboBox->setCurrentIndex(0);
+            //ui->videoFormatcomboBox->setCurrentIndex(0);
         }
     }
 
@@ -195,13 +195,10 @@ void VideoWindow::clearScreen(){
 
 void VideoWindow::setVideoNo(int i)
 {
-    _videoItem->setVideoNo(ui->videoportComboBox->itemText(i).split("o")[1].toInt());
-    videoNo = i;
-    QStringList formatList = ui->videoportComboBox->itemData(i).toStringList();
-    for(int j = 0; j<formatList.size(); j++){
-        ui->videoFormatcomboBox->addItem(formatList[j],0);
-    }
-    setFormat();
+    qDebug()<<"VideoWindow::setVideoNo: "<<i;
+
+    _videoItem->setVideoNo(i);
+
 
 }
 /*

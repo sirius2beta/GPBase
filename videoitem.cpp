@@ -24,6 +24,13 @@ VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, i
     _videoNoModel = new QStandardItemModel;
     int current = _videoNoModel->rowCount();
     _qualityModel = new QStandardItemModel;
+    QStandardItem* item = new QStandardItem("fl");
+    _videoNoModel->setItem(0,0,item);
+    _videoNoModel->removeRows(0,1);
+    _qualityModel->setItem(0,0,item);
+    _qualityModel->removeRows(0,1);
+
+
 }
 
 VideoItem::~VideoItem()
@@ -55,11 +62,11 @@ void VideoItem::setBoatID(int ID)
 {
     qDebug()<<"setBoatID";
     if(_boatID != ID){
-        _videoNoModel->clear();
+        _videoNoModel->removeRows(0,_videoNoModel->rowCount());
         _boatID = ID;
     }
 
-    _qualityModel->clear();
+    _qualityModel->removeRows(0,_qualityModel->rowCount());
     _requestFormat = true;
     emit boatIDSet(this);
 }
@@ -70,20 +77,26 @@ void VideoItem::setIndex(int index)
     emit indexChanged(index);
 }
 
-void VideoItem::setVideoNo(int videoNo)
+void VideoItem::setVideoNo(int index)
 {
 
-    _videoNo = videoNo;
-    _qualityModel->clear();
+
+    _qualityModel->removeRows(0,_qualityModel->rowCount());
+    int currentNo = -1;
+    int currentindex = -1;
     for(const auto &formatlist:_videoFormatList){
         //qDebug()<<"setvideoNO:"<<formatlist.split(' ')[0].split('o')[1]<<","<<videoNo;
-        if(formatlist.split(' ')[0].split('o')[1].toInt() == videoNo){
+        if(formatlist.split(' ')[0].split('o')[1].toInt() != currentNo){
+            currentNo = formatlist.split(' ')[0].split('o')[1].toInt();
+            currentindex ++;
+            _videoNo = currentNo;
+        }
+        if(currentindex == index){
             QStringList fl = formatlist.split(' ');
             fl.pop_front();
             int current = _qualityModel->rowCount();
             QStandardItem* item = new QStandardItem(fl.join(" "));
             _qualityModel->setItem(current, 0, item);
-            //qDebug()<<fl.join(" ");
         }
     }
     emit UIUpdateFormat();
@@ -94,7 +107,7 @@ void VideoItem::setVideoFormat(QStringList videoformat)
     if(!_requestFormat) return;
     _requestFormat = false;
     int index = -1;
-
+    QStandardItem* item = new QStandardItem("fl");
     QString currentvideoNo = QString();
     for(const auto &vf:videoformat){
 

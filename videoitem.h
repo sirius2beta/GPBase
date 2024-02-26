@@ -23,7 +23,7 @@ public:
     void setPCPort(int port);
     void setBoatID(int ID);
     void setIndex(int index);
-    void setVideoNo(int videoNo);
+    void setVideoNo(int index);
     void setFormatNo(int no);
     void setVideoFormat(QStringList videoformat);
     void setWID(WId wid){_xwinid = wid;}

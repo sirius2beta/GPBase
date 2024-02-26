@@ -16,7 +16,6 @@ HeartBeat::HeartBeat(BoatItem* boat, int port, bool isPrimary, QObject *parent, 
 {
 
     _core = core;
-
     boatPort = port;
     isAlive = false;
     isHearBeatLoop = false;

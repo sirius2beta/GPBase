@@ -34,6 +34,7 @@ void DNVideoManager::init()
         }
     }
 
+
 }
 
 void DNVideoManager::addVideoItem(int index, QString title, int boatID, int videoNo, int formatNo, int PCPort)
