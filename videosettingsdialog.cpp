@@ -1,4 +1,4 @@
-#include "videosettingsdialog.h"
+﻿#include "videosettingsdialog.h"
 #include "ui_videosettingsdialog.h"
 
 
@@ -7,7 +7,6 @@ VideoSettingsDialog::VideoSettingsDialog(QWidget *parent) :
     ui(new Ui::VideoSettingsDialog)
 {
     ui->setupUi(this);
-    ui->PC_port_edit->setInputMask(QString("99999"));
     setWindowTitle("Streaming Settings");
 
     ui->videonoComboBox->addItem("video0", "video0");
@@ -27,27 +26,21 @@ VideoSettingsDialog::VideoSettingsDialog(QWidget *parent) :
 
 
     connect(ui->boat_name_edit,SIGNAL(textChanged(QString)),this, SLOT(onTitleChanged(QString)));
-    connect(ui->videonoComboBox,SIGNAL(activated(int)),this, SLOT(onVideonoChanged(int)));
-    connect(ui->formatComboBox, SIGNAL(activated(int)), this, SLOT(selectFormat(int)));
     connect(ui->optionEdit,SIGNAL(textChanged(QString)),this, SLOT(onOptionsChanged(QString)));
-    connect(ui->qualityEdit,SIGNAL(textChanged(QString)),this, SLOT(onQualityChanged(QString)));
-    connect(ui->PC_port_edit, SIGNAL(textChanged(QString)),this,SLOT(onPCPortChanged(QString)));
     connect(ui->videoinfoCheckBox, &QCheckBox::stateChanged,this,&VideoSettingsDialog::onVideoInfoChanged);
+    connect(ui->ProxyCheckBox, &QCheckBox::stateChanged,this,&VideoSettingsDialog::onProxyChanged);
 
 }
 
-void VideoSettingsDialog::setInfo(QString _title, QString _boatname, int _PCPort, int videono, int formatno, bool video_info)
+void VideoSettingsDialog::setInfo(VWSetting settings)
 {
-    __boatname = _boatname;
-    __video_info = video_info;
+    __video_info = settings.video_info;
 
-    ui->titleLineEdit->setText(_title);
-    ui->boat_name_edit->setText(__boatname);
-    ui->videonoComboBox->setCurrentIndex(videono);
-    ui->formatComboBox->setCurrentIndex(formatno);
-    ui->PC_port_edit->setText(QString::number(_PCPort));
+    ui->titleLineEdit->setText(settings.title);
+    ui->videonoComboBox->setCurrentIndex(settings.videono);
+    ui->formatComboBox->setCurrentIndex(settings.formatno);
 
-    if(video_info){
+    if(settings.video_info){
         ui->videoinfoCheckBox->setChecked(true);
     }else{
         ui->videoinfoCheckBox->setChecked(false);
@@ -78,7 +71,13 @@ VideoSettingsDialog::~VideoSettingsDialog()
 
 void VideoSettingsDialog::accept()
 {
-    emit comit(ui->titleLineEdit->text(), __boatname, __PCPort, ui->videonoComboBox->currentIndex(), ui->formatComboBox->currentIndex(), __video_info);
+    VWSetting settings;
+    settings.title = ui->titleLineEdit->text();
+    settings.videono =ui->videonoComboBox->currentIndex();
+    settings.formatno =ui->formatComboBox->currentIndex();
+    settings.video_info = __video_info;
+    settings.proxy = proxy;
+    emit comit(settings);
 
     QDialog::accept();
 }
@@ -113,4 +112,9 @@ void VideoSettingsDialog::onVideoInfoChanged(int i)
 QString VideoSettingsDialog::title()
 {
     return __boatname;
+}
+
+void VideoSettingsDialog::onProxyChanged(int i)
+{
+    proxy = ui->ProxyCheckBox->isChecked();
 }

@@ -13,13 +13,13 @@ namespace Ui {
 class sensorWidget;
 }
 
-class sensorWidget : public QWidget
+class SensorWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit sensorWidget(QWidget *parent = nullptr);
-    ~sensorWidget();
+    explicit SensorWidget(QWidget *parent = nullptr);
+    ~SensorWidget();
     void setBoatList(BoatManager* boatlist);
 public slots:
     void addWidget(QString name, int BoatID, int DeviceID);
@@ -28,7 +28,7 @@ public slots:
 
 signals:
 
-    void sendMsg(int ID, QString command, int PCPort);
+    void sendMsg(QHostAddress addr, char topic, QByteArray command);
 
 private:
     Ui::sensorWidget *ui;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NetworkSettings</class>
- <widget class="QWidget" name="NetworkSettings">
+ <class>NetworkSettingsControl</class>
+ <widget class="QWidget" name="NetworkSettingsControl">
   <property name="geometry">
    <rect>
     <x>0</x>

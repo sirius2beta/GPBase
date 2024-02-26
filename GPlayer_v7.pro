@@ -17,19 +17,23 @@ CONFIG += c++11 console
 DEFINES += DEBUG_MODE
 SOURCES += \
     adddevicedialog.cpp \
+    boatitem.cpp \
     boatmanager.cpp \
     boatsetting.cpp \
     comboboxdelegate.cpp \
     configdialog.cpp \
     createwindowdialog.cpp \
     device.cpp \
+    dnvideomanager.cpp \
+    gpbcore.cpp \
     heartbeat.cpp \
     main.cpp \
     mainwindow.cpp \
-    networksettings.cpp \
+    networkmanager.cpp \
     sensorlabel.cpp \
     sensorwidget.cpp \
     setpindialog.cpp \
+    videoitem.cpp \
     videosettingsdialog.cpp \
     videowindow.cpp \
     #yolov5.cpp
@@ -37,56 +41,66 @@ SOURCES += \
 HEADERS += \
     QTypes.h \
     adddevicedialog.h \
-    boat.h \
+    boatitem.h \
     boatmanager.h \
     boatsetting.h \
     comboboxdelegate.h \
     configdialog.h \
     createwindowdialog.h \
     device.h \
+    dnvideomanager.h \
+    gpbcore.h \
     heartbeat.h \
     mainwindow.h \
-    networksettings.h \
+    networkmanager.h \
     sensorlabel.h \
     sensorwidget.h \
     setpindialog.h \
+    videoitem.h \
     videosettingsdialog.h \
     videowindow.h \
     #yolov5.h
 
 FORMS += \
-    ui\adddevicedialog.ui \
-    ui\boatsetting.ui \
-    ui\configdialog.ui \
-    ui\createwindowdialog.ui \
-    ui\mainwindow.ui \
-    ui\networksettings.ui \
-    ui\sensorlabel.ui \
-    ui\sensorwidget.ui \
-    ui\setpindialog.ui \
-    ui\videosettingsdialog.ui \
-    ui\videowindow.ui
+    ui/adddevicedialog.ui \
+    ui/boatsetting.ui \
+    ui/configdialog.ui \
+    ui/createwindowdialog.ui \
+    ui/mainwindow.ui \
+    ui/networksettingscontrol.ui \
+    ui/sensorlabel.ui \
+    ui/sensorwidget.ui \
+    ui/setpindialog.ui \
+    ui/videosettingsdialog.ui \
+    ui/videowindow.ui
 
 
 
-INCLUDEPATH += "C:\gstreamer\1.0\msvc_x86_64\include"
-INCLUDEPATH += "C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0"
-INCLUDEPATH += "C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0"
-INCLUDEPATH += "C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include"
-INCLUDEPATH += "C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\include"
+win32{
+    INCLUDEPATH += "C:\gstreamer_MSVC\1.0\msvc_x86_64\include"
+    INCLUDEPATH += "C:\gstreamer_MSVC\1.0\msvc_x86_64\include\gstreamer-1.0"
+    INCLUDEPATH += "C:\gstreamer_MSVC\1.0\msvc_x86_64\include\glib-2.0"
+    INCLUDEPATH += "C:\gstreamer_MSVC\1.0\msvc_x86_64\lib\glib-2.0\include"
+    INCLUDEPATH += "C:\gstreamer_MSVC\1.0\msvc_x86_64\lib\gstreamer-1.0\include"
 
 
-CONFIG += link_pkgconfig
-PKGCONFIG += gstreamer-1.0
+    CONFIG += link_pkgconfig
+    PKGCONFIG += gstreamer-1.0
 
-LIBS += -LC:\gstreamer\1.0\msvc_x86_64/lib/ -lgstvideo-1.0
-LIBS += -LC:/Qt/5.15.2/msvc2019_64/lib/ -lQt5Mqtt
-with_cuda{
-    #INCLUDEPATH += "C:\opencv-4.6\build_with_cuda\install\include"
-    #LIBS += -LC:/opencv-4.6/build_with_cuda/install/x64/lib\ -lopencv_world460
-} else{
-    #INCLUDEPATH += "C:\opencv_MSVC_no_cuda\include"
-    #LIBS += -LC:/opencv_MSVC_no_cuda/x64/lib\ -lopencv_world460
+    LIBS += -LC:\gstreamer_MSVC\1.0\msvc_x86_64/lib/ -lgstvideo-1.0
+    LIBS += -LC:/Qt/5.15.2/msvc2019_64/lib/ -lQt5Mqtt
+}
+
+unix{
+        macx {
+            CONFIG += link_pkgconfig
+            PKGCONFIG += gstreamer-1.0
+            INCLUDEPATH += /Library/Frameworks/GStreamer.framework/Versions/1.0/Headers
+            LIBS += -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0 -lgstvideo-1.0
+        }
+         else {
+                # Linux definitions go here ...
+        }
 }
 
 

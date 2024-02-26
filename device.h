@@ -33,10 +33,10 @@ public:
     int addPin(int boardID, int pinID);
     int addPin(int UID);
     QString typeName();
-
+    enum DEV {SENSOR = 0, SERVO = 1, STEPPER=2};
     bool operator== (const Device& lDev);
 
-    enum DEV {SENSOR = 0, SERVO = 1, STEPPER=2};
+
 
 };
 

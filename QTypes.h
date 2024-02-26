@@ -5,5 +5,4 @@
 #define COMMAND 0x30
 #define QUIT 0x40
 #define SENSOR 0x50
-
 #endif // QTYPES_H

@@ -1,4 +1,4 @@
-#ifndef VIDEOSETTINGSDIALOG_H
+﻿#ifndef VIDEOSETTINGSDIALOG_H
 #define VIDEOSETTINGSDIALOG_H
 
 #include <QDialog>
@@ -6,7 +6,19 @@
 #include <QStringList>
 #include <QDebug>
 
-//#include "mainwindow.h"
+
+typedef struct
+{
+    QString title;
+    QString boatIP;
+    int boatPort;
+    int videono;
+    int formatno;
+    bool video_info;
+    bool proxy;
+} VWSetting;
+
+Q_DECLARE_METATYPE(VWSetting)
 
 namespace Ui {
 class VideoSettingsDialog;
@@ -19,19 +31,20 @@ class VideoSettingsDialog : public QDialog
 public:
     explicit VideoSettingsDialog(QWidget *parent = nullptr);
     ~VideoSettingsDialog();
-    void setInfo(QString _title, QString _boatname, int _PCPort, int videono, int formatno, bool video_info);
+    void setInfo(VWSetting settings);
     void accept();
     QString title();
     void setFormat(QAbstractItemModel *model, int index);
     void setVideo(QAbstractItemModel *model, int index);
 
 signals:
-    void comit(QString title, QString boatname, int _boatPort, int videoNo, int formatNo, bool video_info);
+    void comit(VWSetting settings);
 protected slots:
     void onTitleChanged(QString title);
     void onOptionsChanged(QString options);
     void onPCPortChanged(QString text);
     void onVideoInfoChanged(int i);
+    void onProxyChanged(int i);
 
 
 private:
@@ -41,6 +54,7 @@ private:
     QString __PCIP;
     int __PCPort;
     QString __title;
+    bool proxy;
 
     //struct mosquitto *mosq;
 };
