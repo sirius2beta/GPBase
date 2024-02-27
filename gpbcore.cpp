@@ -14,7 +14,7 @@ GPBCore::GPBCore(QObject *parent, QString config)
     connect(_boatManager, &BoatManager::connectionChanged, _videoManager, &DNVideoManager::connectionChanged);
     connect(_boatManager, &BoatManager::connectionTypeChanged, _videoManager, &DNVideoManager::onConnectionChanged);
     connect(_boatManager, &BoatManager::BoatAdded, _videoManager, &DNVideoManager::onBoatAdded);
-
+    init();
 }
 
 GPBCore::~GPBCore(){
@@ -27,31 +27,4 @@ void GPBCore::init()
     _networkManager->init();
 }
 
-void GPBCore::onConnected(int ID, bool isprimary)
-{
-    BoatItem* boat = _boatManager->getBoatbyID(ID);
-    if(boat != 0){
-        if(isprimary){
-            boat->setCurrentIP(boat->PIP());
-            //emit connectionChanged();
-            qDebug()<<"GPBCore onDisconnected "<<QString::number(ID);
-        }else{
-            if(boat->currentIP() != boat->PIP()){
-                boat->setCurrentIP(boat->SIP());
-                //emit connectionChanged();
-            }
-        }
-    }
-}
 
-void GPBCore::onDisonnected(int ID, bool isprimary)
-{
-    BoatItem* boat = _boatManager->getBoatbyID(ID);
-    if(boat != 0){
-        if(isprimary){
-            boat->setCurrentIP(boat->SIP());
-
-            //emit connectionChanged();
-        }
-    }
-}

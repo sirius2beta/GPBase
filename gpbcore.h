@@ -24,19 +24,11 @@ public:
     DNVideoManager* videoManager() { return _videoManager; }
     QString config() {return _config;}
 
-signals:
-    void connectionChanged(int ID);
-public slots:
-    void onConnected(int ID, bool isprimary);
-    void onDisonnected(int ID, bool isprimary);
 
 private:
     QSettings* settings;
-
     QString _config;
-
     BoatManager* _boatManager;
-
     NetworkManager* _networkManager;
     DNVideoManager* _videoManager;
 

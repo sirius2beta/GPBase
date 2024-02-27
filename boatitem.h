@@ -27,7 +27,6 @@ public:
     void setID(int ID);
     void setPIP(QString PIP);
     void setSIP(QString SIP);
-    void setCurrentIP(QString currentIP);
     void setOS(int OS);
     void setConnectionPriority(int connectionType);
     void setPrimaryConnected(bool connected){ primaryConnected = connected; }
@@ -44,7 +43,6 @@ signals:
     void nameChanged(int ID, QString name);
     void IDChanged(int ID);
     void IPChanged(int ID, bool isPrimary);
-    void CurrentIPChanged(QString curretIP);
     void connected(int ID, bool isPrimary);
     void disconnected(int ID, bool isPrimary);
     void connectionChanged(int ID);

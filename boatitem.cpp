@@ -37,12 +37,6 @@ void BoatItem::setSIP(QString SIP)
     emit IPChanged(_ID, false);
 }
 
-void BoatItem::setCurrentIP(QString currentIP)
-{
-    _currentIP = currentIP;
-    emit CurrentIPChanged(currentIP);
-}
-
 void BoatItem::setOS(int OS)
 {
     _OS = OS;

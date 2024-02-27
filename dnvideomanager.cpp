@@ -103,8 +103,10 @@ void DNVideoManager::connectionChanged(int ID)
     qDebug()<<"DNVideoManager::connectionChanged: "<<ID;
     for(int i = 0; i < videoList.size(); i++){
         if(videoList[i]->boatID() == ID){
-            videoList[i]->stop();
-            videoList[i]->play();
+            if(videoList[i]->isPlaying()){
+                videoList[i]->stop();
+                videoList[i]->play();
+            }
 
         }
     }

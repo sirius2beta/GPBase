@@ -61,9 +61,7 @@ void BoatManager::init()
         HeartBeat* _secondaryHeartBeat = new HeartBeat(boat, 50006, false, boat, _core);
         _secondaryHeartBeat->HeartBeatLoop();
 
-        connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
-        connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
-        connect(boat, &BoatItem::connectionChanged, _core, &GPBCore::connectionChanged);
+        connect(boat, &BoatItem::connectionChanged, this, &BoatManager::connectionChanged);
         connect(boat, &BoatItem::IPChanged, _primaryHeartBeat, &HeartBeat::onChangeIP);
         connect(boat, &BoatItem::IPChanged, _secondaryHeartBeat, &HeartBeat::onChangeIP);
 
@@ -107,9 +105,7 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
     HeartBeat* secondaryHeartBeat = new HeartBeat(boat, 50006, false, boat, _core);
     secondaryHeartBeat->HeartBeatLoop();
 
-    connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
-    connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
-    connect(boat, &BoatItem::connectionChanged, _core, &GPBCore::connectionChanged);
+    connect(boat, &BoatItem::connectionChanged, this, &BoatManager::connectionChanged);
     connect(boat, &BoatItem::IPChanged, primaryHeartBeat, &HeartBeat::onChangeIP);
     connect(boat, &BoatItem::IPChanged, secondaryHeartBeat, &HeartBeat::onChangeIP);
 

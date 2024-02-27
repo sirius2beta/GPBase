@@ -42,9 +42,6 @@ public:
     void setVideoNo(int i);
     //void setFormatNo(int i);
 
-signals:
-    void sendMsg(QHostAddress addr, char topic, QByteArray command);
-
 public slots:
     void onConnectionChanged();
     void onPCPortChanged(int port);

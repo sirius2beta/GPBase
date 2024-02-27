@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent, QString config)
 
     //init gpbcore
     gpbcore = new GPBCore(this, config);
-    gpbcore->init();
+
 
     ui->setupUi(this);
     this->setCorner(Qt::Corner::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -119,10 +119,6 @@ VideoWindow* MainWindow::addVideoWindow(VideoItem *videoItem)
     }
     vwindow->init(videoItem);
     vwindow->setFormat();
-
-    connect(vwindow,&VideoWindow::sendMsg,gpbcore->networkManager(),&NetworkManager::sendMsg);
-    //connect(gpbcore->networkManager(), &NetworkManager::setFormat, vwindow, &VideoWindow::setVideoFormat);
-    connect(gpbcore, &GPBCore::connectionChanged, vwindow, &VideoWindow::onConnectionChanged);
 
     return vwindow;
 
