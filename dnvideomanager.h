@@ -26,6 +26,7 @@ public slots:
     void onBoatAdded();
     void onBoatIDSet(VideoItem* videoItem);
     void setVideoFormat(int ID, QStringList videoformat);
+    void onConnectionChanged(int connectionType);
 signals:
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
 

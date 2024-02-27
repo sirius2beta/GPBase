@@ -19,15 +19,17 @@ VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, i
     _encoder(QString("h264")),
     _proxy(false),
     _requestFormat(true),
-    _isPlaying(false)
+    _isPlaying(false),
+    _connectionPriority(0)
 {
     _videoNoModel = new QStandardItemModel;
     int current = _videoNoModel->rowCount();
     _qualityModel = new QStandardItemModel;
-    QStandardItem* item = new QStandardItem("fl");
-    _videoNoModel->setItem(0,0,item);
+    QStandardItem* item1 = new QStandardItem("fl");
+    QStandardItem* item2 = new QStandardItem("fl");
+    _videoNoModel->setItem(0,0,item1);
     _videoNoModel->removeRows(0,1);
-    _qualityModel->setItem(0,0,item);
+    _qualityModel->setItem(0,0,item2);
     _qualityModel->removeRows(0,1);
 
 
@@ -41,8 +43,8 @@ VideoItem::~VideoItem()
         gst_element_set_state (_pipeline, GST_STATE_NULL);
         gst_object_unref (_pipeline);
     }
-    delete _videoNoModel;
 
+    delete _videoNoModel;
     delete _qualityModel;
 }
 
@@ -79,8 +81,6 @@ void VideoItem::setIndex(int index)
 
 void VideoItem::setVideoNo(int index)
 {
-
-
     _qualityModel->removeRows(0,_qualityModel->rowCount());
     int currentNo = -1;
     int currentindex = -1;
@@ -148,15 +148,28 @@ void VideoItem::setDisplay(WId xwinid)
     _xwinid = xwinid;
 }
 
-void VideoItem::play(QString encoder, bool proxy)
+void VideoItem::setConnectionPriority(int connectionType)
 {
+    qDebug()<<"VideoItem:: connectionTypeChanged: pre:"<<_connectionPriority<<", now:"<<connectionType;
+    if(_connectionPriority != connectionType){
+        _connectionPriority = connectionType;
+        if(_isPlaying){
+            stop();
+            play();
+        }else{
+            play();
+        }
+    }
+
+}
+
+void VideoItem::play()
+{
+    if(_videoNo == -1 || _formatNo == -1) return;
+
     QString gstcmd;
-    _encoder = encoder;
-    _proxy = proxy;
-
-
     if(false){
-        if(encoder == "h264"){
+        if(_encoder == "h264"){
             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
              textoverlay text=\"%2\n%3\nPort:%1\" valignment=top halignment=right font-desc=\"Sans, 14\" !\
              glimagesink name=mySink2").arg(QString::number(_PCPort),_title, QString::number(_videoNo));
@@ -167,7 +180,7 @@ void VideoItem::play(QString encoder, bool proxy)
         }
 
     }else{
-        if(encoder == "h264"){
+        if(_encoder == "h264"){
             gstcmd = QString("udpsrc port=%1 ! application/x-rtp, media=video, clock-rate=90000, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert  !\
              glimagesink name=mySink2").arg(QString::number(_PCPort));
         }else{
@@ -175,7 +188,6 @@ void VideoItem::play(QString encoder, bool proxy)
              glimagesink name=mySink2").arg(QString::number(_PCPort));
         }
     }
-
 
     if(!_isPlaying){
         _pipeline= gst_parse_launch(gstcmd.toLocal8Bit(), NULL);
@@ -186,6 +198,13 @@ void VideoItem::play(QString encoder, bool proxy)
         _isPlaying = true;
     }
     emit videoPlayed(this);
+}
+
+void VideoItem::play(QString encoder, bool proxy)
+{
+    _encoder = encoder;
+    _proxy = proxy;
+    play();
 }
 
 void VideoItem::stop()
@@ -201,7 +220,10 @@ void VideoItem::stop()
 
 QString VideoItem::videoFormat()
 {
-    qDebug()<<"no:"<<_formatNo<<", "<<_qualityModel->rowCount();
+    if(_formatNo == -1){
+        qDebug()<<"**Warning: VideoItem::videoFormat: _formatNo = -1";
+        return QString("");
+    }
     return _qualityModel->item(_formatNo, 0)->text();
 
 }

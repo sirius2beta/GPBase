@@ -16,6 +16,7 @@ public:
     explicit VideoItem(QObject *parent = nullptr, GPBCore* core = nullptr, int index=-1, QString title=QString(), int boatID=-1, int videoNo=-1, int formatNo=-1, int PCPort=0);
     ~VideoItem();
     void setDisplay(WId xwinid);
+    void play();
     void play(QString encoder, bool proxy);
     void stop();
 
@@ -27,6 +28,7 @@ public:
     void setFormatNo(int no);
     void setVideoFormat(QStringList videoformat);
     void setWID(WId wid){_xwinid = wid;}
+    void setConnectionPriority(int connectionType);
 
     QString title() { return _title;   }
     int boatID() {  return _boatID; }
@@ -34,6 +36,9 @@ public:
     int port() {return _proxy?(_PCPort+100):_PCPort;}
     int index() {return _index; }
     int videoNo() { return _videoNo;}
+    bool isPlaying(){ return _isPlaying;}
+    int connectionPriority() { return _connectionPriority;}
+
     QString encoder() {return _encoder;}
     QString videoFormat();
     QAbstractItemModel* videoNoModel(){ return _videoNoModel;   }
@@ -56,6 +61,7 @@ private:
     int _videoNo;
     int _formatNo;
     int _PCPort;
+    int _connectionPriority;
     WId _xwinid;
     QString _encoder;
     bool _proxy;

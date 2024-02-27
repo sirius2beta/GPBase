@@ -29,7 +29,7 @@ public:
     int getIndexbyID(int ID);
 
     QString CurrentIP(QString boatname);
-    void setConnectionType(int connectiontype);
+    //void setConnectionType(int connectiontype);
     int size();
 signals:
     void BoatAdded();

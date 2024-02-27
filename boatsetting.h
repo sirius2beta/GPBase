@@ -32,7 +32,7 @@ public:
     void addBoard(int ID, QString boardName, QString boardType, bool connected);
     void upDateDeviceTableView();
 
-    enum Connection {Auto = 0, Primary = 1, Secondary=2};
+    enum Connection {Primary = 0, Secondary=1};
 
 signals:
     void connectionTypeChanged(int connectiontype);

@@ -52,7 +52,8 @@ void DNVideoManager::onPlay(VideoItem* videoItem)
 {
     QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
     QString msg = "video"+QString::number(videoItem->videoNo())+" "+videoItem->videoFormat()+" "+videoItem->encoder()+" nan"+" 90"+" "+QString::number(videoItem->port());
-    emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
+    if(msg == QString("")) return;
+    //emit sendMsg(ip, char(COMMAND), msg.toLocal8Bit());
 }
 
 void DNVideoManager::onStop(VideoItem* videoItem)
@@ -87,5 +88,12 @@ void DNVideoManager::setVideoFormat(int ID, QStringList videoformat)
             videoList[i]->setVideoFormat(videoformat);
 
         }
+    }
+}
+
+void DNVideoManager::onConnectionChanged(int connectionType)
+{
+    for(int i = 0; i < videoList.size(); i++){
+        videoList[i]->setConnectionPriority(connectionType);
     }
 }

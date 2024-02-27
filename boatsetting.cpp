@@ -12,7 +12,7 @@ BoatSetting::BoatSetting(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->autoButton->setChecked(true);
+    ui->primaryButton->setChecked(true);
 
     ui->BoatTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->BoatTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -55,10 +55,8 @@ BoatSetting::BoatSetting(QWidget *parent) :
     connect(ui->deleteBoatPushButton, &QPushButton::clicked, this, &BoatSetting::onDeleteBoat);
     connect(ui->BoatcomboBox, (void (QComboBox::*)(int))&QComboBox::currentIndexChanged, this, &BoatSetting::onBoatSelected);
     connect(ui->addDeviceButton, &QPushButton::clicked, this, &BoatSetting::onAddDeviceButtonClicked);
-    connect(ui->autoButton, &QPushButton::clicked, this, &BoatSetting::connectionTypeChanged);
     connect(ui->primaryButton, &QPushButton::clicked, this, &BoatSetting::connectionTypeChanged);
     connect(ui->secondaryButton, &QPushButton::clicked, this, &BoatSetting::connectionTypeChanged);
-
 }
 
 void BoatSetting::init(GPBCore* core)

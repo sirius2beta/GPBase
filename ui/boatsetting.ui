@@ -107,13 +107,6 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
-           <widget class="QRadioButton" name="autoButton">
-            <property name="text">
-             <string>Auto</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QRadioButton" name="primaryButton">
             <property name="text">
              <string>Primary</string>

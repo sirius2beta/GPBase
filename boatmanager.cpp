@@ -208,13 +208,13 @@ int BoatManager::size()
 {
     return boatList.size();
 }
-
+/*
 void BoatManager::setConnectionType(int connectiontype)
 {
     _connectionType = connectiontype;
     emit connectionTypeChanged(connectiontype);
 }
-
+*/
 void BoatManager::onBoatNameChange(int ID, QString newname)
 {
     int index = getIndexbyID(ID);
@@ -279,7 +279,9 @@ void BoatManager::onDisonnected(int ID, bool isprimary)
 
 void BoatManager::onConnectionTypeChanged(int connectiontype)
 {
-    qDebug()<<"ck1";
     _connectionType = connectiontype;
+    for(int i = 0; i< boatList.size(); i++){
+        boatList[i]->setConnectionPriority(connectiontype);
+    }
     emit connectionTypeChanged(connectiontype);
 }

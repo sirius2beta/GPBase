@@ -2,7 +2,9 @@
 
 BoatItem::BoatItem(QObject *parent)
     : QObject{parent},
-      primaryConnected(false)
+    primaryConnected(false),
+    secondaryConnected(false),
+    _connectionPriority(0)
 {
 }
 
@@ -45,6 +47,11 @@ void BoatItem::setOS(int OS)
     _OS = OS;
 }
 
+void BoatItem::setConnectionPriority(int connectionType)
+{
+    _connectionPriority = connectionType;
+}
+
 Peripheral BoatItem::getPeriperalbyID(int ID)
 {
 
@@ -62,7 +69,8 @@ void BoatItem::connect(bool isPrimary)
     if(isPrimary){
         _currentIP = _PIP;
         primaryConnected = true;
-
+    }else{
+        secondaryConnected = true;
     }
     qDebug()<<"BoatItem::connect "<<(isPrimary?"Primary":"Secondary")<<" "<<QString::number(_ID);
     emit connected(_ID, isPrimary);
