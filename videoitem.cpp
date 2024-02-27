@@ -23,13 +23,14 @@ VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, i
     _connectionPriority(0)
 {
     _videoNoModel = new QStandardItemModel;
-    int current = _videoNoModel->rowCount();
     _qualityModel = new QStandardItemModel;
-    QStandardItem* item1 = new QStandardItem("fl");
-    QStandardItem* item2 = new QStandardItem("fl");
-    _videoNoModel->setItem(0,0,item1);
+    QStandardItem* dummyitem1 = new QStandardItem("fl");
+    QStandardItem* dummyitem2 = new QStandardItem("fl");
+
+    //set and remove item so QCombobox can keep index updated
+    _videoNoModel->setItem(0,0,dummyitem1);
     _videoNoModel->removeRows(0,1);
-    _qualityModel->setItem(0,0,item2);
+    _qualityModel->setItem(0,0,dummyitem2);
     _qualityModel->removeRows(0,1);
 
 
@@ -62,7 +63,6 @@ void VideoItem::setPCPort(int port)
 
 void VideoItem::setBoatID(int ID)
 {
-    qDebug()<<"setBoatID";
     if(_boatID != ID){
         _videoNoModel->removeRows(0,_videoNoModel->rowCount());
         _boatID = ID;
@@ -70,7 +70,7 @@ void VideoItem::setBoatID(int ID)
 
     _qualityModel->removeRows(0,_qualityModel->rowCount());
     _requestFormat = true;
-    emit boatIDSet(this);
+    emit requestFormat(this);
 }
 
 void VideoItem::setIndex(int index)

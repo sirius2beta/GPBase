@@ -45,7 +45,7 @@ public:
     QAbstractItemModel* qualityModel(){ return _qualityModel;   }
 
 signals:
-    void boatIDSet(VideoItem* v);
+    void requestFormat(VideoItem* v); //set _requestFormat = true before sending
     void PCPortChanged(int port);
     void titleChanged(QString title);
     void indexChanged(int index);

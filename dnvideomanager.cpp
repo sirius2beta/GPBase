@@ -44,7 +44,7 @@ void DNVideoManager::addVideoItem(int index, QString title, int boatID, int vide
     videoList.append(newvideoitem);
     connect(newvideoitem, &VideoItem::videoPlayed, this, &DNVideoManager::onPlay);
     connect(newvideoitem, &VideoItem::videoStoped, this, &DNVideoManager::onStop);
-    connect(newvideoitem, &VideoItem::boatIDSet, this, &DNVideoManager::onBoatIDSet);
+    connect(newvideoitem, &VideoItem::requestFormat, this, &DNVideoManager::onRequestFormat);
 
 }
 
@@ -72,7 +72,7 @@ void DNVideoManager::onBoatAdded()
     }
 }
 
-void DNVideoManager::onBoatIDSet(VideoItem* videoItem)
+void DNVideoManager::onRequestFormat(VideoItem* videoItem)
 {
     QHostAddress addr(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
     emit sendMsg(addr,char(FORMAT),"qformat");
