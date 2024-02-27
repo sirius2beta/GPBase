@@ -55,8 +55,8 @@ BoatSetting::BoatSetting(QWidget *parent) :
     connect(ui->deleteBoatPushButton, &QPushButton::clicked, this, &BoatSetting::onDeleteBoat);
     connect(ui->BoatcomboBox, (void (QComboBox::*)(int))&QComboBox::currentIndexChanged, this, &BoatSetting::onBoatSelected);
     connect(ui->addDeviceButton, &QPushButton::clicked, this, &BoatSetting::onAddDeviceButtonClicked);
-    connect(ui->primaryButton, &QPushButton::clicked, this, &BoatSetting::connectionTypeChanged);
-    connect(ui->secondaryButton, &QPushButton::clicked, this, &BoatSetting::connectionTypeChanged);
+    connect(ui->primaryButton, &QPushButton::clicked, this, &BoatSetting::setPrimaryPriority);
+    connect(ui->secondaryButton, &QPushButton::clicked, this, &BoatSetting::setSecondaryPriority);
 }
 
 void BoatSetting::init(GPBCore* core)
@@ -450,4 +450,14 @@ void BoatSetting::onAddDeviceButtonClicked()
 
     }
     */
+}
+
+void BoatSetting::setPrimaryPriority()
+{
+    emit connectionTypeChanged(0);
+}
+
+void BoatSetting::setSecondaryPriority()
+{
+    emit connectionTypeChanged(1);
 }

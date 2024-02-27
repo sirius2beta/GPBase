@@ -25,9 +25,8 @@ public:
     QString config() {return _config;}
 
 signals:
-    void connectionChanged();
+    void connectionChanged(int ID);
 public slots:
-    void onConnectionTypeChanged();
     void onConnected(int ID, bool isprimary);
     void onDisonnected(int ID, bool isprimary);
 

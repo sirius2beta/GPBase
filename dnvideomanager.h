@@ -27,6 +27,7 @@ public slots:
     void onRequestFormat(VideoItem* videoItem);
     void setVideoFormat(int ID, QStringList videoformat);
     void onConnectionChanged(int connectionType);
+    void connectionChanged(int ID);
 signals:
     void sendMsg(QHostAddress addr, char topic, QByteArray command);
 

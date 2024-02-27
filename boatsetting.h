@@ -46,6 +46,8 @@ public slots:
     void onChangePIP();
     void onChangeSIP();
     void onAddDeviceButtonClicked();
+    void setPrimaryPriority();
+    void setSecondaryPriority();
 
 private:
     Ui::BoatSetting *ui;

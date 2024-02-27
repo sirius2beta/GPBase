@@ -34,6 +34,7 @@ public:
 signals:
     void BoatAdded();
     void connectionTypeChanged(int connectiontype);
+    void connectionChanged(int ID);
 public slots:
     void onBoatNameChange(int ID, QString newname);
     void onIPChanged(int ID, bool primary);

@@ -63,6 +63,7 @@ void BoatManager::init()
 
         connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
         connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
+        connect(boat, &BoatItem::connectionChanged, _core, &GPBCore::connectionChanged);
         connect(boat, &BoatItem::IPChanged, _primaryHeartBeat, &HeartBeat::onChangeIP);
         connect(boat, &BoatItem::IPChanged, _secondaryHeartBeat, &HeartBeat::onChangeIP);
 
@@ -108,6 +109,7 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
 
     connect(boat, &BoatItem::connected,  _core, &GPBCore::onConnected);
     connect(boat, &BoatItem::disconnected, _core, &GPBCore::onDisonnected);
+    connect(boat, &BoatItem::connectionChanged, _core, &GPBCore::connectionChanged);
     connect(boat, &BoatItem::IPChanged, primaryHeartBeat, &HeartBeat::onChangeIP);
     connect(boat, &BoatItem::IPChanged, secondaryHeartBeat, &HeartBeat::onChangeIP);
 
@@ -255,9 +257,11 @@ void BoatManager::onIPChanged(int ID, bool primary)
 void BoatManager::onConnected(int ID, bool isprimary)
 {
     if(isprimary){
+        getBoatbyID(ID)->setPrimaryConnected(true);
         boatItemModel->item(getIndexbyID(ID),1)->setText("Active");
         boatItemModel->item(getIndexbyID(ID),1)->setBackground(QBrush(QColor(0,120,0)));
     }else{
+        getBoatbyID(ID)->setSecondaryConnected(false);
         boatItemModel->item(getIndexbyID(ID),2)->setText("Active");
         boatItemModel->item(getIndexbyID(ID),2)->setBackground(QBrush(QColor(0,120,0)));
     }
@@ -268,9 +272,11 @@ void BoatManager::onDisonnected(int ID, bool isprimary)
 {
 
     if(isprimary){
+        getBoatbyID(ID)->setPrimaryConnected(false);
         boatItemModel->item(getIndexbyID(ID),1)->setText("SB");
         boatItemModel->item(getIndexbyID(ID),1)->setBackground(QBrush(QColor(120,0,0)));
     }else{
+        getBoatbyID(ID)->setSecondaryConnected(false);
         boatItemModel->item(getIndexbyID(ID),2)->setText("SB");
         boatItemModel->item(getIndexbyID(ID),2)->setBackground(QBrush(QColor(120,0,0)));
     }

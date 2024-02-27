@@ -17,21 +17,10 @@ public:
     QString PIP(void) {    return _PIP;    };
     QString SIP(void) {    return _SIP;    };
     QString currentIP(void) {
-        if(_connectionPriority == 0){
-            if(!primaryConnected){
-                return _SIP;
-            }else{
-                return _PIP;
-            }
-        }else{
-            if(!secondaryConnected){
-                return _PIP;
-            }else{
-                return _SIP;
-            }
-        }
+        return _currentIP;
     };
     int OS(void) {    return _OS;   };
+    int linkType() { return _linkType; }
 
 
     void setName(QString name);
@@ -41,6 +30,8 @@ public:
     void setCurrentIP(QString currentIP);
     void setOS(int OS);
     void setConnectionPriority(int connectionType);
+    void setPrimaryConnected(bool connected){ primaryConnected = connected; }
+    void setSecondaryConnected(bool connected){ secondaryConnected = connected; }
 
     Device& getDevbyID(int ID);
     Peripheral getPeriperalbyID(int ID);
@@ -56,7 +47,7 @@ signals:
     void CurrentIPChanged(QString curretIP);
     void connected(int ID, bool isPrimary);
     void disconnected(int ID, bool isPrimary);
-    void connectionChanged();
+    void connectionChanged(int ID);
 private:
     QString _name;
     int _ID;
@@ -67,6 +58,7 @@ private:
     bool primaryConnected;
     bool secondaryConnected;
     int _connectionPriority;
+    int _linkType;
 
     HeartBeat* _primaryHeartBeat;
     HeartBeat* _secondaryHeartBeat;

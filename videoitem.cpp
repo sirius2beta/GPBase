@@ -16,11 +16,11 @@ VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, i
     _videoNo(videoNo),
     _formatNo(formatNo),
     _PCPort(PCPort),
+    _connectionPriority(0),
     _encoder(QString("h264")),
     _proxy(false),
     _requestFormat(true),
-    _isPlaying(false),
-    _connectionPriority(0)
+    _isPlaying(false)
 {
     _videoNoModel = new QStandardItemModel;
     _qualityModel = new QStandardItemModel;
@@ -64,13 +64,15 @@ void VideoItem::setPCPort(int port)
 void VideoItem::setBoatID(int ID)
 {
     if(_boatID != ID){
+        stop();
         _videoNoModel->removeRows(0,_videoNoModel->rowCount());
         _boatID = ID;
+        _qualityModel->removeRows(0,_qualityModel->rowCount());
+        _requestFormat = true;
+        emit requestFormat(this);
     }
 
-    _qualityModel->removeRows(0,_qualityModel->rowCount());
-    _requestFormat = true;
-    emit requestFormat(this);
+
 }
 
 void VideoItem::setIndex(int index)
@@ -82,6 +84,7 @@ void VideoItem::setIndex(int index)
 void VideoItem::setVideoNo(int index)
 {
     _qualityModel->removeRows(0,_qualityModel->rowCount());
+    int preNo = -1;
     int currentNo = -1;
     int currentindex = -1;
     for(const auto &formatlist:_videoFormatList){
@@ -89,7 +92,7 @@ void VideoItem::setVideoNo(int index)
         if(formatlist.split(' ')[0].split('o')[1].toInt() != currentNo){
             currentNo = formatlist.split(' ')[0].split('o')[1].toInt();
             currentindex ++;
-            _videoNo = currentNo;
+
         }
         if(currentindex == index){
             QStringList fl = formatlist.split(' ');
@@ -97,6 +100,7 @@ void VideoItem::setVideoNo(int index)
             int current = _qualityModel->rowCount();
             QStandardItem* item = new QStandardItem(fl.join(" "));
             _qualityModel->setItem(current, 0, item);
+            _videoNo = currentNo;
         }
     }
     emit UIUpdateFormat();
@@ -150,14 +154,15 @@ void VideoItem::setDisplay(WId xwinid)
 
 void VideoItem::setConnectionPriority(int connectionType)
 {
-    qDebug()<<"VideoItem:: connectionTypeChanged: pre:"<<_connectionPriority<<", now:"<<connectionType;
+    qDebug()<<"VideoItem:: connectionTypeChanged: index:"<<_index<<", pre:"<<_connectionPriority<<", now:"<<connectionType;
+    qDebug()<<"isPlaying:"<<(_isPlaying?"yes":"no");
     if(_connectionPriority != connectionType){
         _connectionPriority = connectionType;
         if(_isPlaying){
+            qDebug()<<"VideoItem:: connectionTypeChanged:STOP & PLAY";
             stop();
             play();
         }else{
-            play();
         }
     }
 
@@ -165,7 +170,9 @@ void VideoItem::setConnectionPriority(int connectionType)
 
 void VideoItem::play()
 {
+
     if(_videoNo == -1 || _formatNo == -1) return;
+    qDebug()<<"VideoItem::play, videoNo:"<<_videoNo<<", formatNo:"<<_formatNo;
 
     QString gstcmd;
     if(false){
@@ -195,8 +202,9 @@ void VideoItem::play()
         gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY (_sink), _xwinid);
         gst_element_set_state (_pipeline,
             GST_STATE_PLAYING);
-        _isPlaying = true;
+
     }
+    _isPlaying = true;
     emit videoPlayed(this);
 }
 
