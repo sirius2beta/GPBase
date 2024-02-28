@@ -15,48 +15,51 @@ CONFIG += c++11 console
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 DEFINES += DEBUG_MODE
+
+INCLUDEPATH += \
+    api/ \
+
 SOURCES += \
     adddevicedialog.cpp \
-    boatitem.cpp \
-    boatmanager.cpp \
+    api/boatitem.cpp \
+    api/boatmanager.cpp \
     boatsetting.cpp \
     comboboxdelegate.cpp \
     configdialog.cpp \
     createwindowdialog.cpp \
     device.cpp \
-    dnvideomanager.cpp \
-    gpbcore.cpp \
-    heartbeat.cpp \
+    api/dnvideomanager.cpp \
+    api/gpbcore.cpp \
+    api/heartbeat.cpp \
     main.cpp \
     mainwindow.cpp \
-    networkmanager.cpp \
+    api/networkmanager.cpp \
     sensorlabel.cpp \
     sensorwidget.cpp \
     setpindialog.cpp \
-    videoitem.cpp \
+    api/videoitem.cpp \
     videosettingsdialog.cpp \
     videowindow.cpp \
-    #yolov5.cpp
 
 HEADERS += \
     QTypes.h \
     adddevicedialog.h \
-    boatitem.h \
-    boatmanager.h \
+    api/boatitem.h \
+    api/boatmanager.h \
     boatsetting.h \
     comboboxdelegate.h \
     configdialog.h \
     createwindowdialog.h \
     device.h \
-    dnvideomanager.h \
-    gpbcore.h \
-    heartbeat.h \
+    api/dnvideomanager.h \
+    api/gpbcore.h \
+    api/heartbeat.h \
     mainwindow.h \
-    networkmanager.h \
+    api/networkmanager.h \
     sensorlabel.h \
     sensorwidget.h \
     setpindialog.h \
-    videoitem.h \
+    api/videoitem.h \
     videosettingsdialog.h \
     videowindow.h \
     #yolov5.h
