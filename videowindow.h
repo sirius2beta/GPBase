@@ -36,18 +36,15 @@ public:
     ~VideoWindow();
     void init(VideoItem* videoItem);
     void setFormat();
-
     void setVideoInfo(bool i);
     void clearScreen();
     void setVideoNo(int i);
-    //void setFormatNo(int i);
 
 public slots:
     void onConnectionChanged();
     void onPCPortChanged(int port);
     void onTitleChanged(QString t);
     void onIndexChanged(int i);
-    void updateFormat();
 
 protected slots:
     void onSettings();

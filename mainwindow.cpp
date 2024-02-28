@@ -61,23 +61,16 @@ void MainWindow::initBoatSettings()
 
 void MainWindow::initVideoWindows()
 {
-
-    int window_count = 4;
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
-    //settings->endGroup();
-    qDebug()<<"count:"<<gpbcore->videoManager()->count();
     for(int i = 0; i < gpbcore->videoManager()->count(); i++){
         //create settings if first time opened
 
         VideoWindow* vwindow = addVideoWindow(gpbcore->videoManager()->getVideoItem(i));
-        connect(gpbcore->videoManager()->getVideoItem(i), &VideoItem::UIUpdateFormat, vwindow, &VideoWindow::updateFormat);
-
-        if(i == 1){
+        if(i == 0){
             setCentralWidget(vwindow);
         }else{
             QDockWidget* dockwidget = new QDockWidget(settings->value(QString("%1/w%2/title").arg(_config,QString::number(i))).toString(),this);
             addDockWidget(area, dockwidget);
-            //dockwidget->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
             dockwidget->setWidget(vwindow);
             dockwidget->setMinimumHeight(300);
         }
@@ -112,14 +105,7 @@ VideoWindow* MainWindow::addVideoWindow(VideoItem *videoItem)
 
     VideoWindow* vwindow = new VideoWindow(this, _config, gpbcore);
 
-    if(settings->value(QString("%1/w%2/videoinfo").arg(_config,QString::number(videoItem->index()))) == 1){
-        vwindow->setVideoInfo(true);
-    }else{
-        vwindow->setVideoInfo(false);
-    }
     vwindow->init(videoItem);
-    vwindow->setFormat();
-
     return vwindow;
 
 }

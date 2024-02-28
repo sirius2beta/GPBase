@@ -20,7 +20,8 @@ VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, i
     _encoder(QString("h264")),
     _proxy(false),
     _requestFormat(true),
-    _isPlaying(false)
+    _isPlaying(false),
+    _isVideoInfo(false)
 {
     _videoNoModel = new QStandardItemModel;
     _qualityModel = new QStandardItemModel;

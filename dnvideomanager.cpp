@@ -26,6 +26,7 @@ void DNVideoManager::init()
             settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(i)), 0);
         }
         QString title = settings->value(QString("%1/w%2/title").arg(_config,QString::number(i))).toString();
+
         int PCPort = 5201+i;
         if(_core->boatManager()->size() > 0){
             addVideoItem(i, title, _core->boatManager()->getIDbyInex(0), -1, -1, PCPort);
@@ -41,6 +42,11 @@ void DNVideoManager::addVideoItem(int index, QString title, int boatID, int vide
 {
     qDebug()<<"----------------"<<boatID;
     VideoItem* newvideoitem = new VideoItem(this, _core, index, title, boatID, videoNo, formatNo, PCPort);
+    if(settings->value(QString("%1/w%2/videoinfo").arg(_core->config(),QString::number(newvideoitem->index()))) == 1){
+        newvideoitem->setVideoInfo(true);
+    }else{
+        newvideoitem->setVideoInfo(false);
+    }
     videoList.append(newvideoitem);
     connect(newvideoitem, &VideoItem::videoPlayed, this, &DNVideoManager::onPlay);
     connect(newvideoitem, &VideoItem::videoStoped, this, &DNVideoManager::onStop);

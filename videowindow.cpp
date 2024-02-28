@@ -51,11 +51,12 @@ void VideoWindow::init(VideoItem *videoItem)
     _videoItem = videoItem;
     _videoItem->setWID(ui->screen_text->winId());
     ui->videoportComboBox->setModel(videoItem->videoNoModel());
-
     ui->videoFormatcomboBox->setModel(videoItem->qualityModel());
     connect(videoItem, &VideoItem::titleChanged, this, &VideoWindow::onTitleChanged);
     connect(videoItem, &VideoItem::PCPortChanged, this, &VideoWindow::onPCPortChanged);
     connect(videoItem, &VideoItem::indexChanged, this, &VideoWindow::onIndexChanged);
+
+    setFormat();
 }
 
 void VideoWindow::setFormat()
@@ -68,7 +69,6 @@ void VideoWindow::onPCPortChanged(int port)
     ui->screen_text->setText(QString("%1 (port : %2)").arg(_videoItem->title(), QString::number(port)));
 }
 
-
 void VideoWindow::onTitleChanged(QString t)
 {
     ui->screen_text->setText(QString("%1 (port : %2)").arg(t, QString::number(_videoItem->PCPort())));
@@ -77,23 +77,6 @@ void VideoWindow::onTitleChanged(QString t)
 void VideoWindow::onIndexChanged(int i)
 {
     //index = i;
-}
-
-void VideoWindow::updateFormat()
-{
-
-    if(ui->videoportComboBox->currentIndex() == -1){
-        if(ui->videoportComboBox->model()->rowCount()>0){
-            //ui->videoportComboBox->setCurrentIndex(0);
-        }
-    }
-    if(ui->videoFormatcomboBox->currentIndex() == -1){
-        if(ui->videoFormatcomboBox->model()->rowCount()>0){
-
-            //ui->videoFormatcomboBox->setCurrentIndex(0);
-        }
-    }
-
 }
 
 void VideoWindow::setVideoInfo(bool i)
@@ -120,21 +103,18 @@ void VideoWindow::onSettings()
 
 void VideoWindow::onPlay()
 {
-
-
     QString encoder = "jpegenc";
     if(ui->H264checkBox->isChecked()){
         encoder = "h264";
     }
 
     _videoItem->play(encoder, proxyMode);
-
     ui->playButton->setEnabled(false);
     QTimer::singleShot(100,[=]{
         ui->playButton->setEnabled(true);
     });
-    isPlaying = true;
 
+    isPlaying = true;
 }
 
 void VideoWindow::onStop()
@@ -143,10 +123,8 @@ void VideoWindow::onStop()
     _videoItem->stop();
 }
 
-
 void VideoWindow::changeSettings(VWSetting settings)
 {
-
     qDebug()<<"change settings";
     _videoItem->setTitle(settings.title);
     setVideoInfo(settings.video_info);
@@ -174,7 +152,6 @@ void VideoWindow::changeSettings(VWSetting settings)
      glimagesink name=mySink2").arg(QString::number(_videoItem->PCPort()),_videoItem->title(),ui->videoportComboBox->currentText());
     }
 
-
     QDockWidget* dockwidget = (QDockWidget*)parent();
     dockwidget->setWindowTitle(_videoItem->title());
     //ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(title, QString::number(port),ui->videoportComboBox->currentText()));
@@ -186,24 +163,11 @@ void VideoWindow::clearScreen(){
     ui->screen_text->setText(QString("%1\n%3\n(port : %2)").arg(_videoItem->title(), QString::number(_videoItem->PCPort()),ui->videoportComboBox->currentText()));
 }
 
-
-
 void VideoWindow::setVideoNo(int i)
 {
     qDebug()<<"VideoWindow::setVideoNo: "<<i;
-
     _videoItem->setVideoNo(i);
-
-
 }
-/*
-void VideoWindow::setFormatNo(int i)
-{
-    _videoItem->setFormatNo(i);
-    formatNo = i;
-
-}
-*/
 
 void VideoWindow::onSetFormatNo(int i)
 {
@@ -219,7 +183,6 @@ void VideoWindow::onSetBoatNo(int i)
         _videoItem->setBoatID(_core->boatManager()->getIDbyInex(i));
         qDebug()<<"set boatNO "<<_core->boatManager()->getIDbyInex(i);
     }
-
 }
 
 void VideoWindow::onConnectionChanged()
@@ -228,5 +191,4 @@ void VideoWindow::onConnectionChanged()
         onPlay();
         qDebug()<<"VideoWindow::onConnectionChanged";
     }
-
 }

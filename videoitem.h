@@ -29,6 +29,7 @@ public:
     void setVideoFormat(QStringList videoformat);
     void setWID(WId wid){_xwinid = wid;}
     void setConnectionPriority(int connectionType);
+    void setVideoInfo(bool i) { _isVideoInfo = i; }
 
     QString title() { return _title;   }
     int boatID() {  return _boatID; }
@@ -38,6 +39,7 @@ public:
     int videoNo() { return _videoNo;}
     bool isPlaying(){ return _isPlaying;}
     int connectionPriority() { return _connectionPriority;}
+    bool videoInfo() { return _isVideoInfo; }
 
     QString encoder() {return _encoder;}
     QString videoFormat();

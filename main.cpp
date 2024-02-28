@@ -14,7 +14,6 @@ int main(int argc, char *argv[])
     gst_init (&argc, &argv);
     QApplication a(argc, argv);
 
-
     a.setStyle(QStyleFactory::create("Fusion"));
     QPalette darkPalette;
     darkPalette.setColor(QPalette::Window, QColor(53,53,53));
