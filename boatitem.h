@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "device.h"
+#include "boatitem.h"
 
 class HeartBeat;
 
@@ -57,6 +58,7 @@ private:
     bool secondaryConnected;
     int _connectionPriority;
     int _linkType;
+
 
     HeartBeat* _primaryHeartBeat;
     HeartBeat* _secondaryHeartBeat;

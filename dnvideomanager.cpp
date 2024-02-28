@@ -65,6 +65,10 @@ void DNVideoManager::onPlay(VideoItem* videoItem)
 void DNVideoManager::onStop(VideoItem* videoItem)
 {
     QString videoNo = QString("video")+QString::number(videoItem->videoNo());
+    if(_core->boatManager()->getBoatbyID(videoItem->boatID()) == 0){
+        qDebug()<<"Fatal:: DNVideoManager::onStop, boat ID:"<< videoItem->boatID()<<" not exist";
+        return;
+    }
     QHostAddress ip = QHostAddress(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
     emit sendMsg(ip, char(QUIT), videoNo.toLocal8Bit());
 }
@@ -81,6 +85,7 @@ void DNVideoManager::onBoatAdded()
 void DNVideoManager::onRequestFormat(VideoItem* videoItem)
 {
     QHostAddress addr(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
+    qDebug()<<"DNVideoManager::onRequestFormat: currentIP:"<<_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP();
     emit sendMsg(addr,char(FORMAT),"qformat");
     qDebug()<<"format call";
 }

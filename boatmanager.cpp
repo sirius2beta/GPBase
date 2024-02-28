@@ -130,7 +130,7 @@ BoatItem* BoatManager::addBoat(int ID, QString boatname, QString PIP, QString SI
 
 void BoatManager::deleteBoat(int index)
 {
-
+    int ID = getIndexbyID(index);
     delete boatList[index];
     boatList.remove(index);
 
@@ -150,6 +150,12 @@ void BoatManager::deleteBoat(int index)
 
     settings->endArray();
     settings->endGroup();
+
+    for(int i = 0; i < _core->videoManager()->size(); i++){
+        if(_core->videoManager()->getVideoItem(i)->boatID() == ID){
+            _core->videoManager()->getVideoItem(i)->stop();
+        }
+    }
 
     boatItemModel->removeRows(index,1);
 }

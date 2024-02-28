@@ -65,12 +65,7 @@ void BoatItem::connect(bool isPrimary)
     bool isConnectionChanged = false;
     if(_connectionPriority == 0){
         if(primaryConnected){
-            if(isPrimary){
                 //keep connected
-            }else{
-                emit connectionChanged(_ID);
-                _currentIP = _SIP;
-            }
         }else{
             if(secondaryConnected){
                 if(isPrimary){
@@ -84,18 +79,15 @@ void BoatItem::connect(bool isPrimary)
                     emit connectionChanged(_ID);
                     _currentIP = _PIP;
                 }else{
+                    emit connectionChanged(_ID);
+                    _currentIP = _SIP;
                     //keep connected
                 }
             }
         }
     }else{
         if(secondaryConnected){
-            if(isPrimary){
-                emit connectionChanged(_ID);
-                _currentIP = _PIP;
-            }else{
                 //keep connected
-            }
         }else{
             if(primaryConnected){
                 if(isPrimary){
@@ -107,7 +99,8 @@ void BoatItem::connect(bool isPrimary)
 
             }else{
                 if(isPrimary){
-                    //keep connected
+                    emit connectionChanged(_ID);
+                    _currentIP = _PIP;
                 }else{
                     emit connectionChanged(_ID);
                     _currentIP = _SIP;

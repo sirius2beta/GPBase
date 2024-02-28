@@ -19,7 +19,8 @@ public:
     void init();
     void addVideoItem(int index, QString title, int boatID, int videoNo, int formatNo, int PCPort);
     VideoItem* getVideoItem(int index) { return videoList[index];}
-    int count() { return videoList.size();  }
+    int size() { return videoList.size();  }
+
 public slots:
     void onPlay(VideoItem* videoItem);
     void onStop(VideoItem* videoItem);

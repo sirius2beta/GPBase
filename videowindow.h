@@ -40,6 +40,7 @@ public:
     void clearScreen();
     void setVideoNo(int i);
 
+
 public slots:
     void onConnectionChanged();
     void onPCPortChanged(int port);

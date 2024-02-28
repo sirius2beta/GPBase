@@ -62,7 +62,7 @@ void MainWindow::initBoatSettings()
 void MainWindow::initVideoWindows()
 {
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
-    for(int i = 0; i < gpbcore->videoManager()->count(); i++){
+    for(int i = 0; i < gpbcore->videoManager()->size(); i++){
         //create settings if first time opened
 
         VideoWindow* vwindow = addVideoWindow(gpbcore->videoManager()->getVideoItem(i));
