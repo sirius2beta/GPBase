@@ -20,6 +20,7 @@ SensorWidget::SensorWidget(QWidget *parent, GPBCore* core) :
         addWidget(sensorItem);
     }
 
+
 }
 
 SensorWidget::~SensorWidget()
@@ -42,7 +43,7 @@ void SensorWidget::addWidget(SensorItem* sensorItem)
 
 void SensorWidget::info_button_pushed()
 {
-    //emit sendMsg(QString("usv1"),QString("qformat"));
+    QSound::play("qrc:/sound/philips_red_alarm.wav");
 }
 
 void SensorWidget::subscribeSensor(int BoatID, int BoardID, int PinID, char unit)

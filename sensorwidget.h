@@ -6,9 +6,11 @@
 #include <QMap>
 #include <QDebug>
 #include <QHostAddress>
+#include <QSound>
 #include "sensorlabel.h"
 #include "boatmanager.h"
 #include "sensormanager.h"
+
 
 class GPBCore;
 

@@ -14,4 +14,11 @@
         <file>PC-05.png</file>
         <file>view-07.png</file>
     </qresource>
+    <qresource prefix="/sound">
+        <file>pmdg_777_masterwarning.wav</file>
+        <file>disconnect_alarm.wav</file>
+        <file>overspeed_alarm.wav</file>
+        <file>philips_red_alarm.wav</file>
+        <file>philips_yellow_alarm.wav</file>
+    </qresource>
 </RCC>

@@ -4,7 +4,7 @@
 #  = mingw64
 #  = GStreamer-1.0-mingw64 1.20.3
 
-QT       += core gui network
+QT       += core gui network multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
