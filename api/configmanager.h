@@ -17,7 +17,7 @@ protected:
     void readSensorTypes();
 private:
     QXmlStreamReader reader;
-    QStandardItemModel* s
+    QStandardItemModel* s;
 };
 
 #endif // CONFIGMANAGER_H
