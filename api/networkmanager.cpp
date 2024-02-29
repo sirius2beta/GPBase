@@ -42,7 +42,6 @@ void NetworkManager::onUDPMsg()
 
 
         QStringList dataList = QString(data).split(' ');
-
         QString message;
         if(data.split(' ').size() >1){
             message = data.split(' ')[1];
@@ -67,14 +66,13 @@ void NetworkManager::onUDPMsg()
             }
 
         }else if(topic == SENSOR){
-            qDebug()<<"sensor";
-            emit sensorMsg(data);
+            int ID = int(data[0]);
+            data.remove(0,1);
+            emit sensorMsg(ID, data);
         }
         const QString content = QLatin1String(" Received Topic: ")
                     + topic
-                    + QLatin1String(" Message: ")
-                    + message
-                    + QLatin1Char('\n');
+                                + QLatin1String(" Message: ");
         //qDebug() << content;
     }
 }

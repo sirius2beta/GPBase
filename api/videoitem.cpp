@@ -34,7 +34,6 @@ VideoItem::VideoItem(QObject *parent, GPBCore* core, int index, QString title, i
     _qualityModel->setItem(0,0,dummyitem2);
     _qualityModel->removeRows(0,1);
 
-
 }
 
 VideoItem::~VideoItem()
@@ -64,6 +63,10 @@ void VideoItem::setPCPort(int port)
 
 void VideoItem::setBoatID(int ID)
 {
+    if(_core->boatManager()->getBoatbyID(ID) == 0){
+        qDebug()<<"**Fatal:: VideoItem::setBoatID: ID out of range";
+        return;
+    }
     if(_boatID != ID){
         stop();
         _videoNoModel->removeRows(0,_videoNoModel->rowCount());
@@ -84,16 +87,18 @@ void VideoItem::setIndex(int index)
 
 void VideoItem::setVideoNo(int index)
 {
+    if(index >= _videoNoModel->rowCount()){
+        qDebug()<<"**Fatal:: VideoItem::setVideoNo: index out of range";
+        return;
+    }
     _qualityModel->removeRows(0,_qualityModel->rowCount());
     int preNo = -1;
     int currentNo = -1;
     int currentindex = -1;
     for(const auto &formatlist:_videoFormatList){
-        //qDebug()<<"setvideoNO:"<<formatlist.split(' ')[0].split('o')[1]<<","<<videoNo;
         if(formatlist.split(' ')[0].split('o')[1].toInt() != currentNo){
             currentNo = formatlist.split(' ')[0].split('o')[1].toInt();
             currentindex ++;
-
         }
         if(currentindex == index){
             QStringList fl = formatlist.split(' ');
@@ -104,7 +109,6 @@ void VideoItem::setVideoNo(int index)
             _videoNo = currentNo;
         }
     }
-    emit UIUpdateFormat();
 }
 
 void VideoItem::setVideoFormat(QStringList videoformat)
@@ -120,15 +124,8 @@ void VideoItem::setVideoFormat(QStringList videoformat)
         if(currentvideoNo != videoNo){
             currentvideoNo = videoNo;
             int current = _videoNoModel->rowCount();
-
-                QStandardItem* item = new QStandardItem(currentvideoNo);
-                _videoNoModel->setItem(current, 0, item);
-
-
-
-
-            qDebug()<<"DNVideoManager::setVideoFormat:"<<currentvideoNo;
-
+            QStandardItem* item = new QStandardItem(currentvideoNo);
+            _videoNoModel->setItem(current, 0, item);
         }
         QStringList vfl = vf.split(' ');
         if(vfl[2].split('=')[1].toInt()<= 1920){  //limit with<1920
@@ -139,12 +136,14 @@ void VideoItem::setVideoFormat(QStringList videoformat)
     if(_videoNoModel->rowCount() >0){
         setVideoNo(0);
     }
-    emit UIUpdateFormat();
-
 }
 
 void VideoItem::setFormatNo(int no)
 {
+    if(no >= _qualityModel->rowCount()){
+        qDebug()<<"**Fatal:: VideoItem::setFormatNo: index out of range";
+        return;
+    }
     _formatNo = no;
 }
 
@@ -172,7 +171,7 @@ void VideoItem::setConnectionPriority(int connectionType)
 void VideoItem::play()
 {
 
-    if(_videoNo == -1 || _formatNo == -1) return;
+    if(_boatID == -1 || _videoNo == -1 || _formatNo == -1) return;
     qDebug()<<"VideoItem::play, videoNo:"<<_videoNo<<", formatNo:"<<_formatNo;
 
     QString gstcmd;
@@ -218,9 +217,7 @@ void VideoItem::play(QString encoder, bool proxy)
 
 void VideoItem::stop()
 {
-    if(_isPlaying == false){
-
-    }else{
+    if(_isPlaying){
         gst_element_set_state (_pipeline, GST_STATE_NULL);
         _isPlaying = false;
         emit videoStoped(this);

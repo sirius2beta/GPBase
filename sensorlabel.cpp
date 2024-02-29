@@ -5,7 +5,6 @@
 
 SensorLabel::SensorLabel(QWidget *parent) :
     QWidget(parent),
-    unit('i'),
     ui(new Ui::SensorLabel)
 {
     ui->setupUi(this);
@@ -16,9 +15,10 @@ SensorLabel::~SensorLabel()
     delete ui;
 }
 
-void SensorLabel::setSensorName(QString name)
+void SensorLabel::setSensorItem(SensorItem* sensorItem)
 {
-    ui->sensor_name->setText(name);
+    _sensorItem = sensorItem;
+    ui->sensor_name->setText(sensorItem->name());
 }
 
 void SensorLabel::setValue(QString value)

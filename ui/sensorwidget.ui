@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>315</width>
+    <width>282</width>
     <height>501</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>8</verstretch>
    </sizepolicy>
@@ -60,8 +60,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>313</width>
-        <height>223</height>
+        <width>280</width>
+        <height>228</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -108,6 +108,13 @@
        <widget class="QPushButton" name="info_Button">
         <property name="text">
          <string>info</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addButton">
+        <property name="text">
+         <string>Add</string>
         </property>
        </widget>
       </item>

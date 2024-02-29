@@ -2,6 +2,7 @@
 #define SENSORLABEL_H
 
 #include <QWidget>
+#include "sensoritem.h"
 
 namespace Ui {
 class SensorLabel;
@@ -14,15 +15,16 @@ class SensorLabel : public QWidget
 public:
     explicit SensorLabel(QWidget *parent = nullptr);
     ~SensorLabel();
-    void setSensorName(QString name);
-    int uid;
-    char unit;
+    void setSensorItem(SensorItem* sensorItem);
+public slots:
     void setValue(QString value);
+
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
     Ui::SensorLabel *ui;
+    SensorItem* _sensorItem;
 };
 
 #endif // SENSORLABEL_H

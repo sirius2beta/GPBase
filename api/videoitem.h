@@ -53,7 +53,7 @@ signals:
     void indexChanged(int index);
     void videoPlayed(VideoItem* v);
     void videoStoped(VideoItem* v);
-    void UIUpdateFormat();
+
 private:
     GPBCore* _core;
 

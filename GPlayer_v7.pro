@@ -23,6 +23,9 @@ SOURCES += \
     adddevicedialog.cpp \
     api/boatitem.cpp \
     api/boatmanager.cpp \
+    api/configmanager.cpp \
+    api/sensoritem.cpp \
+    api/sensormanager.cpp \
     boatsetting.cpp \
     comboboxdelegate.cpp \
     configdialog.cpp \
@@ -38,6 +41,7 @@ SOURCES += \
     sensorwidget.cpp \
     setpindialog.cpp \
     api/videoitem.cpp \
+    addsensordialog.cpp \
     videosettingsdialog.cpp \
     videowindow.cpp \
 
@@ -46,6 +50,9 @@ HEADERS += \
     adddevicedialog.h \
     api/boatitem.h \
     api/boatmanager.h \
+    api/configmanager.h \
+    api/sensoritem.h \
+    api/sensormanager.h \
     boatsetting.h \
     comboboxdelegate.h \
     configdialog.h \
@@ -60,12 +67,14 @@ HEADERS += \
     sensorwidget.h \
     setpindialog.h \
     api/videoitem.h \
+    addsensordialog.h \
     videosettingsdialog.h \
     videowindow.h \
     #yolov5.h
 
 FORMS += \
     ui/adddevicedialog.ui \
+    ui/addsensordialog.ui \
     ui/boatsetting.ui \
     ui/configdialog.ui \
     ui/createwindowdialog.ui \

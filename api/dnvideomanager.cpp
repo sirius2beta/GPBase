@@ -28,11 +28,9 @@ void DNVideoManager::init()
         QString title = settings->value(QString("%1/w%2/title").arg(_config,QString::number(i))).toString();
 
         int PCPort = 5201+i;
-        if(_core->boatManager()->size() > 0){
-            addVideoItem(i, title, _core->boatManager()->getIDbyInex(0), -1, -1, PCPort);
-        }else{
-            addVideoItem(i, title, -1, -1, -1, PCPort);
-        }
+
+        addVideoItem(i, title, -1, -1, -1, PCPort);
+
     }
 
 
@@ -40,7 +38,6 @@ void DNVideoManager::init()
 
 void DNVideoManager::addVideoItem(int index, QString title, int boatID, int videoNo, int formatNo, int PCPort)
 {
-    qDebug()<<"----------------"<<boatID;
     VideoItem* newvideoitem = new VideoItem(this, _core, index, title, boatID, videoNo, formatNo, PCPort);
     if(settings->value(QString("%1/w%2/videoinfo").arg(_core->config(),QString::number(newvideoitem->index()))) == 1){
         newvideoitem->setVideoInfo(true);
@@ -87,13 +84,11 @@ void DNVideoManager::onRequestFormat(VideoItem* videoItem)
     QHostAddress addr(_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP());
     qDebug()<<"DNVideoManager::onRequestFormat: currentIP:"<<_core->boatManager()->getBoatbyID(videoItem->boatID())->currentIP();
     emit sendMsg(addr,char(FORMAT),"qformat");
-    qDebug()<<"format call";
 }
 
 void DNVideoManager::setVideoFormat(int ID, QStringList videoformat)
 {
     for(int i = 0; i < videoList.size(); i++){
-        qDebug()<<"set format, vid:"<<videoList[i]->boatID()<<", bid"<<ID;
         if(videoList[i]->boatID() == ID){
             qDebug()<<"set format, index:"<<_core->boatManager()->getIndexbyID(ID);
             videoList[i]->setVideoFormat(videoformat);

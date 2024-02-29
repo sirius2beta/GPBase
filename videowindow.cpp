@@ -21,7 +21,7 @@ VideoWindow::VideoWindow(QWidget *parent, QString config, GPBCore* core) :
     ui->playButton->setIcon(QIcon(":/icon/playbutton.png"));
     ui->stopButton->setIcon(QIcon(":/icon/stopbutton.png"));
     ui->settingsButton->setIcon(QIcon(":/icon/settingbutton-02.png"));
-    ui->boatcomboBox->setModel(_core->boatManager()->model());
+
 
 
 
@@ -50,6 +50,7 @@ void VideoWindow::init(VideoItem *videoItem)
 {
     _videoItem = videoItem;
     _videoItem->setWID(ui->screen_text->winId());
+    ui->boatcomboBox->setModel(_core->boatManager()->model());
     ui->videoportComboBox->setModel(videoItem->videoNoModel());
     ui->videoFormatcomboBox->setModel(videoItem->qualityModel());
     connect(videoItem, &VideoItem::titleChanged, this, &VideoWindow::onTitleChanged);
@@ -181,7 +182,6 @@ void VideoWindow::onSetBoatNo(int i)
     qDebug()<<"VideoWindow:: set boatNO ui "<<i;
     if(ui->boatcomboBox->count()!=0){
         _videoItem->setBoatID(_core->boatManager()->getIDbyInex(i));
-        qDebug()<<"VideoWindow:: set boatNO "<<_core->boatManager()->getIDbyInex(i);
     }
 }
 

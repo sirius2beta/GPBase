@@ -39,8 +39,8 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     ui->toolBar->addAction(act);
 
     initBoatSettings();
-    initVideoWindows();   
-    //initSensorWidget();
+    initVideoWindows();
+    initSensorWidget();
 }
 
 void MainWindow::initBoatSettings()
@@ -83,14 +83,12 @@ void MainWindow::initSensorWidget()
 {
     //init sensor panel
     QDockWidget* dockwidget = new QDockWidget("Sensor",this);
-    sensor_widget = new SensorWidget(this);
-    sensor_widget->setBoatList(gpbcore->boatManager());
-    connect(sensor_widget, &SensorWidget::sendMsg, gpbcore->networkManager(), &NetworkManager::sendMsg);
+    sensor_widget = new SensorWidget(this, gpbcore);
 
 
     dockwidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockwidget->setWidget(sensor_widget);
-    dockwidget->setMinimumWidth(400);
+    dockwidget->setMinimumWidth(300);
     addDockWidget(Qt::LeftDockWidgetArea, dockwidget);
     dockwidget->hide();
     //dockwidget->setFloating(true);
