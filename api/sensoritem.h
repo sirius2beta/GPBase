@@ -1,7 +1,8 @@
-#ifndef SENSORITEM_H
+﻿#ifndef SENSORITEM_H
 #define SENSORITEM_H
 
 #include <QObject>
+#include "dnvalue.h"
 
 class SensorItem : public QObject
 {
@@ -9,24 +10,19 @@ class SensorItem : public QObject
 public:
     explicit SensorItem(QObject *parent = nullptr);
     int boatID() { return _boatID; }
-    int sensorType() { return _sensorType; }
-    QString name() { return _name; }
-
+    DNValue value() { return _value; }
+    QString name() { return _value.name(); }
     void setBoatID(int ID);
-    void setSensorType(int type);
     void setName(QString name);
-    void setData(int dataType, QByteArray data);
+    void setValue(DNValue value);
 
 signals:
     void BoatIDSet(int ID);
-    void sensorTypeSet(int type);
-    void setText(QString text);
+    void textSet(QString text);
     void nameSet(QString name);
 private:
-    QByteArray _data;
+    DNValue _value;
     int _boatID;
-    int _sensorType;
-    QString _name;
 
 };
 

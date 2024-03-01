@@ -1,10 +1,10 @@
-#include "configmanager.h"
+﻿#include "configmanager.h"
 #include <QFile>
 #include <QDebug>
 ConfigManager::ConfigManager(QObject *parent)
     : QObject{parent}
 {
-    QFile file("/Users/sirius/test.xml");
+    QFile file("test.xml");
     reader.setDevice(&file);
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)){
         qDebug()<<"file opened";
@@ -49,6 +49,7 @@ void ConfigManager::readSensorTypes()
             QString name = reader.attributes().value("name").toString();
             QString type = reader.attributes().value("type").toString();
             DNMetaData::ValueType_t dataType = DNMetaData::stringToType(type);
+            qDebug()<<type;
             _sensorTypeList.append(DNValue(sensorType, name, dataType));
             // readElementText at last to prevent breaking loop
             QString s = reader.readElementText();

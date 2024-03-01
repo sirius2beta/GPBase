@@ -19,7 +19,7 @@ SensorLabel::~SensorLabel()
 void SensorLabel::setSensorItem(SensorItem* sensorItem)
 {
     _sensorItem = sensorItem;
-    connect(sensorItem, &SensorItem::setText, this, &SensorLabel::onSetText);
+    connect(sensorItem, &SensorItem::textSet, this, &SensorLabel::onSetText);
     ui->sensor_name->setText(sensorItem->name());
 }
 

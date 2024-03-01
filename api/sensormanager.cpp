@@ -1,7 +1,7 @@
-#include "sensormanager.h"
+﻿#include "sensormanager.h"
 #include "gpbcore.h"
 #include <QByteArray>
-
+#include <QVariant>
 SensorManager::SensorManager(QObject *parent, GPBCore* core)
     : QObject{parent},
     _core(core)
@@ -9,16 +9,6 @@ SensorManager::SensorManager(QObject *parent, GPBCore* core)
     settings = new QSettings("Ezosirius", "GPlayer_v1", this);
     _sensorTypeModel = new QStandardItemModel;
 
-}
-
-void SensorManager::setSensorData(int ID, int datatype, int sensortype, QByteArray data)
-{
-    for(int i = 0; i < _sensorList.size(); i++){
-        SensorItem* sensorItem = _sensorList[i];
-        if(sensorItem->boatID() == ID && sensorItem->sensorType() == sensortype){
-            sensorItem->setData(datatype, data);
-        }
-    }
 }
 
 void SensorManager::init()
@@ -40,7 +30,10 @@ void SensorManager::init()
         int boatID = settings->value("boatID").toInt();
         DNMetaData::ValueType_t sensorType = DNMetaData::intToType(settings->value("sensorType").toInt());
         QString sensorName = settings->value("sensorName").toString();
-        addSensor(boatID, sensorType, sensorName);
+        SensorItem* item = new SensorItem(this);
+        item->setBoatID(boatID);
+        item->setName(sensorName);
+        addSensor(item);
 
     }
     settings->endArray();
@@ -48,12 +41,10 @@ void SensorManager::init()
     qDebug()<<"sensorManager::init(): Initiate complete";
 }
 
-void SensorManager::addSensor(int boatID, DNMetaData::ValueType_t sensorType, QString sensorName)
+void SensorManager::addSensor(SensorItem* sensorItem)
 {
-    SensorItem* sensorItem = new SensorItem(this);
-    sensorItem->setBoatID(boatID);
-    sensorItem->setSensorType(sensorType);
-    sensorItem->setName(sensorName);
+    qDebug()<<"gettttt  "<<sensorItem->value().dataType();
+    _sensorList.append(sensorItem);
 }
 
 void SensorManager::deleteSensor(int index)
@@ -63,6 +54,7 @@ void SensorManager::deleteSensor(int index)
 
 void SensorManager::onSensorMsg(int ID, QByteArray data)
 {
+
     DNMetaData::ValueType_t datatype;
     int sensortype;
     QByteArray sensordata;
@@ -70,14 +62,38 @@ void SensorManager::onSensorMsg(int ID, QByteArray data)
     int readorder = 0;
     for(int i = 0; i < data.size(); i++){
         if(readorder == 0){
-            datatype = DNMetaData::intToType(int(data[i]));
+            memcpy(&sensortype, data.left(4).data(), sizeof(int));
+            qDebug()<<"get sss "<<_sensorList.size();
         }else if(readorder == 1){
-            sensortype = int(data[i]);
-        }else if(readorder == 2){
             QByteArray sensordata(data.data()+i,1);
             readorder = -1;
             DNValue value = _core->configManager()->sensorTypeList()[sensortype];
-            emit sensorDataChanged(ID, datatype, sensortype, sensordata);
+            //value.setValue(QVariant(data.right(4).data()));
+
+
+            for(int i = 0; i< _sensorList.size(); i++){
+                qDebug()<<"get  "<<_sensorList[i]->value().dataType();
+                if(_sensorList[i]->boatID() == ID && _sensorList[i]->value().SensorType() == sensortype){
+                    if(_sensorList[i]->value().dataType() == DNMetaData::valueTypeUint32){
+                        int i;
+                        memcpy(&i, data.right(4).data(), sizeof(int));
+                        value.setValue(QVariant(i));
+                        qDebug()<<"get iii "<<i;
+                    }else if(_sensorList[i]->value().dataType() == DNMetaData::valueTypeFloat){
+                        float f;
+                        memcpy(&f, data.right(4).data(), sizeof(float));
+                        value.setValue(QVariant(f));
+                        qDebug()<<"get fff "<<i;
+                    }else if(_sensorList[i]->value().dataType() == DNMetaData::valueTypeBool){
+                        int i;
+                        memcpy(&i, data.right(4).data(), sizeof(int));
+                        value.setValue(QVariant(i));
+                        qDebug()<<"get fff "<<i;
+                    }
+                    _sensorList[i]->setValue(value);
+
+                }
+            }
         }
         readorder ++;
     }

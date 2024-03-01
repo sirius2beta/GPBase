@@ -1,4 +1,4 @@
-#ifndef DNVALUE_H
+﻿#ifndef DNVALUE_H
 #define DNVALUE_H
 
 #include <QObject>
@@ -16,8 +16,11 @@ public:
     QString name(){ return _name; }
     int SensorType() { return _sensorType; }
     QVariant data() { return _rawValue; }
-    QVariant dataType() { return _type; }
+    DNMetaData::ValueType_t dataType() { return _type; }
     ~DNValue();
+
+    void setName(QString name){ _name = name; }
+    void setValue(QVariant value) { _rawValue = value; }
 
 private:
     QString _name;

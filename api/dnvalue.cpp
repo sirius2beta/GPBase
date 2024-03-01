@@ -1,9 +1,9 @@
-#include "dnvalue.h"
+﻿#include "dnvalue.h"
 
 DNValue::DNValue(QObject *parent)
     : QObject{parent},
-    _sensorType(-1),
-    _name(QString()),
+      _name(QString()),
+      _sensorType(-1),
     _rawValue(0),
     _type(DNMetaData::valueTypeUint32)
 {
@@ -12,8 +12,8 @@ DNValue::DNValue(QObject *parent)
 
 DNValue::DNValue(int sensorType, QString name, DNMetaData::ValueType_t type, QObject *parent)
     : QObject{parent},
-    _sensorType(sensorType),
-    _name(name),
+      _name(name),
+      _sensorType(sensorType),
     _rawValue(0),
     _type(type)
 {

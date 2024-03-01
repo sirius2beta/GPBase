@@ -36,7 +36,8 @@ void SensorWidget::addWidget(SensorItem* sensorItem)
     SensorLabel* s = new SensorLabel(this);
     ui->gridLayout->addWidget(s,H,W);
     s->setSensorItem(sensorItem);
-    s->setValue("0");
+    _sensorManager->addSensor(sensorItem);
+    //s->setValue("0");
 
     costumSensorCount++;
 }
