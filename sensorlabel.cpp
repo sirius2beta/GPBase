@@ -3,9 +3,10 @@
 #include <QStyleOption>
 #include <QPainter>
 
-SensorLabel::SensorLabel(QWidget *parent) :
+SensorLabel::SensorLabel(QWidget *parent, SensorItem *sensorItem) :
     QWidget(parent),
-    ui(new Ui::SensorLabel)
+    ui(new Ui::SensorLabel),
+    _sensorItem(sensorItem)
 {
     ui->setupUi(this);
 }
@@ -18,12 +19,13 @@ SensorLabel::~SensorLabel()
 void SensorLabel::setSensorItem(SensorItem* sensorItem)
 {
     _sensorItem = sensorItem;
+    connect(sensorItem, &SensorItem::setText, this, &SensorLabel::onSetText);
     ui->sensor_name->setText(sensorItem->name());
 }
 
-void SensorLabel::setValue(QString value)
+void SensorLabel::onSetText(QString text)
 {
-    ui->value->setText(value);
+    ui->value->setText(text);
 }
 
 void SensorLabel::paintEvent(QPaintEvent* event)

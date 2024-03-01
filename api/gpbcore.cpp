@@ -29,7 +29,9 @@ GPBCore::~GPBCore(){
 void GPBCore::init()
 {
     _videoManager->init();
+    _sensorManager->init();
     _networkManager->init();
+
 }
 
 

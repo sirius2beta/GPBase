@@ -24,6 +24,8 @@ SOURCES += \
     api/boatitem.cpp \
     api/boatmanager.cpp \
     api/configmanager.cpp \
+    api/dnmetadata.cpp \
+    api/dnvalue.cpp \
     api/sensoritem.cpp \
     api/sensormanager.cpp \
     boatsetting.cpp \
@@ -51,6 +53,8 @@ HEADERS += \
     api/boatitem.h \
     api/boatmanager.h \
     api/configmanager.h \
+    api/dnmetadata.h \
+    api/dnvalue.h \
     api/sensoritem.h \
     api/sensormanager.h \
     boatsetting.h \

@@ -13,11 +13,11 @@ class SensorLabel : public QWidget
     Q_OBJECT
 
 public:
-    explicit SensorLabel(QWidget *parent = nullptr);
+    explicit SensorLabel(QWidget *parent = nullptr, SensorItem* sensorItem = nullptr);
     ~SensorLabel();
     void setSensorItem(SensorItem* sensorItem);
 public slots:
-    void setValue(QString value);
+    void onSetText(QString text);
 
 protected:
     void paintEvent(QPaintEvent *event);

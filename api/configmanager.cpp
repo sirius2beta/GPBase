@@ -40,11 +40,16 @@ ConfigManager::ConfigManager(QObject *parent)
 
 void ConfigManager::readSensorTypes()
 {
+    _sensorTypeList.clear();
     while(reader.readNextStartElement()){
 
         if(reader.name() == "entry"){
             qDebug()<<reader.attributes().value("name");
-
+            int sensorType = reader.attributes().value("value").toInt();
+            QString name = reader.attributes().value("name").toString();
+            QString type = reader.attributes().value("type").toString();
+            DNMetaData::ValueType_t dataType = DNMetaData::stringToType(type);
+            _sensorTypeList.append(DNValue(sensorType, name, dataType));
             // readElementText at last to prevent breaking loop
             QString s = reader.readElementText();
         }
