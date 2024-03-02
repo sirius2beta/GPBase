@@ -23,10 +23,7 @@ BoatSetting::BoatSetting(QWidget *parent) :
     ui->BoatTableView->verticalHeader()->setDefaultSectionSize(30);
     ui->DeviceTableView->verticalHeader()->setDefaultSectionSize(10);
     //setup boat tableview
-
     ui->BoatTableView->verticalHeader()->setVisible(false);
-
-
 
     deviceItemModel = new QStandardItemModel();
     QStringList label2 = {"ID", QStringLiteral("USB裝置"), QStringLiteral("腳位"),QStringLiteral("類別"),QStringLiteral("狀態")};
@@ -48,8 +45,6 @@ BoatSetting::BoatSetting(QWidget *parent) :
     ui->PeriTableView->setColumnWidth(3,50);
     ui->PeriTableView->setStyleSheet("QTableView::indicator:checked { background-color: #55ee55;} QTableView::indicator:unchecked { background-color: #ee5555;}");
     ui->PeriTableView->verticalHeader()->setVisible(false);
-
-    //appendBoat("Charlie", "192.168.0.1", "100.109.143.71");
 
     connect(ui->addBoatPushButton, &QPushButton::clicked, this, &BoatSetting::onAddBoat);
     connect(ui->deleteBoatPushButton, &QPushButton::clicked, this, &BoatSetting::onDeleteBoat);
@@ -274,8 +269,6 @@ void BoatSetting::onMsg(QByteArray data)
 }
 */
 
-
-
 void BoatSetting::onBoatNameChange()
 {
 
@@ -294,7 +287,6 @@ void BoatSetting::onAddBoat()
     int index = 0;
     for(int i = 0; i< boatManager->size(); i++){
         indexfree[boatManager->getBoatbyIndex(i)->ID()] = false;
-
     }
     for(int i =0; i<256; i++){
         if(indexfree[i] == true){
@@ -401,15 +393,12 @@ void BoatSetting::onBoatDoubleClicked(QModelIndex index)
 
 void BoatSetting::onChangePIP()
 {
-
     BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     boat->setPIP(ui->PIPlineEdit->text());
-
 }
 
 void BoatSetting::onChangeSIP()
 {
-
     BoatItem* boat = boatManager->getBoatbyIndex(ui->BoatcomboBox->currentIndex());
     boat->setSIP(ui->SIPlineEdit->text());
 }

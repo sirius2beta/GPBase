@@ -3,8 +3,8 @@
 SensorItem::SensorItem(QObject *parent)
     : QObject{parent},
     _value(DNValue()),
-    _enableMaxAlarm(false),
-    _maxAlarmValue(QVariant())
+    _maxAlarmValue(QVariant()),
+    _enableMaxAlarm(false)
 {
 
 }

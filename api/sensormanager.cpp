@@ -8,7 +8,6 @@ SensorManager::SensorManager(QObject *parent, GPBCore* core)
 {
     settings = new QSettings("Ezosirius", "GPlayer_v1", this);
     _sensorTypeModel = new QStandardItemModel;
-
 }
 
 void SensorManager::init()

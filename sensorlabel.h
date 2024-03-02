@@ -19,13 +19,15 @@ public:
     void setSensorItem(SensorItem* sensorItem);
 public slots:
     void onSetText(QString text);
-
+    void onDisableAlarmSound();
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
     Ui::SensorLabel *ui;
     SensorItem* _sensorItem;
+    bool _isPlaying;
+    bool _disableAlarmSound;
     QSound* alarm;
 };
 

@@ -32,7 +32,7 @@ public slots:
     void onAddSensorButtonClicked();
 
 signals:
-
+    void disableAlarmSound();
 private:
     Ui::sensorWidget *ui;
     int connection_counter;

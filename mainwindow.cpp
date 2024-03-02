@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent, QString config)
     //init gpbcore
     gpbcore = new GPBCore(this, config);
 
-
     ui->setupUi(this);
     this->setCorner(Qt::Corner::BottomLeftCorner, Qt::LeftDockWidgetArea);
     this->setCorner(Qt::Corner::TopLeftCorner, Qt::LeftDockWidgetArea);
@@ -56,7 +55,6 @@ void MainWindow::initBoatSettings()
 
     dockwidget->toggleViewAction()->setIcon(QIcon(":/icon/boat-06.png"));
     ui->toolBar->addAction(dockwidget->toggleViewAction());
-
 }
 
 void MainWindow::initVideoWindows()
@@ -64,7 +62,6 @@ void MainWindow::initVideoWindows()
     Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
     for(int i = 0; i < gpbcore->videoManager()->size(); i++){
         //create settings if first time opened
-
         VideoWindow* vwindow = addVideoWindow(gpbcore->videoManager()->getVideoItem(i));
         if(i == 0){
             setCentralWidget(vwindow);
@@ -74,9 +71,7 @@ void MainWindow::initVideoWindows()
             dockwidget->setWidget(vwindow);
             dockwidget->setMinimumHeight(300);
         }
-
     }
-
 }
 
 void MainWindow::initSensorWidget()
@@ -85,12 +80,11 @@ void MainWindow::initSensorWidget()
     QDockWidget* dockwidget = new QDockWidget("Sensor",this);
     sensor_widget = new SensorWidget(this, gpbcore);
 
-
     dockwidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockwidget->setWidget(sensor_widget);
     dockwidget->setMinimumWidth(300);
     addDockWidget(Qt::LeftDockWidgetArea, dockwidget);
-    dockwidget->hide();
+    //dockwidget->hide();
     //dockwidget->setFloating(true);
 
     dockwidget->toggleViewAction()->setIcon(QIcon(":/icon/sensor-02.png"));
@@ -99,13 +93,9 @@ void MainWindow::initSensorWidget()
 
 VideoWindow* MainWindow::addVideoWindow(VideoItem *videoItem)
 {
-    Qt::DockWidgetArea area = Qt::RightDockWidgetArea;
-
     VideoWindow* vwindow = new VideoWindow(this, _config, gpbcore);
-
     vwindow->init(videoItem);
     return vwindow;
-
 }
 
 void MainWindow::openCreateWindowDialog()
@@ -119,10 +109,6 @@ MainWindow::~MainWindow()
     delete ui;
 
 }
-
-
-
-
 
 void MainWindow::setConfig(QString config)
 {

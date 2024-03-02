@@ -107,7 +107,7 @@
       <item>
        <widget class="QPushButton" name="info_Button">
         <property name="text">
-         <string>info</string>
+         <string>Alarrm</string>
         </property>
        </widget>
       </item>

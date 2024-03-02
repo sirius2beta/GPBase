@@ -7,7 +7,6 @@
 SensorWidget::SensorWidget(QWidget *parent, GPBCore* core) :
     QWidget(parent),
     ui(new Ui::sensorWidget),
-    connection_counter(0),
     costumSensorCount(0),
     _core(core)
 {
@@ -37,14 +36,14 @@ void SensorWidget::addWidget(SensorItem* sensorItem)
     ui->gridLayout->addWidget(s,H,W);
     s->setSensorItem(sensorItem);
     _sensorManager->addSensor(sensorItem);
-    //s->setValue("0");
+    connect(this, &SensorWidget::disableAlarmSound, s, &SensorLabel::onDisableAlarmSound);
 
     costumSensorCount++;
 }
 
 void SensorWidget::info_button_pushed()
 {
-
+    emit disableAlarmSound();
 }
 
 void SensorWidget::subscribeSensor(int BoatID, int BoardID, int PinID, char unit)
