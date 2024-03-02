@@ -26,6 +26,8 @@ void AddSensorDialog::accept()
     qDebug()<<"+++++++++"<<b->value().dataType();
     b->setName(ui->sensorNameLineEdit->text());
     b->setBoatID(_core->boatManager()->getIDbyInex(ui->boatIDComboBox->currentIndex()));
+    b->enableMaxAlarm(ui->enableMaxCheckBox->isChecked());
+    b->setMaxAlarmValue(QVariant(ui->maxValueLineEdit->text().toFloat()));
     emit comit(b);
 
     QDialog::accept();

@@ -44,7 +44,7 @@ void SensorWidget::addWidget(SensorItem* sensorItem)
 
 void SensorWidget::info_button_pushed()
 {
-    QSound::play("qrc:/sound/philips_red_alarm.wav");
+
 }
 
 void SensorWidget::subscribeSensor(int BoatID, int BoardID, int PinID, char unit)

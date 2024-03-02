@@ -1,7 +1,8 @@
-#ifndef SENSORLABEL_H
+﻿#ifndef SENSORLABEL_H
 #define SENSORLABEL_H
 
 #include <QWidget>
+#include <QSound>
 #include "sensoritem.h"
 
 namespace Ui {
@@ -25,6 +26,7 @@ protected:
 private:
     Ui::SensorLabel *ui;
     SensorItem* _sensorItem;
+    QSound* alarm;
 };
 
 #endif // SENSORLABEL_H

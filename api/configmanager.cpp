@@ -4,7 +4,8 @@
 ConfigManager::ConfigManager(QObject *parent)
     : QObject{parent}
 {
-    QFile file("test.xml");
+
+    QFile file("SensorType.xml");
     reader.setDevice(&file);
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)){
         qDebug()<<"file opened";
@@ -27,15 +28,11 @@ ConfigManager::ConfigManager(QObject *parent)
                 }
             }
             else
-                reader.raiseError(QObject::tr("Incorrect file"));
+                reader.raiseError(QObject::tr("ConfigManager:: Incorrect xml config file"));
         }
-
-
-
-
     }
     file.close();
-    qDebug()<<"file closed";
+    qDebug()<<"ConfigManager:: xml file closed";
 }
 
 void ConfigManager::readSensorTypes()

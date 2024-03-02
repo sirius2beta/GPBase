@@ -2,7 +2,9 @@
 
 SensorItem::SensorItem(QObject *parent)
     : QObject{parent},
-    _value(DNValue())
+    _value(DNValue()),
+    _enableMaxAlarm(false),
+    _maxAlarmValue(QVariant())
 {
 
 }

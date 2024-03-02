@@ -9,6 +9,7 @@ SensorLabel::SensorLabel(QWidget *parent, SensorItem *sensorItem) :
     _sensorItem(sensorItem)
 {
     ui->setupUi(this);
+    alarm = new QSound("qrc:/sound/philips_red_alarm.wav",this);
 }
 
 SensorLabel::~SensorLabel()
@@ -25,6 +26,10 @@ void SensorLabel::setSensorItem(SensorItem* sensorItem)
 
 void SensorLabel::onSetText(QString text)
 {
+    if(_sensorItem->isEnableMaxAlarm() && QVariant(text).toFloat() > _sensorItem->maxAlarmValue().toFloat()){
+        alarm->play();
+        setStyleSheet(QString("*{ background-color: red;}"));
+    }
     ui->value->setText(text);
 }
 
