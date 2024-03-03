@@ -1,0 +1,3 @@
+[submodule "dnapi"]
+	path = dnapi
+	url = https://github.com/sirius2beta/dnapi.git

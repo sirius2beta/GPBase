@@ -17,32 +17,32 @@ CONFIG += c++11 console
 DEFINES += DEBUG_MODE
 
 INCLUDEPATH += \
-    api/ \
+    dnapi/ \
 
 SOURCES += \
     adddevicedialog.cpp \
-    api/boatitem.cpp \
-    api/boatmanager.cpp \
-    api/configmanager.cpp \
-    api/dnmetadata.cpp \
-    api/dnvalue.cpp \
-    api/sensoritem.cpp \
-    api/sensormanager.cpp \
+    dnapi/boatitem.cpp \
+    dnapi/boatmanager.cpp \
+    dnapi/configmanager.cpp \
+    dnapi/dnmetadata.cpp \
+    dnapi/dnvalue.cpp \
+    dnapi/sensoritem.cpp \
+    dnapi/sensormanager.cpp \
     boatsetting.cpp \
     comboboxdelegate.cpp \
     configdialog.cpp \
     createwindowdialog.cpp \
     device.cpp \
-    api/dnvideomanager.cpp \
-    api/gpbcore.cpp \
-    api/heartbeat.cpp \
+    dnapi/dnvideomanager.cpp \
+    dnapi/gpbcore.cpp \
+    dnapi/heartbeat.cpp \
     main.cpp \
     mainwindow.cpp \
-    api/networkmanager.cpp \
+    dnapi/networkmanager.cpp \
     sensorlabel.cpp \
     sensorwidget.cpp \
     setpindialog.cpp \
-    api/videoitem.cpp \
+    dnapi/videoitem.cpp \
     addsensordialog.cpp \
     videosettingsdialog.cpp \
     videowindow.cpp \
@@ -50,27 +50,27 @@ SOURCES += \
 HEADERS += \
     QTypes.h \
     adddevicedialog.h \
-    api/boatitem.h \
-    api/boatmanager.h \
-    api/configmanager.h \
-    api/dnmetadata.h \
-    api/dnvalue.h \
-    api/sensoritem.h \
-    api/sensormanager.h \
+    dnapi/boatitem.h \
+    dnapi/boatmanager.h \
+    dnapi/configmanager.h \
+    dnapi/dnmetadata.h \
+    dnapi/dnvalue.h \
+    dnapi/sensoritem.h \
+    dnapi/sensormanager.h \
     boatsetting.h \
     comboboxdelegate.h \
     configdialog.h \
     createwindowdialog.h \
     device.h \
-    api/dnvideomanager.h \
-    api/gpbcore.h \
-    api/heartbeat.h \
+    dnapi/dnvideomanager.h \
+    dnapi/gpbcore.h \
+    dnapi/heartbeat.h \
     mainwindow.h \
-    api/networkmanager.h \
+    dnapi/networkmanager.h \
     sensorlabel.h \
     sensorwidget.h \
     setpindialog.h \
-    api/videoitem.h \
+    dnapi/videoitem.h \
     addsensordialog.h \
     videosettingsdialog.h \
     videowindow.h \
