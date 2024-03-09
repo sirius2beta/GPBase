@@ -4,7 +4,7 @@
 #  = mingw64
 #  = GStreamer-1.0-mingw64 1.20.3
 
-QT       += core gui network multimedia
+QT       += core gui network multimedia quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,7 +33,7 @@ SOURCES += \
     configdialog.cpp \
     createwindowdialog.cpp \
     device.cpp \
-    dnapi/dnvideomanager.cpp \
+    dnapi/videomanager.cpp \
     dnapi/gpbcore.cpp \
     dnapi/heartbeat.cpp \
     main.cpp \
@@ -46,6 +46,7 @@ SOURCES += \
     addsensordialog.cpp \
     videosettingsdialog.cpp \
     videowindow.cpp \
+    dnapi/QmlObjectListModel.cpp\
 
 HEADERS += \
     QTypes.h \
@@ -62,7 +63,7 @@ HEADERS += \
     configdialog.h \
     createwindowdialog.h \
     device.h \
-    dnapi/dnvideomanager.h \
+    dnapi/videomanager.h \
     dnapi/gpbcore.h \
     dnapi/heartbeat.h \
     mainwindow.h \
@@ -74,7 +75,7 @@ HEADERS += \
     addsensordialog.h \
     videosettingsdialog.h \
     videowindow.h \
-    #yolov5.h
+    dnapi/QmlObjectListModel.h\
 
 FORMS += \
     ui/adddevicedialog.ui \

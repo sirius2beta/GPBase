@@ -129,9 +129,18 @@ void VideoWindow::changeSettings(VWSetting settings)
     qDebug()<<"change settings";
     _videoItem->setTitle(settings.title);
     setVideoInfo(settings.video_info);
-    ui->videoportComboBox->setCurrentIndex(settings.videono);
-    ui->videoFormatcomboBox->setCurrentIndex(settings.formatno);
+    //ui->videoportComboBox->setCurrentIndex(settings.videono);
+    //ui->videoFormatcomboBox->setCurrentIndex(settings.formatno);
     proxyMode = settings.proxy;
+    if(proxyMode){
+        ui->H264checkBox->setCheckState(Qt::Unchecked);
+        ui->H264checkBox->setDisabled(true);
+    }else{
+        ui->H264checkBox->setDisabled(false);
+    }
+    _videoItem->setProxyMode(settings.proxy);
+
+
 
     this->settings->setValue(QString("%1/w%2/videono").arg(_config,QString::number(_videoItem->index())), settings.videono);
     this->settings->setValue(QString("%1/w%2/formatno").arg(_config,QString::number(_videoItem->index())), settings.formatno);
